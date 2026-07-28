@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import { useSignupForm } from '~/features/signup'
+import { useLoginForm } from '~/features/login'
 
-const { form, pending, errorMessage, submit } = useSignupForm()
+const { form, pending, errorMessage, submit } = useLoginForm()
 </script>
 
 <template>
@@ -28,22 +28,19 @@ const { form, pending, errorMessage, submit } = useSignupForm()
     <a-form-item
       label="Password"
       name="password"
-      :rules="[
-        { required: true, message: 'Password is required' },
-        { min: 8, message: 'Password must be at least 8 characters' }
-      ]"
+      :rules="[{ required: true, message: 'Password is required' }]"
     >
-      <a-input-password v-model:value="form.password" autocomplete="new-password" />
+      <a-input-password v-model:value="form.password" autocomplete="current-password" />
     </a-form-item>
 
     <a-form-item>
       <a-button type="primary" html-type="submit" :loading="pending" block>
-        Sign up
+        Log in
       </a-button>
     </a-form-item>
 
     <a-flex justify="center">
-      <NuxtLink to="/login">Already have an account? Log in</NuxtLink>
+      <NuxtLink to="/signup">Don't have an account? Sign up</NuxtLink>
     </a-flex>
   </a-form>
 </template>
