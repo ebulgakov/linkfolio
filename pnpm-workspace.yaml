@@ -1,5 +1,6 @@
 allowBuilds:
   '@parcel/watcher': true
+  core-js: true
   esbuild: true
 minimumReleaseAgeExclude:
   - '@nuxt/kit@4.5.1'
