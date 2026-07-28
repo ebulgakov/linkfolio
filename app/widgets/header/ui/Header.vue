@@ -1,7 +1,9 @@
 <script lang="ts" setup>
 import { authClient } from '~/shared/api/auth-client'
 
-const session = authClient.useSession()
+const { data: session } = await authClient.useSession((url, opts) =>
+  useFetch(url, { ...opts, key: 'auth-session' })
+)
 const router = useRouter()
 
 async function logOut() {
@@ -15,8 +17,8 @@ async function logOut() {
 
 <template>
   <a-flex class="header">
-    <a-flex v-if="session.data" align="center" gap="middle" class="username">
-      <span>{{ session.data.user.name || session.data.user.email }}</span>
+    <a-flex v-if="session" align="center" gap="middle" class="username">
+      <span>{{ session.user.name || session.user.email }}</span>
       <a-button @click="logOut">Log Out</a-button>
     </a-flex>
   </a-flex>
