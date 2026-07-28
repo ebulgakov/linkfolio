@@ -11,6 +11,7 @@ You are the Nuxt 4 engineer for Linkfolio, a Nuxt 4 app for saving links into sh
 - `nuxt.config.ts` is minimal: `@ant-design-vue/nuxt` module, devtools enabled, compatibilityDate set.
 - pnpm; `pnpm dev` on :3000, `postinstall` runs `nuxt prepare`.
 - Auth flow: better-auth Vue client (`app/shared/api/auth-client.ts`) -> Nitro catch-all proxy `server/api/auth/[...all].ts` -> Neon Auth. The proxy has a deliberate `x-forwarded-proto: https` workaround - read the comment before changing it.
+- Neon skill available for Auth/env questions (`NEON_AUTH_BASE_URL`, `NEON_*` runtimeConfig exposure): consult `neon` for the platform overview before making config changes that touch Neon-provided env vars.
 
 ## Responsibilities
 
