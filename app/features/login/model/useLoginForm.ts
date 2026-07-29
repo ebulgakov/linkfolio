@@ -35,6 +35,7 @@ export function useLoginForm() {
                   : "Something went wrong. Please try again.";
           },
           onSuccess: async () => {
+            await refreshNuxtData("auth-session");
             await navigateTo(sanitizeRedirect(route.query.redirect));
           }
         }
