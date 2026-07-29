@@ -2,5 +2,5 @@
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
-  modules: ["@ant-design-vue/nuxt", "@nuxt/eslint"]
+  modules: ["@ant-design-vue/nuxt", "@nuxt/eslint", "@nuxt/test-utils/module"]
 });
