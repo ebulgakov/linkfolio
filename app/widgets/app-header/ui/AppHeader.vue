@@ -1,6 +1,7 @@
 <script lang="ts" setup>
-import { authClient } from "~/shared/api/auth-client";
+import { useAuth } from "~/shared/api/use-auth";
 
+const authClient = useAuth();
 const { data: session } = await authClient.useSession((url, opts) =>
   useFetch(url, { ...opts, key: "auth-session" })
 );
@@ -19,7 +20,7 @@ async function logOut() {
 
 <template>
   <a-flex class="header">
-    <a-flex v-if="session" align="center" gap="middle" class="username">
+    <a-flex v-if="session?.user" align="center" gap="middle" class="username">
       <span>{{ session.user.name || session.user.email }}</span>
       <a-button @click="logOut">Log Out</a-button>
     </a-flex>
