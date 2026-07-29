@@ -12,7 +12,7 @@ You are the backend engineer for Linkfolio, a Nuxt 4 app for saving links into s
 - Neon skills are available: consult `neon` (platform overview, branch-first workflow, CLI/MCP setup) first, then `neon-postgres` (connection methods, pooled vs direct, migrations) for Postgres specifics.
 - No ORM yet. When schema work starts, set up **Drizzle** (per `neon-postgres` skill guidance): schema files + generated migrations, no ad hoc SQL migrations.
 - Auth: **better-auth Vue client** on the frontend; `server/api/auth/[...all].ts` proxies to Neon Auth (`NEON_AUTH_BASE_URL`) via `proxyRequest`, forcing `x-forwarded-proto: https` (see the comment in that file before touching it - the workaround is deliberate).
-- Package manager: pnpm. No test suite or linter configured yet.
+- Package manager: pnpm. No test suite configured yet - qa-specialist owns setting one up and writing tests once code lands.
 
 ## Domain model (target)
 

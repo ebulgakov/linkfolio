@@ -11,8 +11,11 @@ Package manager is pnpm (see `pnpm-lock.yaml` / `pnpm-workspace.yaml`).
 - `pnpm build` — production build
 - `pnpm generate` — static site generation
 - `pnpm preview` — locally preview the production build
+- `pnpm lint` / `pnpm lint:fix` — ESLint
+- `pnpm format` / `pnpm format:fix` — Prettier
+- `pnpm type-check` — `nuxt typecheck`
 
-There is no test suite or linter configured in this repo yet.
+There is no test suite configured in this repo yet; the qa-specialist subagent owns setting one up (Vitest + `@nuxt/test-utils`) when it's next needed.
 
 ## Architecture
 
@@ -48,3 +51,4 @@ Specialist subagents live in `.claude/agents/`. `team-lead` is the entry point f
 - **backend** — everything under `server/`: Nitro routes, Neon Postgres schema/migrations (Drizzle), API endpoints, auth/session handling.
 - **vue-specialist** — Vue 3 components and composables inside FSD `ui/`/`model/` segments, Ant Design Vue usage.
 - **nuxt-integrator** — `nuxt.config.ts`, modules, routing/pages, data fetching (`useFetch`/`useAsyncData`), middleware, plugins, SSR/hydration.
+- **qa-specialist** — writes/updates tests for components and composables after they're implemented; use PROACTIVELY once a component or composable lands.
