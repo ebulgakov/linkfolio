@@ -19,6 +19,7 @@
   "dependencies": {
     "@mdi/font": "^7.4.47",
     "@neondatabase/serverless": "^1.1.0",
+    "@nuxt/image": "^2.0.0",
     "@sentry/nuxt": "^10.68.0",
     "better-auth": "^1.6.25",
     "nuxt": "^4.5.1",

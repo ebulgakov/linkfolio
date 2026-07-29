@@ -45,7 +45,7 @@ async function onSubmit() {
     </v-btn>
 
     <div class="d-flex justify-center mt-4">
-      <NuxtLink to="/login">Already have an account? Log in</NuxtLink>
+      <NuxtLink to="/login" class="text-primary">Already have an account? Log in</NuxtLink>
     </div>
   </v-form>
 </template>

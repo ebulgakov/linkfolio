@@ -7,7 +7,8 @@ export default defineNuxtConfig({
     "vuetify-nuxt-module",
     "@nuxt/eslint",
     "@nuxt/test-utils/module",
-    "@sentry/nuxt/module"
+    "@sentry/nuxt/module",
+    "@nuxt/image"
   ],
 
   css: ["@mdi/font/css/materialdesignicons.css"],

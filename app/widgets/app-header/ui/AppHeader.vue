@@ -27,11 +27,21 @@ async function logOut() {
 </script>
 
 <template>
-  <v-app-bar>
+  <v-app-bar class="px-4">
+    <NuxtLink to="/" class="d-flex align-center ma-0 text-primary text-decoration-none">
+      <nuxt-img src="/linkfolio-logo.svg" alt="Linkfolio Logo" width="40" height="40" />
+      <figcaption class="mt-2 text-body-large">Linkfolio</figcaption>
+    </NuxtLink>
     <v-spacer />
     <template v-if="session?.user">
       <span class="username">{{ session.user.name || session.user.email }}</span>
       <v-btn @click="logOut">Log Out</v-btn>
+    </template>
+    <template v-else>
+      <div class="d-flex ga-3">
+        <v-btn color="primary" variant="outlined" @click="router.push('/login')">Log In</v-btn>
+        <v-btn color="primary" variant="tonal" @click="router.push('/signup')">Sign Up</v-btn>
+      </div>
     </template>
   </v-app-bar>
 </template>

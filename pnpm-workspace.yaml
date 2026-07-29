@@ -5,6 +5,7 @@ allowBuilds:
   '@sentry/cli': true
   core-js: true
   esbuild: true
+  sharp: true
   unrs-resolver: false
 minimumReleaseAgeExclude:
   - "@nuxt/kit@4.5.1"
