@@ -4,7 +4,11 @@ import { AppHeader } from "~/widgets/app-header";
 
 <template>
   <NuxtLayout>
-    <AppHeader />
-    <NuxtPage />
+    <v-app>
+      <AppHeader />
+      <v-main>
+        <NuxtPage />
+      </v-main>
+    </v-app>
   </NuxtLayout>
 </template>

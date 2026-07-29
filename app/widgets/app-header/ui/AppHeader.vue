@@ -27,21 +27,17 @@ async function logOut() {
 </script>
 
 <template>
-  <a-flex class="header">
-    <a-flex v-if="session?.user" align="center" gap="middle" class="username">
-      <span>{{ session.user.name || session.user.email }}</span>
-      <a-button @click="logOut">Log Out</a-button>
-    </a-flex>
-  </a-flex>
+  <v-app-bar>
+    <v-spacer />
+    <template v-if="session?.user">
+      <span class="username">{{ session.user.name || session.user.email }}</span>
+      <v-btn @click="logOut">Log Out</v-btn>
+    </template>
+  </v-app-bar>
 </template>
 
 <style lang="css" scoped>
-.header {
-  padding: 12px 24px;
-  border-bottom: 1px solid #f0f0f0;
-}
-
 .username {
-  margin-left: auto;
+  margin-right: 16px;
 }
 </style>

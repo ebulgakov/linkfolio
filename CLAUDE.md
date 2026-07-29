@@ -28,8 +28,8 @@ Package manager is pnpm (see `pnpm-lock.yaml` / `pnpm-workspace.yaml`).
 Linkfolio is a Nuxt 4 application, organized with **Feature-Sliced Design** (FSD) under `app/`.
 
 - `app/app.vue` — root component, renders `Header` widget + `NuxtPage` (Nuxt 4 source directory convention: app code lives under `app/`, not the project root)
-- `nuxt.config.ts` — Nuxt config; the `@ant-design-vue/nuxt` module is registered here, which auto-imports Ant Design Vue components (e.g. `<a-button>`, `<a-flex>`, `<a-slider>`) with no manual import needed
-- UI library: **Ant Design Vue** via `@ant-design-vue/nuxt`
+- `nuxt.config.ts` — Nuxt config; the `vuetify-nuxt-module` module is registered here, which auto-imports Vuetify components (e.g. `<v-btn>`, `<v-text-field>`, `<v-card>`) with no manual import needed
+- UI library: **Vuetify** via `vuetify-nuxt-module` (icons: MDI webfont, `@mdi/font`)
 
 ### FSD layers in use
 
