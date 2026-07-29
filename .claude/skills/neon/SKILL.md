@@ -73,15 +73,15 @@ Neon provides a set of agent skills in addition to the official documentation. W
 
 The skills below live in the [`neondatabase/agent-skills`](https://github.com/neondatabase/agent-skills) repo:
 
-| Skill | Use it for |
-| --- | --- |
-| `neon-postgres` | Working with databases, including connections, schemas, queries, and autoscaling: SQL development, schema design, performance optimization, and scaling decisions. |
-| `neon-postgres-branches` | Choosing or creating the right branch type for dev, preview, test, or CI workflows. Use this skill as a slash command. |
-| `neon-object-storage` | Storing and serving files (uploads, images, blobs), including branching them with the database. |
-| `neon-functions` | Deploying long-running or streaming serverless functions — APIs, agents, SSE/WebSocket servers. |
-| `neon-ai-gateway` | Calling an LLM or routing across model providers with one credential, including discovering the branch's servable models at runtime via the OpenAI-compatible `/v1/models` endpoint. |
-| `claimable-postgres` | Provisioning instant, claimable temporary Postgres databases (for example, one per end user or demo). |
-| `neon-postgres-egress-optimizer` | Diagnosing or fixing excessive Postgres egress (network data-transfer) costs in a codebase. |
+| Skill                            | Use it for                                                                                                                                                                           |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `neon-postgres`                  | Working with databases, including connections, schemas, queries, and autoscaling: SQL development, schema design, performance optimization, and scaling decisions.                   |
+| `neon-postgres-branches`         | Choosing or creating the right branch type for dev, preview, test, or CI workflows. Use this skill as a slash command.                                                               |
+| `neon-object-storage`            | Storing and serving files (uploads, images, blobs), including branching them with the database.                                                                                      |
+| `neon-functions`                 | Deploying long-running or streaming serverless functions — APIs, agents, SSE/WebSocket servers.                                                                                      |
+| `neon-ai-gateway`                | Calling an LLM or routing across model providers with one credential, including discovering the branch's servable models at runtime via the OpenAI-compatible `/v1/models` endpoint. |
+| `claimable-postgres`             | Provisioning instant, claimable temporary Postgres databases (for example, one per end user or demo).                                                                                |
+| `neon-postgres-egress-optimizer` | Diagnosing or fixing excessive Postgres egress (network data-transfer) costs in a codebase.                                                                                          |
 
 For guidance on agent platforms that provision and operate Neon Postgres at scale, use `neon-postgres-agent-platforms`, which lives in a separate repo: [`neondatabase/neon-for-agent-platforms`](https://github.com/neondatabase/neon-for-agent-platforms).
 
@@ -179,16 +179,16 @@ export default defineConfig({
     aiGateway: true,
     buckets: {
       images: {
-        access: "private",
-      },
+        access: "private"
+      }
     },
     functions: {
       imagegen: {
         name: "AI SDK image agent",
-        source: "src/index.ts",
-      },
-    },
-  },
+        source: "src/index.ts"
+      }
+    }
+  }
 });
 ```
 
@@ -202,14 +202,10 @@ export default defineConfig({
   auth: true,
   dataApi: true,
   preview: {
-    functions: {
-      /* ... */
-    }, // see the neon-functions skill
-    buckets: {
-      /* ... */
-    }, // see the neon-object-storage skill
-    aiGateway: true, // see the neon-ai-gateway skill
-  },
+    functions: {/* ... */}, // see the neon-functions skill
+    buckets: {/* ... */}, // see the neon-object-storage skill
+    aiGateway: true // see the neon-ai-gateway skill
+  }
 });
 ```
 
@@ -267,7 +263,7 @@ import { defineConfig } from "@neon/config/v1";
 export default defineConfig({
   auth: true,
   dataApi: true,
-  branch: (branch) => {
+  branch: branch => {
     if (branch.exists) {
       // leave existing branches untouched
       return {};
@@ -279,13 +275,13 @@ export default defineConfig({
           computeSettings: {
             autoscalingLimitMinCu: 0.25, // scale to zero
             autoscalingLimitMaxCu: 1, // keep it cheap
-            suspendTimeout: "5m",
-          },
-        },
+            suspendTimeout: "5m"
+          }
+        }
       };
     }
     return {};
-  },
+  }
 });
 ```
 
@@ -297,7 +293,7 @@ Because `neon.ts` is TypeScript, the compiler catches invalid infrastructure bef
 
 ```typescript
 export default defineConfig({
-  dataApi: true, // type error: `dataApi` (default authProvider 'neon') requires Neon Auth
+  dataApi: true // type error: `dataApi` (default authProvider 'neon') requires Neon Auth
 });
 ```
 
@@ -311,8 +307,8 @@ export default defineConfig({ auth: true, dataApi: true });
 export default defineConfig({
   dataApi: {
     authProvider: "external",
-    jwksUrl: "https://your-idp/.well-known/jwks.json",
-  },
+    jwksUrl: "https://your-idp/.well-known/jwks.json"
+  }
 });
 ```
 

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import { useLoginForm } from '~/features/login'
+import { useLoginForm } from "~/features/login";
 
-const { form, pending, errorMessage, submit } = useLoginForm()
+const { form, pending, errorMessage, submit } = useLoginForm();
 </script>
 
 <template>
@@ -34,9 +34,7 @@ const { form, pending, errorMessage, submit } = useLoginForm()
     </a-form-item>
 
     <a-form-item>
-      <a-button type="primary" html-type="submit" :loading="pending" block>
-        Log in
-      </a-button>
+      <a-button type="primary" html-type="submit" :loading="pending" block> Log in </a-button>
     </a-form-item>
 
     <a-flex justify="center">

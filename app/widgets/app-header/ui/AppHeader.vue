@@ -1,17 +1,19 @@
 <script lang="ts" setup>
-import { authClient } from '~/shared/api/auth-client'
+import { authClient } from "~/shared/api/auth-client";
 
 const { data: session } = await authClient.useSession((url, opts) =>
-  useFetch(url, { ...opts, key: 'auth-session' })
-)
-const router = useRouter()
+  useFetch(url, { ...opts, key: "auth-session" })
+);
+const router = useRouter();
 
 async function logOut() {
   await authClient.signOut({
     fetchOptions: {
-      onSuccess: () => router.push('/login')
+      onSuccess: () => {
+        router.push("/login");
+      }
     }
-  })
+  });
 }
 </script>
 
@@ -23,7 +25,6 @@ async function logOut() {
     </a-flex>
   </a-flex>
 </template>
-
 
 <style lang="css" scoped>
 .header {

@@ -1,10 +1,10 @@
 <script lang="ts" setup>
-import { Header } from '~/widgets/header'
+import { AppHeader } from "~/widgets/app-header";
 </script>
 
 <template>
   <NuxtLayout>
-    <Header />
+    <AppHeader />
     <NuxtPage />
   </NuxtLayout>
 </template>

@@ -7,7 +7,12 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "lint:fix": "eslint --fix",
+    "lint": "eslint",
+    "type-check": "nuxt typecheck",
+    "format:fix": "prettier --write .",
+    "format": "prettier --check ."
   },
   "dependencies": {
     "@ant-design-vue/nuxt": "1.4.6",
@@ -18,6 +23,13 @@
     "vue-router": "^5.2.0"
   },
   "devDependencies": {
-    "@types/node": "^26.1.1"
+    "@nuxt/eslint": "^1.16.0",
+    "@types/node": "^26.1.1",
+    "eslint": "^10.8.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.32.0",
+    "prettier": "^3.9.6",
+    "typescript": "^6.0.3",
+    "vue-tsc": "^3.3.8"
   }
 }
