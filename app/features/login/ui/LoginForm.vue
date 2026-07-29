@@ -33,10 +33,13 @@ async function onSubmit() {
       autocomplete="current-password"
       :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
       :rules="[required('Password is required')]"
+      :aria-label="showPassword ? 'Hide password' : 'Show password'"
       @click:append-inner="showPassword = !showPassword"
     />
 
-    <v-btn type="submit" color="primary" :loading="pending" block> Log in </v-btn>
+    <v-btn type="submit" color="primary" :loading="pending" :disabled="pending" block>
+      Log in
+    </v-btn>
 
     <div class="d-flex justify-center mt-4">
       <NuxtLink to="/signup">Don't have an account? Sign up</NuxtLink>

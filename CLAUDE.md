@@ -56,7 +56,7 @@ Specialist subagents live in `.claude/agents/`. `team-lead` is the entry point f
 - **team-lead** — orchestrator; breaks down multi-area work and delegates to the specialists below.
 - **fsd-architect** — Feature-Sliced Design layer/slice decisions, entity and data-model design, API contracts between frontend and server. Consult first for any new feature.
 - **backend** — everything under `server/`: Nitro routes, Neon Postgres schema/migrations (Drizzle), API endpoints, auth/session handling.
-- **vue-specialist** — Vue 3 components and composables inside FSD `ui/`/`model/` segments, Ant Design Vue usage.
+- **vue-specialist** — Vue 3 components and composables inside FSD `ui/`/`model/` segments, Vuetify usage.
 - **nuxt-integrator** — `nuxt.config.ts`, modules, routing/pages, data fetching (`useFetch`/`useAsyncData`), middleware, plugins, SSR/hydration.
 - **qa-specialist** — writes/updates tests for components and composables after they're implemented; use PROACTIVELY once a component or composable lands.
 - **devops-ci** — GitHub Actions, deploy configuration (Vercel), environment/secrets management, PR preview deploys.
