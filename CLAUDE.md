@@ -59,3 +59,4 @@ Specialist subagents live in `.claude/agents/`. `team-lead` is the entry point f
 - **vue-specialist** — Vue 3 components and composables inside FSD `ui/`/`model/` segments, Ant Design Vue usage.
 - **nuxt-integrator** — `nuxt.config.ts`, modules, routing/pages, data fetching (`useFetch`/`useAsyncData`), middleware, plugins, SSR/hydration.
 - **qa-specialist** — writes/updates tests for components and composables after they're implemented; use PROACTIVELY once a component or composable lands.
+- **devops-ci** — GitHub Actions, deploy configuration (Vercel), environment/secrets management, PR preview deploys.

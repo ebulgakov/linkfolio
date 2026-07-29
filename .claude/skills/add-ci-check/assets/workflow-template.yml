@@ -1,0 +1,30 @@
+name: <Check Name>
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  <job-name>:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@<version>
+        with:
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@<version>
+        with:
+          version: <pnpm-version>
+
+      - uses: actions/setup-node@<version>
+        with:
+          node-version: <node-version>
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm <script>
