@@ -1,0 +1,60 @@
+{
+  "common": {
+    "appName": "Linkfolio",
+    "logoAlt": "Linkfolio Logo"
+  },
+  "nav": {
+    "logIn": "Log In",
+    "logOut": "Log Out",
+    "signUp": "Sign Up"
+  },
+  "footer": {
+    "languageSwitcherLabel": "Switch language"
+  },
+  "pages": {
+    "home": {
+      "title": "Hello World"
+    },
+    "login": {
+      "title": "Log in"
+    },
+    "signup": {
+      "title": "Sign up"
+    }
+  },
+  "forms": {
+    "email": "Email",
+    "password": "Password",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password"
+  },
+  "validation": {
+    "emailRequired": "Email is required",
+    "emailInvalid": "Please enter a valid email",
+    "passwordRequired": "Password is required",
+    "passwordMinLength": "Password must be at least {min} characters"
+  },
+  "login": {
+    "submit": "Log in",
+    "noAccountPrompt": "Don't have an account?",
+    "noAccountLink": "Sign up",
+    "errors": {
+      "notVerified": "Please verify your email before signing in.",
+      "invalidCredentials": "Invalid email or password."
+    }
+  },
+  "signup": {
+    "submit": "Sign up",
+    "haveAccountPrompt": "Already have an account?",
+    "haveAccountLink": "Log in",
+    "errors": {
+      "emailTaken": "This email is already registered."
+    },
+    "success": {
+      "unverified": "Signup succeeded, but you need to verify your email before signing in."
+    }
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again."
+  }
+}

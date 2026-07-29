@@ -1,0 +1,60 @@
+{
+  "common": {
+    "appName": "Linkfolio",
+    "logoAlt": "Логотип Linkfolio"
+  },
+  "nav": {
+    "logIn": "Войти",
+    "logOut": "Выйти",
+    "signUp": "Зарегистрироваться"
+  },
+  "footer": {
+    "languageSwitcherLabel": "Переключить язык"
+  },
+  "pages": {
+    "home": {
+      "title": "Привет, мир"
+    },
+    "login": {
+      "title": "Вход"
+    },
+    "signup": {
+      "title": "Регистрация"
+    }
+  },
+  "forms": {
+    "email": "Email",
+    "password": "Пароль",
+    "showPassword": "Показать пароль",
+    "hidePassword": "Скрыть пароль"
+  },
+  "validation": {
+    "emailRequired": "Укажите email",
+    "emailInvalid": "Введите корректный email",
+    "passwordRequired": "Укажите пароль",
+    "passwordMinLength": "Пароль должен содержать не менее {min} символов"
+  },
+  "login": {
+    "submit": "Войти",
+    "noAccountPrompt": "Нет аккаунта?",
+    "noAccountLink": "Зарегистрироваться",
+    "errors": {
+      "notVerified": "Пожалуйста, подтвердите email перед входом.",
+      "invalidCredentials": "Неверный email или пароль."
+    }
+  },
+  "signup": {
+    "submit": "Зарегистрироваться",
+    "haveAccountPrompt": "Уже есть аккаунт?",
+    "haveAccountLink": "Войти",
+    "errors": {
+      "emailTaken": "Этот email уже зарегистрирован."
+    },
+    "success": {
+      "unverified": "Регистрация прошла успешно, но перед входом необходимо подтвердить email."
+    }
+  },
+  "errors": {
+    "generic": "Что-то пошло не так. Попробуйте ещё раз."
+  }
+}

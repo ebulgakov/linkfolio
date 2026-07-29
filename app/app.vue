@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { AppFooter } from "~/widgets/app-footer";
 import { AppHeader } from "~/widgets/app-header";
 </script>
 
@@ -9,6 +10,7 @@ import { AppHeader } from "~/widgets/app-header";
       <v-main>
         <NuxtPage />
       </v-main>
+      <AppFooter />
     </v-app>
   </NuxtLayout>
 </template>

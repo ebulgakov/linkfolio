@@ -13,6 +13,7 @@ export function sanitizeRedirect(candidate: unknown): string {
 }
 
 export function useLoginForm() {
+  const { t } = useI18n();
   const route = useRoute();
   const form = reactive({ email: "", password: "" });
   const pending = ref(false);
@@ -29,10 +30,10 @@ export function useLoginForm() {
           onError: ctx => {
             errorMessage.value =
               ctx.error.status === 403
-                ? "Please verify your email before signing in."
+                ? t("login.errors.notVerified")
                 : ctx.error.status === 401
-                  ? "Invalid email or password."
-                  : "Something went wrong. Please try again.";
+                  ? t("login.errors.invalidCredentials")
+                  : t("errors.generic");
           },
           onSuccess: async () => {
             await refreshNuxtData("auth-session");
@@ -41,7 +42,7 @@ export function useLoginForm() {
         }
       );
     } catch {
-      errorMessage.value ??= "Something went wrong. Please try again.";
+      errorMessage.value ??= t("errors.generic");
     } finally {
       pending.value = false;
     }
