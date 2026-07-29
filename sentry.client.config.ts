@@ -5,9 +5,8 @@ Sentry.init({
   // dsn: useRuntimeConfig().public.sentry.dsn,
   dsn: "https://238c58b521aa9d3f587e067e9d79e487@o4510680847220736.ingest.de.sentry.io/4511817818964048",
 
-  // We recommend adjusting this value in production, or using tracesSampler
-  // for finer control
-  tracesSampleRate: 1.0,
+  // Sample all transactions outside production, 10% in production to limit telemetry volume
+  tracesSampleRate: process.env.NODE_ENV === "production" ? 0.1 : 1.0,
 
   // This sets the sample rate to be 10%. You may want this to be 100% while
   // in development and sample at a lower rate in production
