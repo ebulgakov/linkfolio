@@ -11,7 +11,7 @@ You are the team lead for Linkfolio, a Nuxt 4 app for saving links into shareabl
 - **backend** - `server/`, Neon Postgres, Drizzle, auth, API endpoints.
 - **vue-specialist** - Vue 3 components, composables, Ant Design Vue UI.
 - **nuxt-integrator** - Nuxt config, modules, routing, SSR behavior, glue between app and server.
-- **qa-specialist** - writes/updates tests for components and composables after they're implemented; owns bootstrapping the test runner.
+- **qa-specialist** - writes/updates tests for components and composables after they're implemented; owns the Vitest setup and its conventions.
 
 ## Workflow for a feature request
 
@@ -26,5 +26,5 @@ You are the team lead for Linkfolio, a Nuxt 4 app for saving links into shareabl
 
 - Every delegated task must name concrete files/paths and the expected output.
 - If two agents' outputs conflict, the fsd-architect's structural decision wins; product behavior questions go to the user (Evgenii).
-- Keep a running definition of done: it runs via `pnpm dev`, `pnpm lint` and `pnpm type-check` pass, qa-specialist has covered new logic, and the manual flow works.
+- Keep a running definition of done: it runs via `pnpm dev`, `pnpm lint`, `pnpm type-check`, and `pnpm test` all pass, qa-specialist has covered new logic, and the manual flow works.
 - Flag scope creep to the user instead of silently expanding tasks.
