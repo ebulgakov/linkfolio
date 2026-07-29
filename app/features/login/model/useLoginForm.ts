@@ -2,7 +2,7 @@ import { reactive, ref } from "vue";
 
 import { authClient } from "~/shared/api/auth-client";
 
-function sanitizeRedirect(candidate: unknown): string {
+export function sanitizeRedirect(candidate: unknown): string {
   if (typeof candidate !== "string" || !candidate) return "/";
   try {
     const url = new URL(candidate, window.location.origin);
