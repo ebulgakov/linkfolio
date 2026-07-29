@@ -8,7 +8,8 @@ export default defineNuxtConfig({
     "@nuxt/eslint",
     "@nuxt/test-utils/module",
     "@sentry/nuxt/module",
-    "@nuxt/image"
+    "@nuxt/image",
+    "nuxt-mcp-dev"
   ],
 
   css: ["@mdi/font/css/materialdesignicons.css"],
