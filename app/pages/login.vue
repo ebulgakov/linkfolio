@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import { LoginForm } from '~/features/login'
+import { LoginForm } from "~/features/login";
 
-definePageMeta({ middleware: 'guest' })
+definePageMeta({ middleware: "guest" });
 </script>
 
 <template>
