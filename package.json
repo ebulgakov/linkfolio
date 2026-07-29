@@ -8,6 +8,7 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
+    "prepare": "husky",
     "lint:fix": "eslint --fix",
     "lint": "eslint",
     "type-check": "nuxt typecheck",
@@ -27,9 +28,14 @@
     "@types/node": "^26.1.1",
     "eslint": "^10.8.0",
     "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-import": "^2.32.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.2.0",
     "prettier": "^3.9.6",
     "typescript": "^6.0.3",
     "vue-tsc": "^3.3.8"
+  },
+  "lint-staged": {
+    "*.{js,mjs,cjs,ts,vue}": "eslint --fix",
+    "*.{js,mjs,cjs,ts,vue,json,md,css}": "prettier --write"
   }
 }
