@@ -4,11 +4,13 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
 
   modules: [
-    "@ant-design-vue/nuxt",
+    "vuetify-nuxt-module",
     "@nuxt/eslint",
     "@nuxt/test-utils/module",
     "@sentry/nuxt/module"
   ],
+
+  css: ["@mdi/font/css/materialdesignicons.css"],
 
   sentry: {
     org: "home-nbh",

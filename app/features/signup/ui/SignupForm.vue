@@ -1,47 +1,51 @@
 <script lang="ts" setup>
 import { useSignupForm } from "~/features/signup";
+import { email, minLength, required } from "~/shared/lib/validators";
 
 const { form, pending, errorMessage, submit } = useSignupForm();
+
+const formRef = useTemplateRef("formRef");
+const showPassword = ref(false);
+
+async function onSubmit() {
+  const { valid: isValid } = await formRef.value!.validate();
+  if (!isValid) return;
+  await submit();
+}
 </script>
 
 <template>
-  <a-form layout="vertical" :model="form" @finish="submit">
-    <a-alert
-      v-if="errorMessage"
-      type="error"
-      :message="errorMessage"
-      show-icon
-      style="margin-bottom: 16px"
+  <v-form ref="formRef" @submit.prevent="onSubmit">
+    <v-alert v-if="errorMessage" type="error" :text="errorMessage" class="mb-4" />
+
+    <v-text-field
+      v-model="form.email"
+      label="Email"
+      type="email"
+      autocomplete="email"
+      :rules="[required('Email is required'), email('Please enter a valid email')]"
     />
 
-    <a-form-item
-      label="Email"
-      name="email"
-      :rules="[
-        { required: true, message: 'Email is required' },
-        { type: 'email', message: 'Please enter a valid email' }
-      ]"
-    >
-      <a-input v-model:value="form.email" type="email" autocomplete="email" />
-    </a-form-item>
-
-    <a-form-item
+    <v-text-field
+      v-model="form.password"
       label="Password"
-      name="password"
+      :type="showPassword ? 'text' : 'password'"
+      autocomplete="new-password"
+      :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
       :rules="[
-        { required: true, message: 'Password is required' },
-        { min: 8, message: 'Password must be at least 8 characters' }
+        required('Password is required'),
+        minLength(8, 'Password must be at least 8 characters')
       ]"
-    >
-      <a-input-password v-model:value="form.password" autocomplete="new-password" />
-    </a-form-item>
+      :aria-label="showPassword ? 'Hide password' : 'Show password'"
+      @click:append-inner="showPassword = !showPassword"
+    />
 
-    <a-form-item>
-      <a-button type="primary" html-type="submit" :loading="pending" block> Sign up </a-button>
-    </a-form-item>
+    <v-btn type="submit" color="primary" :loading="pending" :disabled="pending" block>
+      Sign up
+    </v-btn>
 
-    <a-flex justify="center">
+    <div class="d-flex justify-center mt-4">
       <NuxtLink to="/login">Already have an account? Log in</NuxtLink>
-    </a-flex>
-  </a-form>
+    </div>
+  </v-form>
 </template>

@@ -1,5 +1,5 @@
 <template>
-  <a-flex justify="center" align="center" style="min-height: 100vh">
+  <v-container class="fill-height d-flex align-center justify-center">
     <h1>Hello World</h1>
-  </a-flex>
+  </v-container>
 </template>

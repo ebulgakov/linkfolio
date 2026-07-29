@@ -28,8 +28,8 @@ Package manager is pnpm (see `pnpm-lock.yaml` / `pnpm-workspace.yaml`).
 Linkfolio is a Nuxt 4 application, organized with **Feature-Sliced Design** (FSD) under `app/`.
 
 - `app/app.vue` — root component, renders `Header` widget + `NuxtPage` (Nuxt 4 source directory convention: app code lives under `app/`, not the project root)
-- `nuxt.config.ts` — Nuxt config; the `@ant-design-vue/nuxt` module is registered here, which auto-imports Ant Design Vue components (e.g. `<a-button>`, `<a-flex>`, `<a-slider>`) with no manual import needed
-- UI library: **Ant Design Vue** via `@ant-design-vue/nuxt`
+- `nuxt.config.ts` — Nuxt config; the `vuetify-nuxt-module` module is registered here, which auto-imports Vuetify components (e.g. `<v-btn>`, `<v-text-field>`, `<v-card>`) with no manual import needed
+- UI library: **Vuetify** via `vuetify-nuxt-module` (icons: MDI webfont, `@mdi/font`)
 
 ### FSD layers in use
 
@@ -56,7 +56,7 @@ Specialist subagents live in `.claude/agents/`. `team-lead` is the entry point f
 - **team-lead** — orchestrator; breaks down multi-area work and delegates to the specialists below.
 - **fsd-architect** — Feature-Sliced Design layer/slice decisions, entity and data-model design, API contracts between frontend and server. Consult first for any new feature.
 - **backend** — everything under `server/`: Nitro routes, Neon Postgres schema/migrations (Drizzle), API endpoints, auth/session handling.
-- **vue-specialist** — Vue 3 components and composables inside FSD `ui/`/`model/` segments, Ant Design Vue usage.
+- **vue-specialist** — Vue 3 components and composables inside FSD `ui/`/`model/` segments, Vuetify usage.
 - **nuxt-integrator** — `nuxt.config.ts`, modules, routing/pages, data fetching (`useFetch`/`useAsyncData`), middleware, plugins, SSR/hydration.
 - **qa-specialist** — writes/updates tests for components and composables after they're implemented; use PROACTIVELY once a component or composable lands.
 - **devops-ci** — GitHub Actions, deploy configuration (Vercel), environment/secrets management, PR preview deploys.
