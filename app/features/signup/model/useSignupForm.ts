@@ -24,6 +24,7 @@ export function useSignupForm() {
         onSuccess: async () => {
           const session = await authClient.getSession();
           if (session?.data) {
+            await refreshNuxtData("auth-session");
             await navigateTo("/");
           } else {
             errorMessage.value =

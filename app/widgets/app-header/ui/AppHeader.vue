@@ -2,15 +2,23 @@
 import { useAuth } from "~/shared/api/use-auth";
 
 const authClient = useAuth();
+// better-auth/vue's useSession(customFetcher) only ever calls customFetcher(url, { ref }) —
+// it never forwards the client's own fetchOptions.headers, so the cookie useAuth() attaches
+// for SSR is otherwise dropped here and the server-side session lookup comes back unauthenticated.
 const { data: session } = await authClient.useSession((url, opts) =>
-  useFetch(url, { ...opts, key: "auth-session" })
+  useFetch(url, {
+    ...opts,
+    key: "auth-session",
+    headers: import.meta.server ? useRequestHeaders(["cookie"]) : undefined
+  })
 );
 const router = useRouter();
 
 async function logOut() {
   await authClient.signOut({
     fetchOptions: {
-      onSuccess: () => {
+      onSuccess: async () => {
+        await refreshNuxtData("auth-session");
         router.push("/login");
       }
     }
