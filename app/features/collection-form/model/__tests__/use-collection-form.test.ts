@@ -67,6 +67,11 @@ beforeEach(() => {
   navigateToMock.mockReset();
   resetCollectionsApiMocks();
   tMock.mockClear();
+  // Default so a test that changes the slug but never sets up its own
+  // implementation still has something to resolve if its debounce timer is
+  // ever advanced - keeps `checkSlugAvailability(...).then(...)` from
+  // blowing up on `undefined` rather than the test's own assertions.
+  checkSlugAvailabilityMock.mockResolvedValue({ available: true });
 });
 
 afterEach(() => {
@@ -75,11 +80,16 @@ afterEach(() => {
 
 describe("useCollectionForm - create vs edit mode", () => {
   it("create mode: initializes an empty form and reflects create mode", () => {
-    const { form, mode, isEditing } = withEffectScope(() => useCollectionForm());
+    const { form, mode, isEditing, slugStatus } = withEffectScope(() => useCollectionForm());
 
     expect(form).toEqual({ name: "", description: "", shared: false, slug: "" });
     expect(mode).toBe("create");
     expect(isEditing).toBe(false);
+    // Distinct from edit mode's own-slug skip, which starts at 'free' - and
+    // distinct from 'invalid', which the empty starting slug would also
+    // technically qualify for since it fails the format check. 'idle' is
+    // only ever set here, in the ref initializer, never by scheduleSlugCheck.
+    expect(slugStatus.value).toBe("idle");
   });
 
   it("edit mode: initializes the form from the existing collection and reflects edit mode", () => {
@@ -247,10 +257,19 @@ describe("useCollectionForm - submit: 23505 field-error mapping", () => {
 
     const { form, errors, errorMessage, submit } = withEffectScope(() => useCollectionForm());
     form.name = "Test Collection";
+    await nextTick(); // let the name -> slug auto-sync watcher run
 
     await submit();
 
-    expect(createCollectionMock).toHaveBeenCalledTimes(1);
+    // Also exercises toPayload()'s `description: form.description || null`
+    // mapping - an untouched empty-string description must cross the
+    // boundary as `null`, not `""`.
+    expect(createCollectionMock).toHaveBeenCalledWith({
+      name: "Test Collection",
+      description: null,
+      shared: false,
+      slug: "test-collection"
+    });
     expect(errors.value).toEqual({ slug: ["This slug is already taken."] });
     expect(errorMessage.value).toBeNull();
   });
@@ -330,7 +349,12 @@ describe("useCollectionForm - shared-link-change confirmation gate", () => {
     const { submit, showShareWarning } = withEffectScope(() => useCollectionForm(existing));
     await submit();
 
-    expect(updateCollectionMock).toHaveBeenCalledTimes(1);
+    expect(updateCollectionMock).toHaveBeenCalledWith("collection-1", {
+      name: "My Collection",
+      description: null,
+      shared: true,
+      slug: "old-slug"
+    });
     expect(showShareWarning.value).toBe(false);
   });
 
