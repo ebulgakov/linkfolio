@@ -39,6 +39,12 @@
     },
     "collectionDetail": {
       "title": "Collection"
+    },
+    "newLink": {
+      "title": "Add link"
+    },
+    "editLink": {
+      "title": "Edit link"
     }
   },
   "forms": {
@@ -54,7 +60,9 @@
     "passwordMinLength": "Password must be at least {min} characters",
     "nameRequired": "Name is required",
     "slugRequired": "Slug is required",
-    "slugInvalid": "Use lowercase letters, numbers, and single hyphens only (3-64 characters)."
+    "slugInvalid": "Use lowercase letters, numbers, and single hyphens only (3-64 characters).",
+    "urlRequired": "URL is required",
+    "urlInvalid": "Please enter a valid http(s) URL"
   },
   "login": {
     "submit": "Log in",
@@ -126,6 +134,44 @@
     "errors": {
       "notFound": "Collection not found.",
       "loadFailed": "Failed to load this collection."
+    }
+  },
+  "links": {
+    "list": {
+      "addButton": "Add link",
+      "empty": "This collection doesn't have any links yet."
+    },
+    "card": {
+      "openLink": "Open link",
+      "editLink": "Edit link",
+      "deleteButton": "Delete link",
+      "statusPending": "Pending",
+      "statusFetched": "Fetched",
+      "statusFailed": "Failed to fetch"
+    },
+    "form": {
+      "urlLabel": "URL",
+      "urlReadonlyHint": "The URL can't be changed after a link is created.",
+      "titleLabel": "Title",
+      "descriptionLabel": "Description",
+      "imageUrlLabel": "Image URL",
+      "previewChecking": "Fetching preview…",
+      "previewFetched": "Preview fetched",
+      "previewFailed": "Couldn't fetch a preview for this URL",
+      "createSubmit": "Add link",
+      "editSubmit": "Save changes",
+      "editSharedWarning": "This link's title, description, and image are shared - editing them here also updates every other collection of yours that includes this same link."
+    },
+    "deleteConfirm": {
+      "title": "Delete this link?",
+      "message": "This will remove the link from this collection. This can't be undone.",
+      "confirm": "Delete",
+      "cancel": "Cancel"
+    },
+    "errors": {
+      "notFound": "Link not found.",
+      "loadFailed": "Failed to load this link.",
+      "alreadyInCollection": "This link is already in this collection."
     }
   }
 }
