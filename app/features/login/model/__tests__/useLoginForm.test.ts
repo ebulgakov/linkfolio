@@ -1,74 +1,24 @@
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { beforeEach, describe, expect, it } from "vitest";
 
-import { mockNuxtImport } from "@nuxt/test-utils/runtime";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { deferred } from "~/shared/testing/deferred";
+import { resetAuthClientMocks, signInEmailMock } from "~/shared/testing/mocks/auth-client";
+import { tMock } from "~/shared/testing/mocks/i18n";
+import { navigateToMock } from "~/shared/testing/mocks/navigate";
+import { resetRouteState, routeState } from "~/shared/testing/mocks/route";
 
+// This import must stay last: the `~/shared/testing/mocks/*` modules above
+// register their `vi.mock`/`mockNuxtImport` side effects as they're
+// evaluated, in the order their import statements appear. Importing the
+// composable under test first would resolve its own `useRoute`/`navigateTo`/
+// `useI18n` auto-imports against the real implementations before the mocks
+// are registered, so `pnpm lint:fix`/editors must not reorder this.
+// eslint-disable-next-line import/order
 import { sanitizeRedirect, useLoginForm } from "../useLoginForm";
 
-// Read en.json as plain JSON via `fs`, not `import` - `@nuxtjs/i18n` applies
-// its own Vite transform to files under its configured locales directory
-// (precompiling them to a vue-i18n message AST), so a normal ES import here
-// would yield that compiled AST instead of the raw string messages.
-//
-// This must stay a plain (non-`vi.hoisted`) statement: `vi.hoisted` callbacks
-// run *before* this file's own `import` statements are linked, so a
-// `readFileSync` call made inside one throws "Cannot access
-// '__vi_import_0__' before initialization". Declaring `en` here is safe
-// because `tMock` below only reads it lazily, the first time `t()` is
-// actually called - by then this line has long since run. `resolve` is
-// anchored on `process.cwd()` (Vitest runs from the repo root) rather than
-// `import.meta.url`, since that URL isn't a `file:` scheme in this
-// transformed environment.
-const en = JSON.parse(
-  readFileSync(resolve(process.cwd(), "i18n/locales/en.json"), "utf-8")
-) as Record<string, unknown>;
-
-// Mutable state shared with the mocked `useRoute`/`navigateTo` auto-imports.
-// `mockNuxtImport` compiles to a hoisted `vi.mock`, so the factory can only be
-// registered once per file - tests vary behavior by mutating these boxes
-// rather than calling `mockNuxtImport` again.
-const routeState = vi.hoisted(() => ({ query: {} as Record<string, unknown> }));
-const navigateToMock = vi.hoisted(() => vi.fn());
-
-mockNuxtImport("useRoute", () => () => routeState);
-mockNuxtImport("navigateTo", () => navigateToMock);
-
-// `useI18n` is a Nuxt auto-import too (no i18n Vue plugin exists in this test
-// environment for it to inject from). Resolve `t(key)` against the real
-// en.json messages rather than returning the key itself, so these tests keep
-// documenting the actual user-facing copy - and so a typo'd translation key
-// in the composable fails the test instead of silently passing.
-const tMock = vi.hoisted(() =>
-  vi.fn((key: string) => {
-    const value = key.split(".").reduce<unknown>((node, segment) => {
-      return node && typeof node === "object" && segment in node
-        ? (node as Record<string, unknown>)[segment]
-        : undefined;
-    }, en);
-    if (typeof value !== "string") {
-      throw new Error(`Missing test translation for key "${key}"`);
-    }
-    return value;
-  })
-);
-
-mockNuxtImport("useI18n", () => () => ({ t: tMock }));
-
-const signInEmailMock = vi.hoisted(() => vi.fn());
-
-vi.mock("~/shared/api/auth-client", () => ({
-  authClient: {
-    signIn: {
-      email: signInEmailMock
-    }
-  }
-}));
-
 beforeEach(() => {
-  routeState.query = {};
+  resetRouteState();
   navigateToMock.mockReset();
-  signInEmailMock.mockReset();
+  resetAuthClientMocks();
   tMock.mockClear();
 });
 
@@ -214,20 +164,15 @@ describe("useLoginForm().submit", () => {
       await submit();
       expect(showForgotPasswordLink.value).toBe(true);
 
-      let resolveSecondCall!: () => void;
-      signInEmailMock.mockImplementationOnce(
-        () =>
-          new Promise<void>(resolve => {
-            resolveSecondCall = resolve;
-          })
-      );
+      const { promise, resolve } = deferred();
+      signInEmailMock.mockImplementationOnce(() => promise);
 
       const submitPromise = submit();
       // Reset happens synchronously at the top of submit(), before the
       // second call settles.
       expect(showForgotPasswordLink.value).toBe(false);
 
-      resolveSecondCall();
+      resolve();
       await submitPromise;
     });
   });
@@ -256,13 +201,8 @@ describe("useLoginForm().submit", () => {
   });
 
   it("sets pending true while the request is in flight and false once it settles", async () => {
-    let resolveSignIn!: () => void;
-    signInEmailMock.mockImplementation(
-      () =>
-        new Promise<void>(resolve => {
-          resolveSignIn = resolve;
-        })
-    );
+    const { promise, resolve } = deferred();
+    signInEmailMock.mockImplementation(() => promise);
 
     const { submit, pending } = useLoginForm();
     expect(pending.value).toBe(false);
@@ -270,7 +210,7 @@ describe("useLoginForm().submit", () => {
     const submitPromise = submit();
     expect(pending.value).toBe(true);
 
-    resolveSignIn();
+    resolve();
     await submitPromise;
 
     expect(pending.value).toBe(false);
