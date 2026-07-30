@@ -88,6 +88,17 @@ beforeEach(() => {
   navigateToMock.mockReset();
   resetLinksApiMocks();
   tMock.mockClear();
+  // Default so a test that changes the url but never sets up its own
+  // fetchLinkPreview implementation still has something to resolve if its
+  // debounce timer is ever advanced - keeps `fetchLinkPreview(...).then(...)`
+  // from blowing up on `undefined` rather than the test's own assertions.
+  // "failed" is the most inert fetchStatus: it never touches form fields.
+  fetchLinkPreviewMock.mockResolvedValue({
+    title: null,
+    description: null,
+    imageUrl: null,
+    fetchStatus: "failed"
+  });
 });
 
 afterEach(() => {
