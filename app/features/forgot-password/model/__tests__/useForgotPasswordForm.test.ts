@@ -1,60 +1,20 @@
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { beforeEach, describe, expect, it } from "vitest";
 
-import { mockNuxtImport } from "@nuxt/test-utils/runtime";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { deferred } from "~/shared/testing/deferred";
+import { requestPasswordResetMock, resetAuthClientMocks } from "~/shared/testing/mocks/auth-client";
+import { tMock } from "~/shared/testing/mocks/i18n";
 
+// This import must stay last: the `~/shared/testing/mocks/*` modules above
+// register their `vi.mock`/`mockNuxtImport` side effects as they're
+// evaluated, in the order their import statements appear. Importing the
+// composable under test first would resolve its own `useI18n` auto-import
+// against the real implementation before the mocks are registered, so
+// `pnpm lint:fix`/editors must not reorder this.
+// eslint-disable-next-line import/order
 import { useForgotPasswordForm } from "../useForgotPasswordForm";
 
-// Read en.json as plain JSON via `fs`, not `import` - `@nuxtjs/i18n` applies
-// its own Vite transform to files under its configured locales directory
-// (precompiling them to a vue-i18n message AST), so a normal ES import here
-// would yield that compiled AST instead of the raw string messages.
-//
-// This must stay a plain (non-`vi.hoisted`) statement: `vi.hoisted` callbacks
-// run *before* this file's own `import` statements are linked, so a
-// `readFileSync` call made inside one throws "Cannot access
-// '__vi_import_0__' before initialization". Declaring `en` here is safe
-// because `tMock` below only reads it lazily, the first time `t()` is
-// actually called - by then this line has long since run. `resolve` is
-// anchored on `process.cwd()` (Vitest runs from the repo root) rather than
-// `import.meta.url`, since that URL isn't a `file:` scheme in this
-// transformed environment.
-const en = JSON.parse(
-  readFileSync(resolve(process.cwd(), "i18n/locales/en.json"), "utf-8")
-) as Record<string, unknown>;
-
-// `useI18n` is a Nuxt auto-import too (no i18n Vue plugin exists in this test
-// environment for it to inject from). Resolve `t(key)` against the real
-// en.json messages rather than returning the key itself, so these tests keep
-// documenting the actual user-facing copy - and so a typo'd translation key
-// in the composable fails the test instead of silently passing.
-const tMock = vi.hoisted(() =>
-  vi.fn((key: string) => {
-    const value = key.split(".").reduce<unknown>((node, segment) => {
-      return node && typeof node === "object" && segment in node
-        ? (node as Record<string, unknown>)[segment]
-        : undefined;
-    }, en);
-    if (typeof value !== "string") {
-      throw new Error(`Missing test translation for key "${key}"`);
-    }
-    return value;
-  })
-);
-
-mockNuxtImport("useI18n", () => () => ({ t: tMock }));
-
-const requestPasswordResetMock = vi.hoisted(() => vi.fn());
-
-vi.mock("~/shared/api/auth-client", () => ({
-  authClient: {
-    requestPasswordReset: requestPasswordResetMock
-  }
-}));
-
 beforeEach(() => {
-  requestPasswordResetMock.mockReset();
+  resetAuthClientMocks();
   tMock.mockClear();
 });
 
@@ -140,13 +100,8 @@ describe("useForgotPasswordForm().submit", () => {
     await submit();
     expect(errorMessage.value).toBe("Something went wrong. Please try again.");
 
-    let resolveSecondCall!: () => void;
-    requestPasswordResetMock.mockImplementationOnce(
-      () =>
-        new Promise<void>(resolve => {
-          resolveSecondCall = resolve;
-        })
-    );
+    const { promise, resolve } = deferred();
+    requestPasswordResetMock.mockImplementationOnce(() => promise);
 
     const submitPromise = submit();
     // Reset happens synchronously at the top of submit(), before the second
@@ -154,18 +109,13 @@ describe("useForgotPasswordForm().submit", () => {
     expect(errorMessage.value).toBeNull();
     expect(submitted.value).toBe(false);
 
-    resolveSecondCall();
+    resolve();
     await submitPromise;
   });
 
   it("sets pending true while the request is in flight and false once it settles", async () => {
-    let resolveCall!: () => void;
-    requestPasswordResetMock.mockImplementation(
-      () =>
-        new Promise<void>(resolve => {
-          resolveCall = resolve;
-        })
-    );
+    const { promise, resolve } = deferred();
+    requestPasswordResetMock.mockImplementation(() => promise);
 
     const { submit, pending } = useForgotPasswordForm();
     expect(pending.value).toBe(false);
@@ -173,48 +123,37 @@ describe("useForgotPasswordForm().submit", () => {
     const submitPromise = submit();
     expect(pending.value).toBe(true);
 
-    resolveCall();
+    resolve();
     await submitPromise;
 
     expect(pending.value).toBe(false);
   });
 
   it("sets pending false after settling on error", async () => {
-    let resolveCall!: () => void;
-    requestPasswordResetMock.mockImplementation(
-      (_payload, handlers) =>
-        new Promise<void>(resolve => {
-          resolveCall = () => {
-            handlers.onError({ error: { status: 500 } });
-            resolve();
-          };
-        })
+    const { promise, resolve } = deferred();
+    requestPasswordResetMock.mockImplementation((_payload, handlers) =>
+      promise.then(() => handlers.onError({ error: { status: 500 } }))
     );
 
     const { submit, pending } = useForgotPasswordForm();
     const submitPromise = submit();
     expect(pending.value).toBe(true);
 
-    resolveCall();
+    resolve();
     await submitPromise;
 
     expect(pending.value).toBe(false);
   });
 
   it("sets pending false after the call throws", async () => {
-    let rejectCall!: (error: Error) => void;
-    requestPasswordResetMock.mockImplementation(
-      () =>
-        new Promise((_resolve, reject) => {
-          rejectCall = reject;
-        })
-    );
+    const { promise, reject } = deferred();
+    requestPasswordResetMock.mockImplementation(() => promise);
 
     const { submit, pending } = useForgotPasswordForm();
     const submitPromise = submit();
     expect(pending.value).toBe(true);
 
-    rejectCall(new Error("network down"));
+    reject(new Error("network down"));
     await submitPromise;
 
     expect(pending.value).toBe(false);
