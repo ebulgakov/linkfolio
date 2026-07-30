@@ -2,10 +2,17 @@
 import { useLoginForm } from "~/features/login";
 import { email, required } from "~/shared/lib/validators";
 
+const { t } = useI18n();
 const { form, pending, errorMessage, submit } = useLoginForm();
 
 const formRef = useTemplateRef("formRef");
 const showPassword = ref(false);
+
+const emailRules = computed(() => [
+  required(t("validation.emailRequired")),
+  email(t("validation.emailInvalid"))
+]);
+const passwordRules = computed(() => [required(t("validation.passwordRequired"))]);
 
 async function onSubmit() {
   const { valid: isValid } = await formRef.value!.validate();
@@ -20,29 +27,30 @@ async function onSubmit() {
 
     <v-text-field
       v-model="form.email"
-      label="Email"
+      :label="t('forms.email')"
       type="email"
       autocomplete="email"
-      :rules="[required('Email is required'), email('Please enter a valid email')]"
+      :rules="emailRules"
     />
 
     <v-text-field
       v-model="form.password"
-      label="Password"
+      :label="t('forms.password')"
       :type="showPassword ? 'text' : 'password'"
       autocomplete="current-password"
       :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
-      :rules="[required('Password is required')]"
-      :aria-label="showPassword ? 'Hide password' : 'Show password'"
+      :rules="passwordRules"
+      :aria-label="showPassword ? t('forms.hidePassword') : t('forms.showPassword')"
       @click:append-inner="showPassword = !showPassword"
     />
 
     <v-btn type="submit" color="primary" :loading="pending" :disabled="pending" block>
-      Log in
+      {{ t("login.submit") }}
     </v-btn>
 
     <div class="d-flex justify-center mt-4">
-      <NuxtLink to="/signup" class="text-primary">Don't have an account? Sign up</NuxtLink>
+      <span>{{ t("login.noAccountPrompt") }}&nbsp;</span>
+      <NuxtLink to="/signup" class="text-primary">{{ t("login.noAccountLink") }}</NuxtLink>
     </div>
   </v-form>
 </template>

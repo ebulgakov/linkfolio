@@ -2,10 +2,20 @@
 import { useSignupForm } from "~/features/signup";
 import { email, minLength, required } from "~/shared/lib/validators";
 
+const { t } = useI18n();
 const { form, pending, errorMessage, submit } = useSignupForm();
 
 const formRef = useTemplateRef("formRef");
 const showPassword = ref(false);
+
+const emailRules = computed(() => [
+  required(t("validation.emailRequired")),
+  email(t("validation.emailInvalid"))
+]);
+const passwordRules = computed(() => [
+  required(t("validation.passwordRequired")),
+  minLength(8, t("validation.passwordMinLength", { min: 8 }))
+]);
 
 async function onSubmit() {
   const { valid: isValid } = await formRef.value!.validate();
@@ -20,32 +30,30 @@ async function onSubmit() {
 
     <v-text-field
       v-model="form.email"
-      label="Email"
+      :label="t('forms.email')"
       type="email"
       autocomplete="email"
-      :rules="[required('Email is required'), email('Please enter a valid email')]"
+      :rules="emailRules"
     />
 
     <v-text-field
       v-model="form.password"
-      label="Password"
+      :label="t('forms.password')"
       :type="showPassword ? 'text' : 'password'"
       autocomplete="new-password"
       :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
-      :rules="[
-        required('Password is required'),
-        minLength(8, 'Password must be at least 8 characters')
-      ]"
-      :aria-label="showPassword ? 'Hide password' : 'Show password'"
+      :rules="passwordRules"
+      :aria-label="showPassword ? t('forms.hidePassword') : t('forms.showPassword')"
       @click:append-inner="showPassword = !showPassword"
     />
 
     <v-btn type="submit" color="primary" :loading="pending" :disabled="pending" block>
-      Sign up
+      {{ t("signup.submit") }}
     </v-btn>
 
     <div class="d-flex justify-center mt-4">
-      <NuxtLink to="/login" class="text-primary">Already have an account? Log in</NuxtLink>
+      <span>{{ t("signup.haveAccountPrompt") }}&nbsp;</span>
+      <NuxtLink to="/login" class="text-primary">{{ t("signup.haveAccountLink") }}</NuxtLink>
     </div>
   </v-form>
 </template>

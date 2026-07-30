@@ -8,10 +8,22 @@ export default defineNuxtConfig({
     "@nuxt/eslint",
     "@nuxt/test-utils/module",
     "@sentry/nuxt/module",
-    "@nuxt/image"
+    "@nuxt/image",
+    "@nuxtjs/i18n",
+    "nuxt-mcp-dev"
   ],
 
   css: ["@mdi/font/css/materialdesignicons.css"],
+
+  i18n: {
+    locales: [
+      { code: "en", name: "English", file: "en.json" },
+      { code: "ru", name: "Русский", file: "ru.json" }
+    ],
+    defaultLocale: "en",
+    strategy: "no_prefix",
+    detectBrowserLanguage: false
+  },
 
   sentry: {
     org: "home-nbh",
