@@ -26,9 +26,9 @@ export const collections = pgTable(
     name: text("name").notNull(),
     description: text("description"),
     shared: boolean("shared").notNull().default(false),
-    // App-generated (nanoid) random short id, sized for negligible collision
-    // odds; generated once at creation and never regenerated — `shared` is
-    // purely a visibility gate, not a slug-regeneration trigger.
+    // User-authored, not system-generated — checked for availability via an
+    // AJAX endpoint before submit. Globally unique (not scoped per-user).
+    // `shared` is purely a visibility gate, not a slug-regeneration trigger.
     slug: text("slug").notNull().unique(),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     // Set explicitly on every update in app code — no DB trigger.

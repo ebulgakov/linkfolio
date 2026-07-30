@@ -1,1 +1,1 @@
-export { email, minLength, required } from "./validators";
+export { email, minLength, required, slug } from "./validators";
