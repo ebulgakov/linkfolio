@@ -9,7 +9,8 @@
     "signUp": "Зарегистрироваться"
   },
   "footer": {
-    "languageSwitcherLabel": "Переключить язык"
+    "languageSwitcherLabel": "Переключить язык",
+    "copyright": "© {year} Linkfolio"
   },
   "pages": {
     "home": {

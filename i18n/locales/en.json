@@ -9,7 +9,8 @@
     "signUp": "Sign Up"
   },
   "footer": {
-    "languageSwitcherLabel": "Switch language"
+    "languageSwitcherLabel": "Switch language",
+    "copyright": "© {year} Linkfolio"
   },
   "pages": {
     "home": {
