@@ -20,7 +20,9 @@ function slugify(value: string): string {
     .toLowerCase()
     .trim()
     .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 64)
+    .replace(/-+$/g, "");
 }
 
 function isValidSlugFormat(value: string): boolean {
@@ -147,15 +149,18 @@ export function useCollectionForm(existing?: Collection) {
   }
 
   function toPayload(): CollectionInput {
+    const trimmedDescription = form.description.trim();
     return {
-      name: form.name,
-      description: form.description || null,
+      name: form.name.trim(),
+      description: trimmedDescription || null,
       shared: form.shared,
       slug: form.slug
     };
   }
 
   async function performSubmit() {
+    if (pending.value) return;
+
     errorMessage.value = null;
     errors.value = {};
     pending.value = true;

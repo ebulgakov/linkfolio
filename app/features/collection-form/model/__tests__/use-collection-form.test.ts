@@ -48,7 +48,14 @@ function withEffectScope<T>(setup: () => T): T {
   return effectScope().run(setup)!;
 }
 
-const GENERIC_ERROR = "Something went wrong. Please try again.";
+// Derived from the mock itself (which resolves against the real
+// i18n/locales/en.json via a lazy readFileSync lookup - see
+// app/shared/testing/mocks/i18n.ts) rather than hardcoded, so this constant
+// can't silently drift out of sync with the actual translation. Called once
+// here at module-eval time, before any `beforeEach` runs - the
+// `tMock.mockClear()` in `beforeEach` below resets call history before every
+// test starts, so this call never counts toward a test's own assertions.
+const GENERIC_ERROR = tMock("errors.generic");
 
 // Realistic shape of a thrown ofetch/h3 error for a 23505 (unique violation)
 // mapped to a field error server-side, per app/shared/api/collections.ts's
@@ -146,6 +153,40 @@ describe("useCollectionForm - slugify-until-dirty", () => {
     await nextTick();
     expect(form.slug).toBe("old-slug");
   });
+
+  it("truncates the auto-synced slug to 64 chars when the slugified name is longer (cut lands mid-word)", async () => {
+    const { form } = withEffectScope(() => useCollectionForm());
+
+    // "alpha" x11 joined by spaces slugifies (pre-truncation) to a 65-char
+    // string: 10 full "alpha-" blocks (60 chars) plus the first 4 chars of
+    // an 11th "alpha" landing at the 64-char cutoff - "alph", not a full
+    // word and not a hyphen. Verified with a standalone reproduction of
+    // slugify() before writing this assertion, not guessed.
+    form.name = Array(11).fill("alpha").join(" ");
+    await nextTick();
+
+    expect(form.slug).toBe("alpha-alpha-alpha-alpha-alpha-alpha-alpha-alpha-alpha-alpha-alph");
+    expect(form.slug.length).toBe(64);
+  });
+
+  it("strips a trailing hyphen left by the 64-char slice, when the cut lands right after a hyphen", async () => {
+    const { form } = withEffectScope(() => useCollectionForm());
+
+    // "abc" x17 joined by spaces slugifies (pre-truncation) to a 67-char
+    // string of 17 "abc" segments joined by hyphens. 16 full "abc-" blocks
+    // are exactly 64 chars (4 chars each), so slice(0, 64) cuts right after
+    // the 16th block's trailing hyphen, and the 17th "abc" is dropped
+    // entirely - exercising the `.replace(/-+$/g, "")` cleanup after the
+    // slice, not just the slice itself. Verified with a standalone
+    // reproduction of slugify() before writing this assertion.
+    form.name = Array(17).fill("abc").join(" ");
+    await nextTick();
+
+    const expectedSlug = Array(16).fill("abc").join("-");
+    expect(form.slug).toBe(expectedSlug);
+    expect(form.slug.length).toBe(63);
+    expect(form.slug.endsWith("-")).toBe(false);
+  });
 });
 
 describe("useCollectionForm - debounced slug availability check", () => {
@@ -181,6 +222,25 @@ describe("useCollectionForm - debounced slug availability check", () => {
     resolve({ available: false });
     await promise;
     expect(slugStatus.value).toBe("taken");
+  });
+
+  it("transitions checking -> idle when the availability check rejects (network error)", async () => {
+    const { promise, reject } = deferred<{ available: boolean }>();
+    checkSlugAvailabilityMock.mockReturnValue(promise);
+
+    const { onSlugInput, slugStatus } = withEffectScope(() => useCollectionForm());
+
+    onSlugInput("free-slug");
+    await nextTick();
+    await vi.advanceTimersByTimeAsync(400);
+    expect(slugStatus.value).toBe("checking");
+
+    reject(new Error("network down"));
+    // The rejection is handled internally by the composable's own .catch(),
+    // so awaiting the *settled* promise (not just the microtask queue) is
+    // what guarantees that handler has already run before we assert.
+    await promise.catch(() => {});
+    expect(slugStatus.value).toBe("idle");
   });
 
   it("does not fire a network call for an invalid-format slug, and the status is 'invalid' (not 'idle')", async () => {
@@ -227,6 +287,30 @@ describe("useCollectionForm - debounced slug availability check", () => {
   });
 });
 
+describe("useCollectionForm - teardown", () => {
+  it("clears a pending debounce timer when the effect scope is stopped, so no network call ever fires", async () => {
+    // Unlike withEffectScope() (which deliberately never stops its scope),
+    // this test needs the scope handle itself so it can call .stop() and
+    // exercise the composable's onScopeDispose(() => clearDebounceTimer())
+    // registration.
+    const scope = effectScope();
+    const { onSlugInput, slugStatus } = scope.run(() => useCollectionForm())!;
+
+    onSlugInput("free-slug");
+    await nextTick(); // schedules the debounce timer, does not fire it yet
+    // Proves a debounce timer is actually pending at this point - otherwise
+    // the "not called yet" assertion below would pass vacuously even if
+    // scheduling were broken.
+    expect(slugStatus.value).toBe("checking");
+    expect(checkSlugAvailabilityMock).not.toHaveBeenCalled();
+
+    scope.stop();
+
+    await vi.advanceTimersByTimeAsync(400);
+    expect(checkSlugAvailabilityMock).not.toHaveBeenCalled();
+  });
+});
+
 describe("useCollectionForm - edit mode's own-slug skip", () => {
   it("starts at 'free' with no network call, and returns to 'free' with no call when the slug is set back to its own value", async () => {
     const existing = makeCollection({ slug: "my-collection" });
@@ -261,9 +345,9 @@ describe("useCollectionForm - submit: 23505 field-error mapping", () => {
 
     await submit();
 
-    // Also exercises toPayload()'s `description: form.description || null`
-    // mapping - an untouched empty-string description must cross the
-    // boundary as `null`, not `""`.
+    // Also exercises toPayload()'s whitespace-collapsing description mapping
+    // - an untouched empty-string description must cross the boundary as
+    // `null`, not `""`.
     expect(createCollectionMock).toHaveBeenCalledWith({
       name: "Test Collection",
       description: null,
@@ -306,6 +390,49 @@ describe("useCollectionForm - submit: 23505 field-error mapping", () => {
     await submit();
 
     expect(errorMessage.value).toBe(GENERIC_ERROR);
+  });
+});
+
+describe("useCollectionForm - toPayload trimming", () => {
+  it("create: trims a padded name and collapses a whitespace-only description to null", async () => {
+    createCollectionMock.mockResolvedValue(makeCollection());
+
+    const { form, submit } = withEffectScope(() => useCollectionForm());
+    form.name = "  Test Collection  ";
+    form.description = "   ";
+    // Slug auto-sync runs off the raw (untrimmed) `form.name`, but
+    // slugify() already .trim()s internally, so the resulting slug is the
+    // same either way - asserted explicitly below rather than assumed.
+    await nextTick();
+
+    await submit();
+
+    expect(createCollectionMock).toHaveBeenCalledWith({
+      name: "Test Collection",
+      description: null,
+      shared: false,
+      slug: "test-collection"
+    });
+  });
+
+  it("edit: trims a padded name and collapses a whitespace-only description to null", async () => {
+    const existing = makeCollection({ name: "Old Name", description: "Old desc" });
+    updateCollectionMock.mockResolvedValue(existing);
+
+    const { form, submit } = withEffectScope(() => useCollectionForm(existing));
+    form.name = "  Test Collection  ";
+    form.description = "   ";
+
+    await submit();
+
+    // Edit mode's slug auto-sync is off from the start, so the slug stays
+    // the existing collection's slug regardless of the name change.
+    expect(updateCollectionMock).toHaveBeenCalledWith("collection-1", {
+      name: "Test Collection",
+      description: null,
+      shared: false,
+      slug: "my-collection"
+    });
   });
 });
 
@@ -446,6 +573,29 @@ describe("useCollectionForm - submitDisabled", () => {
     resolve(makeCollection());
     await submitPromise;
     expect(submitDisabled.value).toBe(false);
+  });
+});
+
+describe("useCollectionForm - double-submit guard", () => {
+  it("ignores a second submit() while the first is still pending, calling the API exactly once", async () => {
+    const { promise, resolve } = deferred<Collection>();
+    createCollectionMock.mockReturnValue(promise);
+
+    const { form, submit } = withEffectScope(() => useCollectionForm());
+    form.name = "Test Collection";
+    await nextTick(); // let the name -> slug auto-sync watcher run
+
+    // Deliberately not awaiting the first call before starting the second -
+    // performSubmit()'s `if (pending.value) return;` guard is what's under
+    // test here, not sequential submits.
+    const first = submit();
+    const second = submit();
+
+    resolve(makeCollection());
+    await Promise.all([first, second]);
+
+    expect(createCollectionMock).toHaveBeenCalledTimes(1);
+    expect(navigateToMock).toHaveBeenCalledTimes(1);
   });
 });
 

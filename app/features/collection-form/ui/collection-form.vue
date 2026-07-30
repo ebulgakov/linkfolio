@@ -6,6 +6,25 @@ import { required, slug } from "~/shared/lib";
 
 const props = defineProps<{ collection?: Collection }>();
 
+// `GlobalComponents["VForm"]` (from Vuetify's ambient `vue` module
+// augmentation) type-checks but silently resolves to `any` here: Vuetify
+// isn't a direct dependency of this app (only vuetify-nuxt-module is), so
+// its nested `import('vuetify/components')` type query can't actually
+// resolve from this file's module-resolution context, and
+// `skipLibCheck: true` hides the failure instead of erroring. An explicit
+// `import { VForm } from "vuetify/components"` fails outright for the same
+// reason - "vuetify" isn't resolvable as a bare specifier here. So the ref
+// is typed against VForm's actual exposed `validate()` shape instead,
+// copied from vuetify/lib/components/VForm/VForm.d.ts - narrower than the
+// full instance type, but real (not `any`) for the one method this
+// component calls.
+interface VFormInstance {
+  validate: () => Promise<{
+    valid: boolean;
+    errors: { id: number | string; errorMessages: string[] }[];
+  }>;
+}
+
 const { t } = useI18n();
 const {
   isEditing,
@@ -22,7 +41,7 @@ const {
   cancelShareWarning
 } = useCollectionForm(props.collection);
 
-const formRef = useTemplateRef("formRef");
+const formRef = useTemplateRef<VFormInstance>("formRef");
 
 const nameRules = computed(() => [required(t("validation.nameRequired"))]);
 const slugRules = computed(() => [

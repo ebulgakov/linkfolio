@@ -22,14 +22,14 @@ const collectionSchema = z.object({
 const idSchema = z.uuid();
 
 export default defineEventHandler(async event => {
+  const userId = await requireUserId(event);
+
   const body = await readBody(event);
   const parsed = collectionSchema.safeParse(body);
 
   if (!parsed.success) {
     throwValidationError(parsed.error);
   }
-
-  const userId = await requireUserId(event);
 
   const parsedId = idSchema.safeParse(getRouterParam(event, "id"));
   if (!parsedId.success) {

@@ -16,14 +16,14 @@ const collectionSchema = z.object({
 });
 
 export default defineEventHandler(async event => {
+  const userId = await requireUserId(event);
+
   const body = await readBody(event);
   const parsed = collectionSchema.safeParse(body);
 
   if (!parsed.success) {
     throwValidationError(parsed.error);
   }
-
-  const userId = await requireUserId(event);
 
   try {
     const [collection] = await db
