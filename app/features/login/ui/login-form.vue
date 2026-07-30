@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-import { useSignupForm } from "~/features/signup";
-import { email, minLength, required } from "~/shared/lib/validators";
+import { useLoginForm } from "~/features/login";
+import { email, required } from "~/shared/lib";
 
 const { t } = useI18n();
-const { form, pending, errorMessage, showForgotPasswordLink, submit } = useSignupForm();
+const { form, pending, errorMessage, showForgotPasswordLink, submit } = useLoginForm();
 
 const formRef = useTemplateRef("formRef");
 const showPassword = ref(false);
@@ -12,10 +12,7 @@ const emailRules = computed(() => [
   required(t("validation.emailRequired")),
   email(t("validation.emailInvalid"))
 ]);
-const passwordRules = computed(() => [
-  required(t("validation.passwordRequired")),
-  minLength(8, t("validation.passwordMinLength", { min: 8 }))
-]);
+const passwordRules = computed(() => [required(t("validation.passwordRequired"))]);
 
 async function onSubmit() {
   const { valid: isValid } = await formRef.value!.validate();
@@ -40,7 +37,7 @@ async function onSubmit() {
       v-model="form.password"
       :label="t('forms.password')"
       :type="showPassword ? 'text' : 'password'"
-      autocomplete="new-password"
+      autocomplete="current-password"
       :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
       :rules="passwordRules"
       :aria-label="showPassword ? t('forms.hidePassword') : t('forms.showPassword')"
@@ -54,12 +51,12 @@ async function onSubmit() {
     </div>
 
     <v-btn type="submit" color="primary" :loading="pending" :disabled="pending" block>
-      {{ t("signup.submit") }}
+      {{ t("login.submit") }}
     </v-btn>
 
     <div class="d-flex justify-center mt-4">
-      <span>{{ t("signup.haveAccountPrompt") }}&nbsp;</span>
-      <NuxtLink to="/login" class="text-primary">{{ t("signup.haveAccountLink") }}</NuxtLink>
+      <span>{{ t("login.noAccountPrompt") }}&nbsp;</span>
+      <NuxtLink to="/signup" class="text-primary">{{ t("login.noAccountLink") }}</NuxtLink>
     </div>
   </v-form>
 </template>

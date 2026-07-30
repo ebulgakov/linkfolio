@@ -16,7 +16,7 @@ import { navigateToMock } from "~/shared/testing/mocks/navigate";
 // auto-imports against the real implementations before the mocks are
 // registered, so `pnpm lint:fix`/editors must not reorder this.
 // eslint-disable-next-line import/order
-import { useSignupForm } from "../useSignupForm";
+import { useSignupForm } from "../use-signup-form";
 
 beforeEach(() => {
   navigateToMock.mockReset();

@@ -1,4 +1,4 @@
-import { useAuth } from "~/shared/api/use-auth";
+import { useAuth } from "~/shared/api";
 
 export default defineNuxtRouteMiddleware(async () => {
   const { data: session } = await useAuth().getSession();

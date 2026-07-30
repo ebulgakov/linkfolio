@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useResetPasswordForm } from "~/features/reset-password";
-import { minLength, required } from "~/shared/lib/validators";
+import { minLength, required } from "~/shared/lib";
 
 const { t } = useI18n();
 const { form, pending, errorMessage, success, hasValidToken, submit } = useResetPasswordForm();

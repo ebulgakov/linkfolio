@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useForgotPasswordForm } from "~/features/forgot-password";
-import { email, required } from "~/shared/lib/validators";
+import { email, required } from "~/shared/lib";
 
 const { t } = useI18n();
 const { form, pending, errorMessage, submitted, submit } = useForgotPasswordForm();

@@ -1,6 +1,6 @@
 import { reactive, ref } from "vue";
 
-import { authClient } from "~/shared/api/auth-client";
+import { authClient } from "~/shared/api";
 
 export function sanitizeRedirect(candidate: unknown): string {
   if (typeof candidate !== "string" || !candidate) return "/";

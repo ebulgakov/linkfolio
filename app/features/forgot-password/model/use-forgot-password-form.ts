@@ -1,6 +1,6 @@
 import { reactive, ref } from "vue";
 
-import { authClient } from "~/shared/api/auth-client";
+import { authClient } from "~/shared/api";
 
 export function useForgotPasswordForm() {
   const { t } = useI18n();

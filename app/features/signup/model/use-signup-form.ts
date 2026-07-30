@@ -1,6 +1,6 @@
 import { reactive, ref } from "vue";
 
-import { authClient } from "~/shared/api/auth-client";
+import { authClient } from "~/shared/api";
 
 export function useSignupForm() {
   const { t } = useI18n();

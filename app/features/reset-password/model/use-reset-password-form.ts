@@ -1,6 +1,6 @@
 import { computed, reactive, ref } from "vue";
 
-import { authClient } from "~/shared/api/auth-client";
+import { authClient } from "~/shared/api";
 
 export function useResetPasswordForm() {
   const { t } = useI18n();
