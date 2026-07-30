@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { SignupForm } from "~/features/signup";
-import AuthCard from "~/shared/ui/AuthCard.vue";
+import { AuthCard } from "~/shared/ui";
 
 definePageMeta({ middleware: "guest" });
 

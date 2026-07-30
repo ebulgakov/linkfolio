@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useAuth } from "~/shared/api/use-auth";
+import { useAuth } from "~/shared/api";
 
 const { t } = useI18n();
 const authClient = useAuth();

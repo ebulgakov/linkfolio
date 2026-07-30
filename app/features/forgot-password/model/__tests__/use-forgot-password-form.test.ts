@@ -11,7 +11,7 @@ import { tMock } from "~/shared/testing/mocks/i18n";
 // against the real implementation before the mocks are registered, so
 // `pnpm lint:fix`/editors must not reorder this.
 // eslint-disable-next-line import/order
-import { useForgotPasswordForm } from "../useForgotPasswordForm";
+import { useForgotPasswordForm } from "../use-forgot-password-form";
 
 beforeEach(() => {
   resetAuthClientMocks();

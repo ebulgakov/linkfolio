@@ -13,7 +13,7 @@ import { resetRouteState, routeState } from "~/shared/testing/mocks/route";
 // `useI18n` auto-imports against the real implementations before the mocks
 // are registered, so `pnpm lint:fix`/editors must not reorder this.
 // eslint-disable-next-line import/order
-import { sanitizeRedirect, useLoginForm } from "../useLoginForm";
+import { sanitizeRedirect, useLoginForm } from "../use-login-form";
 
 beforeEach(() => {
   resetRouteState();

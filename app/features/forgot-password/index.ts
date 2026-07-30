@@ -1,2 +1,2 @@
-export { default as ForgotPasswordForm } from "./ui/ForgotPasswordForm.vue";
-export { useForgotPasswordForm } from "./model/useForgotPasswordForm";
+export { default as ForgotPasswordForm } from "./ui/forgot-password-form.vue";
+export { useForgotPasswordForm } from "./model/use-forgot-password-form";

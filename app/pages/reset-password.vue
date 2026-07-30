@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ResetPasswordForm } from "~/features/reset-password";
-import AuthCard from "~/shared/ui/AuthCard.vue";
+import { AuthCard } from "~/shared/ui";
 
 definePageMeta({ middleware: "guest" });
 
