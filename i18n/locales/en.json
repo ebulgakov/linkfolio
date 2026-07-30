@@ -20,6 +20,12 @@
     },
     "signup": {
       "title": "Sign up"
+    },
+    "forgotPassword": {
+      "title": "Reset your password"
+    },
+    "resetPassword": {
+      "title": "Set a new password"
     }
   },
   "forms": {
@@ -52,6 +58,23 @@
     },
     "success": {
       "unverified": "Signup succeeded, but you need to verify your email before signing in."
+    }
+  },
+  "auth": {
+    "forgotPasswordLink": "Forgot your password?"
+  },
+  "forgotPassword": {
+    "submit": "Send reset link",
+    "success": "If an account exists for that email, we've sent a link to reset your password.",
+    "backToLogin": "Back to log in"
+  },
+  "resetPassword": {
+    "submit": "Reset password",
+    "success": "Your password has been reset. You can now log in.",
+    "backToLogin": "Go to log in",
+    "requestNewLink": "Request a new link",
+    "errors": {
+      "invalidToken": "This password reset link is invalid or has expired. Please request a new one."
     }
   },
   "errors": {

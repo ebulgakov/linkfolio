@@ -3,7 +3,7 @@ import { useLoginForm } from "~/features/login";
 import { email, required } from "~/shared/lib/validators";
 
 const { t } = useI18n();
-const { form, pending, errorMessage, submit } = useLoginForm();
+const { form, pending, errorMessage, showForgotPasswordLink, submit } = useLoginForm();
 
 const formRef = useTemplateRef("formRef");
 const showPassword = ref(false);
@@ -43,6 +43,12 @@ async function onSubmit() {
       :aria-label="showPassword ? t('forms.hidePassword') : t('forms.showPassword')"
       @click:append-inner="showPassword = !showPassword"
     />
+
+    <div v-if="showForgotPasswordLink" class="d-flex justify-end mb-4">
+      <NuxtLink to="/forgot-password" class="text-primary">{{
+        t("auth.forgotPasswordLink")
+      }}</NuxtLink>
+    </div>
 
     <v-btn type="submit" color="primary" :loading="pending" :disabled="pending" block>
       {{ t("login.submit") }}

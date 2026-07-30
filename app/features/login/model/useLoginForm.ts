@@ -18,9 +18,11 @@ export function useLoginForm() {
   const form = reactive({ email: "", password: "" });
   const pending = ref(false);
   const errorMessage = ref<string | null>(null);
+  const showForgotPasswordLink = ref(false);
 
   async function submit() {
     errorMessage.value = null;
+    showForgotPasswordLink.value = false;
     pending.value = true;
 
     try {
@@ -28,6 +30,9 @@ export function useLoginForm() {
         { email: form.email, password: form.password },
         {
           onError: ctx => {
+            if (ctx.error.status === 401) {
+              showForgotPasswordLink.value = true;
+            }
             errorMessage.value =
               ctx.error.status === 403
                 ? t("login.errors.notVerified")
@@ -48,5 +53,5 @@ export function useLoginForm() {
     }
   }
 
-  return { form, pending, errorMessage, submit };
+  return { form, pending, errorMessage, showForgotPasswordLink, submit };
 }
