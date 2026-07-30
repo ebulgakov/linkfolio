@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { deferred } from "~/shared/testing/deferred";
 import { tMock } from "~/shared/testing/mocks/i18n";
 import { deleteLinkMock, resetLinksApiMocks } from "~/shared/testing/mocks/links-api";
 
@@ -59,15 +60,24 @@ describe("useCollectionLinks - dialog state transitions", () => {
     expect(isDialogOpen.value).toBe(false);
   });
 
-  it("requestDelete clears a stale errorMessage from a previous failed attempt", () => {
+  it("requestDelete clears a stale errorMessage from a previous failed attempt on a different link", async () => {
+    deleteLinkMock.mockRejectedValue(new Error("network down"));
     const onDeleted = vi.fn();
-    const { errorMessage, requestDelete } = useCollectionLinks("collection-1", onDeleted);
+    const { pendingDeleteLinkId, errorMessage, requestDelete, confirmDelete } = useCollectionLinks(
+      "collection-1",
+      onDeleted
+    );
 
     requestDelete("link-1");
-    errorMessage.value = "stale error";
+    await confirmDelete();
+    expect(errorMessage.value).toBe(GENERIC_ERROR);
 
+    // User dismisses the failed dialog and targets a different link - the
+    // stale error from link-1's failed attempt must not bleed into link-2's
+    // fresh dialog.
     requestDelete("link-2");
 
+    expect(pendingDeleteLinkId.value).toBe("link-2");
     expect(errorMessage.value).toBeNull();
   });
 
@@ -168,14 +178,41 @@ describe("useCollectionLinks - confirmDelete: failure", () => {
   });
 });
 
+describe("useCollectionLinks - onDeleted rejection after a successful delete", () => {
+  // FLAG FOR TEAM-LEAD: pendingDeleteLinkId is cleared (closing the dialog,
+  // since isDialogOpen derives from it) BEFORE `await onDeleted()` runs. If
+  // onDeleted (a page's refresh()) rejects, the catch block still sets
+  // errorMessage - but by then isDialogOpen is already false. In
+  // app/pages/collections/[id]/index.vue, the `<v-alert>` showing
+  // errorMessage lives *inside* the `<v-dialog v-model="isDialogOpen">`, so
+  // this error becomes unreachable/invisible to the user on a closed dialog
+  // rather than a source bug this test file should fix inline - documenting
+  // the current behavior here per the qa-specialist "don't fix source
+  // inline" rule.
+  it("documents that a rejected onDeleted still sets errorMessage even though the dialog has already closed", async () => {
+    deleteLinkMock.mockResolvedValue(undefined);
+    const onDeleted = vi.fn().mockRejectedValue(new Error("refresh failed"));
+
+    const { pendingDeleteLinkId, isDialogOpen, errorMessage, requestDelete, confirmDelete } =
+      useCollectionLinks("collection-1", onDeleted);
+
+    requestDelete("link-1");
+    await confirmDelete();
+
+    expect(deleteLinkMock).toHaveBeenCalledWith("collection-1", "link-1");
+    // The dialog is already closed at this point...
+    expect(pendingDeleteLinkId.value).toBeNull();
+    expect(isDialogOpen.value).toBe(false);
+    // ...yet errorMessage is still set, with nowhere in the current UI to
+    // display it.
+    expect(errorMessage.value).toBe(GENERIC_ERROR);
+  });
+});
+
 describe("useCollectionLinks - double-delete guard", () => {
   it("ignores a second confirmDelete() while the first is still pending, calling deleteLink exactly once", async () => {
-    let resolveDelete!: () => void;
-    deleteLinkMock.mockReturnValue(
-      new Promise<void>(resolve => {
-        resolveDelete = resolve;
-      })
-    );
+    const { promise, resolve } = deferred();
+    deleteLinkMock.mockReturnValue(promise);
     const onDeleted = vi.fn().mockResolvedValue(undefined);
 
     const { requestDelete, confirmDelete } = useCollectionLinks("collection-1", onDeleted);
@@ -185,7 +222,7 @@ describe("useCollectionLinks - double-delete guard", () => {
     const first = confirmDelete();
     const second = confirmDelete();
 
-    resolveDelete();
+    resolve();
     await Promise.all([first, second]);
 
     expect(deleteLinkMock).toHaveBeenCalledTimes(1);
