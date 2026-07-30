@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "feature-sliced-design": {
+      "source": "feature-sliced/skills",
+      "sourceType": "github",
+      "skillPath": "feature-sliced-design/SKILL.md",
+      "computedHash": "913158ff73fba3223e3d37fd57f1fe2c24863936308ef6b78d9a37300ce9e563"
+    },
     "neon": {
       "source": "neondatabase/agent-skills",
       "sourceType": "github",
