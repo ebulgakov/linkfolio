@@ -5,6 +5,6 @@ const { t } = useI18n();
 <template>
   <NuxtLink to="/" class="d-flex align-center ma-0 text-primary text-decoration-none">
     <nuxt-img src="/linkfolio-logo.svg" :alt="t('common.logoAlt')" width="40" height="40" />
-    <figcaption class="mt-2 text-body-large">{{ t("common.appName") }}</figcaption>
+    <span class="mt-2 text-body-large">{{ t("common.appName") }}</span>
   </NuxtLink>
 </template>
