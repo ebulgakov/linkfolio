@@ -165,6 +165,73 @@ describe("useLoginForm().submit", () => {
     expect(errorMessage.value).toBe("Please verify your email before signing in.");
   });
 
+  describe("showForgotPasswordLink", () => {
+    it("is false initially", () => {
+      const { showForgotPasswordLink } = useLoginForm();
+
+      expect(showForgotPasswordLink.value).toBe(false);
+    });
+
+    it("becomes true after a 401 error", async () => {
+      signInEmailMock.mockImplementation(async (_credentials, handlers) => {
+        handlers.onError({ error: { status: 401 } });
+      });
+
+      const { submit, showForgotPasswordLink } = useLoginForm();
+      await submit();
+
+      expect(showForgotPasswordLink.value).toBe(true);
+    });
+
+    it("stays false after a 403 error", async () => {
+      signInEmailMock.mockImplementation(async (_credentials, handlers) => {
+        handlers.onError({ error: { status: 403 } });
+      });
+
+      const { submit, showForgotPasswordLink } = useLoginForm();
+      await submit();
+
+      expect(showForgotPasswordLink.value).toBe(false);
+    });
+
+    it("stays false on success", async () => {
+      signInEmailMock.mockImplementation(async (_credentials, handlers) => {
+        await handlers.onSuccess();
+      });
+
+      const { submit, showForgotPasswordLink } = useLoginForm();
+      await submit();
+
+      expect(showForgotPasswordLink.value).toBe(false);
+    });
+
+    it("resets to false at the start of a new submit() call", async () => {
+      signInEmailMock.mockImplementationOnce(async (_credentials, handlers) => {
+        handlers.onError({ error: { status: 401 } });
+      });
+
+      const { submit, showForgotPasswordLink } = useLoginForm();
+      await submit();
+      expect(showForgotPasswordLink.value).toBe(true);
+
+      let resolveSecondCall!: () => void;
+      signInEmailMock.mockImplementationOnce(
+        () =>
+          new Promise<void>(resolve => {
+            resolveSecondCall = resolve;
+          })
+      );
+
+      const submitPromise = submit();
+      // Reset happens synchronously at the top of submit(), before the
+      // second call settles.
+      expect(showForgotPasswordLink.value).toBe(false);
+
+      resolveSecondCall();
+      await submitPromise;
+    });
+  });
+
   it("falls back to a generic message on an unrecognized error status", async () => {
     signInEmailMock.mockImplementation(async (_credentials, handlers) => {
       handlers.onError({ error: { status: 500 } });

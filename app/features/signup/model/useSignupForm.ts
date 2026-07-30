@@ -7,9 +7,11 @@ export function useSignupForm() {
   const form = reactive({ email: "", password: "" });
   const pending = ref(false);
   const errorMessage = ref<string | null>(null);
+  const showForgotPasswordLink = ref(false);
 
   async function submit() {
     errorMessage.value = null;
+    showForgotPasswordLink.value = false;
     pending.value = true;
     const name = form.email.split("@")[0] || form.email;
 
@@ -18,10 +20,11 @@ export function useSignupForm() {
         { email: form.email, password: form.password, name },
         {
           onError: ctx => {
-            errorMessage.value =
-              ctx.error.status === 422 || ctx.error.code === "USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL"
-                ? t("signup.errors.emailTaken")
-                : t("errors.generic");
+            const emailTaken =
+              ctx.error.status === 422 ||
+              ctx.error.code === "USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL";
+            showForgotPasswordLink.value = emailTaken;
+            errorMessage.value = emailTaken ? t("signup.errors.emailTaken") : t("errors.generic");
           },
           onSuccess: async () => {
             const session = await authClient.getSession();
@@ -41,5 +44,5 @@ export function useSignupForm() {
     }
   }
 
-  return { form, pending, errorMessage, submit };
+  return { form, pending, errorMessage, showForgotPasswordLink, submit };
 }

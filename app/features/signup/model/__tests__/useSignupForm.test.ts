@@ -140,6 +140,87 @@ describe("useSignupForm().submit - onError", () => {
     expect(errorMessage.value).toBe("Something went wrong. Please try again.");
   });
 
+  describe("showForgotPasswordLink", () => {
+    it("is false initially", () => {
+      const { showForgotPasswordLink } = useSignupForm();
+
+      expect(showForgotPasswordLink.value).toBe(false);
+    });
+
+    it("becomes true on status 422 (email taken)", async () => {
+      signUpEmailMock.mockImplementation(async (_credentials, handlers) => {
+        handlers.onError({ error: { status: 422, code: "SOME_OTHER_CODE" } });
+      });
+
+      const { submit, showForgotPasswordLink } = useSignupForm();
+      await submit();
+
+      expect(showForgotPasswordLink.value).toBe(true);
+    });
+
+    it("becomes true on USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL code alone, isolated from status", async () => {
+      signUpEmailMock.mockImplementation(async (_credentials, handlers) => {
+        handlers.onError({
+          error: { status: 400, code: "USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL" }
+        });
+      });
+
+      const { submit, showForgotPasswordLink } = useSignupForm();
+      await submit();
+
+      expect(showForgotPasswordLink.value).toBe(true);
+    });
+
+    it("stays false when neither condition is met", async () => {
+      signUpEmailMock.mockImplementation(async (_credentials, handlers) => {
+        handlers.onError({ error: { status: 500, code: "SOME_OTHER_CODE" } });
+      });
+
+      const { submit, showForgotPasswordLink } = useSignupForm();
+      await submit();
+
+      expect(showForgotPasswordLink.value).toBe(false);
+    });
+
+    it("stays false on success", async () => {
+      signUpEmailMock.mockImplementation(async (_credentials, handlers) => {
+        await handlers.onSuccess();
+      });
+      getSessionMock.mockResolvedValue({ data: { user: { id: "1" } } });
+
+      const { submit, showForgotPasswordLink } = useSignupForm();
+      await submit();
+
+      expect(showForgotPasswordLink.value).toBe(false);
+    });
+
+    it("resets to false at the start of a new submit() call", async () => {
+      signUpEmailMock.mockImplementationOnce(async (_credentials, handlers) => {
+        handlers.onError({ error: { status: 422, code: "SOME_OTHER_CODE" } });
+      });
+
+      const { submit, showForgotPasswordLink } = useSignupForm();
+      await submit();
+      expect(showForgotPasswordLink.value).toBe(true);
+
+      let resolveSecondCall!: () => void;
+      signUpEmailMock.mockImplementationOnce(
+        () =>
+          new Promise<void>(resolve => {
+            resolveSecondCall = resolve;
+          })
+      );
+
+      const submitPromise = submit();
+      // Reset happens synchronously at the top of submit(), before the
+      // second call settles.
+      expect(showForgotPasswordLink.value).toBe(false);
+
+      resolveSecondCall();
+      await submitPromise;
+    });
+  });
+
   it("sets pending true while in flight and false after settling on error", async () => {
     let resolveSignUp!: () => void;
     signUpEmailMock.mockImplementation(
