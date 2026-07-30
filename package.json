@@ -14,7 +14,9 @@
     "lint": "eslint",
     "type-check": "nuxt typecheck",
     "format:fix": "prettier --write .",
-    "format": "prettier --check ."
+    "format": "prettier --check .",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate"
   },
   "dependencies": {
     "@mdi/font": "^7.4.47",
@@ -23,6 +25,8 @@
     "@nuxtjs/i18n": "^10.5.0",
     "@sentry/nuxt": "^10.68.0",
     "better-auth": "^1.6.25",
+    "drizzle-orm": "^0.45.2",
+    "nanoid": "^6.0.0",
     "nuxt": "^4.5.1",
     "vue": "^3.5.40",
     "vue-router": "^5.2.0",
@@ -33,6 +37,8 @@
     "@nuxt/test-utils": "^4.1.0",
     "@types/node": "^26.1.1",
     "@vue/test-utils": "^2.4.11",
+    "dotenv": "^17.4.2",
+    "drizzle-kit": "^0.31.10",
     "eslint": "^10.8.0",
     "eslint-config-prettier": "^10.1.8",
     "happy-dom": "^20.11.1",
