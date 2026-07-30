@@ -235,21 +235,29 @@ describe("useSignupForm().submit - onSuccess", () => {
   });
 });
 
-describe("useSignupForm().submit - missing try/catch (documented bug)", () => {
-  it("BUG: pending stays true forever when signUp.email itself rejects, since there is no try/catch/finally", async () => {
+describe("useSignupForm().submit - signUp.email rejects", () => {
+  it("sets the generic error message and resets pending instead of leaving it stuck", async () => {
     signUpEmailMock.mockImplementation(async () => {
       throw new Error("network down");
     });
 
     const { submit, pending, errorMessage } = useSignupForm();
+    await submit();
 
-    // submit() has no try/catch around authClient.signUp.email, so a
-    // rejected call propagates out of submit() itself rather than being
-    // routed through onError. Wrap the await so this test documents the
-    // current behavior instead of failing on the unhandled rejection.
-    await expect(submit()).rejects.toThrow("network down");
+    expect(errorMessage.value).toBe("Something went wrong. Please try again.");
+    expect(pending.value).toBe(false);
+  });
 
-    expect(pending.value).toBe(true);
-    expect(errorMessage.value).toBeNull();
+  it("does not overwrite an error message already set by onError before the rejection", async () => {
+    signUpEmailMock.mockImplementation(async (_credentials, handlers) => {
+      handlers.onError({ error: { status: 422, code: "SOME_OTHER_CODE" } });
+      throw new Error("network down");
+    });
+
+    const { submit, pending, errorMessage } = useSignupForm();
+    await submit();
+
+    expect(errorMessage.value).toBe("This email is already registered.");
+    expect(pending.value).toBe(false);
   });
 });
