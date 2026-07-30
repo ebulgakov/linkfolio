@@ -1,0 +1,128 @@
+<script lang="ts" setup>
+import type { Collection } from "~/shared/api";
+
+import { useCollectionForm } from "~/features/collection-form";
+import { required, slug } from "~/shared/lib";
+
+const props = defineProps<{ collection?: Collection }>();
+
+const { t } = useI18n();
+const {
+  isEditing,
+  form,
+  pending,
+  errorMessage,
+  errors,
+  slugStatus,
+  submitDisabled,
+  showShareWarning,
+  onSlugInput,
+  submit,
+  confirmAndSubmit,
+  cancelShareWarning
+} = useCollectionForm(props.collection);
+
+const formRef = useTemplateRef("formRef");
+
+const nameRules = computed(() => [required(t("validation.nameRequired"))]);
+const slugRules = computed(() => [
+  required(t("validation.slugRequired")),
+  slug(t("validation.slugInvalid"))
+]);
+
+const slugStatusMessage = computed(() => {
+  switch (slugStatus.value) {
+    case "checking":
+      return t("collections.form.slugChecking");
+    case "free":
+      return t("collections.form.slugAvailable");
+    case "taken":
+      return t("collections.form.slugTaken");
+    default:
+      return undefined;
+  }
+});
+
+async function onSubmit() {
+  const { valid: isValid } = await formRef.value!.validate();
+  if (!isValid) return;
+  await submit();
+}
+</script>
+
+<template>
+  <v-form ref="formRef" @submit.prevent="onSubmit">
+    <v-alert v-if="errorMessage" type="error" :text="errorMessage" class="mb-4" />
+
+    <v-text-field
+      v-model="form.name"
+      :label="t('collections.form.nameLabel')"
+      :rules="nameRules"
+      :error-messages="errors.name"
+    />
+
+    <!--
+      Deliberately :model-value + @update:model-value instead of v-model:
+      onSlugInput() flips the composable's dirty flag before writing
+      form.slug. Switching this to v-model="form.slug" would bypass that
+      flag, so auto-sync from `name` would keep silently overwriting the
+      user's manually-typed slug on every subsequent name keystroke.
+    -->
+    <v-text-field
+      :model-value="form.slug"
+      :label="t('collections.form.slugLabel')"
+      :rules="slugRules"
+      :error-messages="errors.slug"
+      :hint="slugStatusMessage"
+      persistent-hint
+      @update:model-value="onSlugInput"
+    >
+      <template #append-inner>
+        <v-progress-circular v-if="slugStatus === 'checking'" indeterminate size="20" width="2" />
+        <v-icon v-else-if="slugStatus === 'free'" icon="mdi-check-circle" color="success" />
+        <v-icon v-else-if="slugStatus === 'taken'" icon="mdi-close-circle" color="error" />
+      </template>
+    </v-text-field>
+
+    <v-textarea
+      v-model="form.description"
+      :label="t('collections.form.descriptionLabel')"
+      :error-messages="errors.description"
+      rows="3"
+    />
+
+    <v-switch
+      v-model="form.shared"
+      :label="t('collections.form.sharedLabel')"
+      color="primary"
+      :error-messages="errors.shared"
+    />
+
+    <v-btn type="submit" color="primary" :loading="pending" :disabled="submitDisabled" block>
+      {{ isEditing ? t("collections.form.editSubmit") : t("collections.form.createSubmit") }}
+    </v-btn>
+
+    <!--
+      Nested inside v-form so the component has a single root node (lets a
+      parent's attrs, e.g. class, auto-inherit onto the form element).
+      Vuetify teleports the dialog's content to <body>, so it never ends up
+      nested in the form's DOM, and its buttons default to type="button" -
+      neither submits the outer form.
+    -->
+    <v-dialog v-model="showShareWarning" max-width="480">
+      <v-card>
+        <v-card-title>{{ t("collections.shareWarning.title") }}</v-card-title>
+        <v-card-text>{{ t("collections.shareWarning.message") }}</v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn variant="text" @click="cancelShareWarning">
+            {{ t("collections.shareWarning.cancel") }}
+          </v-btn>
+          <v-btn color="primary" :loading="pending" @click="confirmAndSubmit">
+            {{ t("collections.shareWarning.confirm") }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+  </v-form>
+</template>

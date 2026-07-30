@@ -27,6 +27,18 @@
     },
     "resetPassword": {
       "title": "Set a new password"
+    },
+    "collections": {
+      "title": "Collections"
+    },
+    "newCollection": {
+      "title": "New collection"
+    },
+    "editCollection": {
+      "title": "Edit collection"
+    },
+    "collectionDetail": {
+      "title": "Collection"
     }
   },
   "forms": {
@@ -39,7 +51,10 @@
     "emailRequired": "Email is required",
     "emailInvalid": "Please enter a valid email",
     "passwordRequired": "Password is required",
-    "passwordMinLength": "Password must be at least {min} characters"
+    "passwordMinLength": "Password must be at least {min} characters",
+    "nameRequired": "Name is required",
+    "slugRequired": "Slug is required",
+    "slugInvalid": "Use lowercase letters, numbers, and single hyphens only (3-64 characters)."
   },
   "login": {
     "submit": "Log in",
@@ -80,5 +95,37 @@
   },
   "errors": {
     "generic": "Something went wrong. Please try again."
+  },
+  "collections": {
+    "list": {
+      "title": "Your collections",
+      "empty": "You don't have any collections yet.",
+      "createLink": "New collection",
+      "editLink": "Edit",
+      "sharedBadge": "Shared"
+    },
+    "form": {
+      "nameLabel": "Name",
+      "descriptionLabel": "Description",
+      "sharedLabel": "Shared",
+      "slugLabel": "Slug",
+      "slugChecking": "Checking availability…",
+      "slugAvailable": "Slug is available",
+      "slugTaken": "This slug is already taken.",
+      "createSubmit": "Create collection",
+      "editSubmit": "Save changes",
+      "createTitle": "New collection",
+      "editTitle": "Edit collection"
+    },
+    "shareWarning": {
+      "title": "Changing the link for a shared collection",
+      "message": "This collection is shared, and its link is changing. The old public link will stop working. Continue?",
+      "confirm": "Yes, change it",
+      "cancel": "Cancel"
+    },
+    "errors": {
+      "notFound": "Collection not found.",
+      "loadFailed": "Failed to load this collection."
+    }
   }
 }

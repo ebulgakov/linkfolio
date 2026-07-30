@@ -27,6 +27,18 @@
     },
     "resetPassword": {
       "title": "Новый пароль"
+    },
+    "collections": {
+      "title": "Коллекции"
+    },
+    "newCollection": {
+      "title": "Новая коллекция"
+    },
+    "editCollection": {
+      "title": "Редактирование коллекции"
+    },
+    "collectionDetail": {
+      "title": "Коллекция"
     }
   },
   "forms": {
@@ -39,7 +51,10 @@
     "emailRequired": "Укажите email",
     "emailInvalid": "Введите корректный email",
     "passwordRequired": "Укажите пароль",
-    "passwordMinLength": "Пароль должен содержать не менее {min} символов"
+    "passwordMinLength": "Пароль должен содержать не менее {min} символов",
+    "nameRequired": "Укажите название",
+    "slugRequired": "Укажите слаг",
+    "slugInvalid": "Используйте строчные латинские буквы, цифры и одиночные дефисы (3-64 символа)."
   },
   "login": {
     "submit": "Войти",
@@ -80,5 +95,37 @@
   },
   "errors": {
     "generic": "Что-то пошло не так. Попробуйте ещё раз."
+  },
+  "collections": {
+    "list": {
+      "title": "Ваши коллекции",
+      "empty": "У вас пока нет коллекций.",
+      "createLink": "Новая коллекция",
+      "editLink": "Редактировать",
+      "sharedBadge": "Публичная"
+    },
+    "form": {
+      "nameLabel": "Название",
+      "descriptionLabel": "Описание",
+      "sharedLabel": "Публичная",
+      "slugLabel": "Слаг",
+      "slugChecking": "Проверка доступности…",
+      "slugAvailable": "Слаг свободен",
+      "slugTaken": "Этот слаг уже занят.",
+      "createSubmit": "Создать коллекцию",
+      "editSubmit": "Сохранить изменения",
+      "createTitle": "Новая коллекция",
+      "editTitle": "Редактирование коллекции"
+    },
+    "shareWarning": {
+      "title": "Изменение ссылки публичной коллекции",
+      "message": "Эта коллекция публичная, и её ссылка изменится. Старая публичная ссылка перестанет работать. Продолжить?",
+      "confirm": "Да, изменить",
+      "cancel": "Отмена"
+    },
+    "errors": {
+      "notFound": "Коллекция не найдена.",
+      "loadFailed": "Не удалось загрузить коллекцию."
+    }
   }
 }
