@@ -15,6 +15,10 @@
     "nuxt-docs": {
       "type": "http",
       "url": "https://nuxt.com/mcp"
+    },
+    "better-auth-docs": {
+      "type": "http",
+      "url": "https://mcp.better-auth.com/mcp"
     }
   }
 }
