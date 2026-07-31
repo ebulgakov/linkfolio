@@ -168,10 +168,11 @@ export function useCollectionForm(existing?: Collection) {
     try {
       if (isEditing) {
         await updateCollection(existing!.id, toPayload());
+        await navigateTo("/");
       } else {
-        await createCollection(toPayload());
+        const created = await createCollection(toPayload());
+        await navigateTo(`/collections/${created.id}`);
       }
-      await navigateTo("/collections");
     } catch (error) {
       const fieldErrors = extractFieldErrors(error);
       if (fieldErrors) {

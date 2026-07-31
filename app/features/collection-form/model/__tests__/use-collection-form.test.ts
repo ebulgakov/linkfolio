@@ -600,23 +600,24 @@ describe("useCollectionForm - double-submit guard", () => {
 });
 
 describe("useCollectionForm - on success", () => {
-  it("navigates to /collections after a successful create", async () => {
-    createCollectionMock.mockResolvedValue(makeCollection());
+  it("navigates to the new collection's page after a successful create", async () => {
+    const created = makeCollection();
+    createCollectionMock.mockResolvedValue(created);
 
     const { form, submit } = withEffectScope(() => useCollectionForm());
     form.name = "New Collection";
     await submit();
 
-    expect(navigateToMock).toHaveBeenCalledWith("/collections");
+    expect(navigateToMock).toHaveBeenCalledWith(`/collections/${created.id}`);
   });
 
-  it("navigates to /collections after a successful edit", async () => {
+  it("navigates to / after a successful edit", async () => {
     const existing = makeCollection();
     updateCollectionMock.mockResolvedValue(existing);
 
     const { submit } = withEffectScope(() => useCollectionForm(existing));
     await submit();
 
-    expect(navigateToMock).toHaveBeenCalledWith("/collections");
+    expect(navigateToMock).toHaveBeenCalledWith("/");
   });
 });
