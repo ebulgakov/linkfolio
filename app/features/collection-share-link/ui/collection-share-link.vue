@@ -1,16 +1,10 @@
 <script lang="ts" setup>
-import { useClipboard } from "~/shared/lib";
+import { useCollectionShareLink } from "../model/use-collection-share-link";
 
 const props = defineProps<{ slug: string }>();
 
 const { t } = useI18n();
-const requestUrl = useRequestURL();
-const shareUrl = computed(() => `${requestUrl.origin}/shared/${props.slug}`);
-const { copy, copied } = useClipboard();
-
-function onCopyClick() {
-  copy(shareUrl.value);
-}
+const { shareUrl, copied, copyFailed, onCopyClick } = useCollectionShareLink(props.slug);
 </script>
 
 <template>
@@ -30,5 +24,8 @@ function onCopyClick() {
       @click="onCopyClick"
     />
     <v-snackbar v-model="copied" timeout="2000">{{ t("collections.detail.copied") }}</v-snackbar>
+    <v-snackbar v-model="copyFailed" timeout="3000" color="error">{{
+      t("errors.generic")
+    }}</v-snackbar>
   </div>
 </template>
