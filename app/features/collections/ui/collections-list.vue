@@ -1,26 +1,15 @@
 <script lang="ts" setup>
-import type { Collection } from "~/shared/api";
-
+import { useCollections } from "~/features/collections";
 import { useAuth } from "~/shared/api";
-
-definePageMeta({ middleware: "auth" });
 
 const { t } = useI18n();
 
-// The `auth` middleware already guarantees a session exists (it redirects
-// otherwise), but doesn't expose the resolved session to the page. Re-resolve
-// it here via the same useAuth()/getSession() call the middleware uses, so
-// the cache key below can be scoped per-user identically on SSR and client.
+// Re-resolves the session so it can scope the useAsyncData cache key
+// identically on SSR and client (the page rendering this may or may not
+// have already guaranteed a session via the `auth` middleware).
 const { data: session } = await useAuth().getSession();
 
-const requestFetch = useRequestFetch();
-const {
-  data: collections,
-  pending,
-  error
-} = await useAsyncData(`collections-${session?.user.id}`, () =>
-  requestFetch<Collection[]>("/api/collections")
-);
+const { data: collections, pending, error } = await useCollections(session?.user.id);
 </script>
 
 <template>
