@@ -1,7 +1,7 @@
 import { desc, eq } from "drizzle-orm";
 
-import { db } from "../../db";
-import { collections } from "../../db/schema";
+import { db } from "~~/server/db";
+import { collections } from "~~/server/db/schema";
 
 export default defineEventHandler(async event => {
   const userId = await requireUserId(event);

@@ -1,8 +1,8 @@
 import { and, eq, sql } from "drizzle-orm";
 import { z } from "zod";
 
-import { db } from "../../../../db";
-import { collectionItems, collections, urls } from "../../../../db/schema";
+import { db } from "~~/server/db";
+import { collectionItems, collections, urls } from "~~/server/db/schema";
 
 // A malformed (non-uuid) `:id` must not reach the driver as a raw string —
 // see `collections/[id].get.ts` for why.

@@ -1,7 +1,7 @@
 import { and, eq, ne, sql } from "drizzle-orm";
 
-import { db } from "../db";
-import { collections } from "../db/schema";
+import { db } from "~~/server/db";
+import { collections } from "~~/server/db/schema";
 
 // Nitro auto-imports everything under `server/utils/*`.
 

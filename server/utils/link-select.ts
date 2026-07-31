@@ -1,4 +1,4 @@
-import { collectionItems, urls } from "../db/schema";
+import { collectionItems, urls } from "~~/server/db/schema";
 
 // Nitro auto-imports everything under `server/utils/*`, so `linkSelection`
 // is available in route handlers with no explicit import.

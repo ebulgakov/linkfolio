@@ -1,8 +1,8 @@
 import { and, eq, ne } from "drizzle-orm";
 import { z } from "zod";
 
-import { db } from "../../db";
-import { collections } from "../../db/schema";
+import { db } from "~~/server/db";
+import { collections } from "~~/server/db/schema";
 
 // Same format/length/reserved-word rule as the create/update schema — this
 // endpoint is polled while the user is mid-typing, so a not-yet-valid slug
