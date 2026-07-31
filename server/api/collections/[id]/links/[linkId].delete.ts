@@ -1,8 +1,8 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, notExists } from "drizzle-orm";
 import { z } from "zod";
 
 import { db } from "~~/server/db";
-import { collectionItems, collections } from "~~/server/db/schema";
+import { collectionItems, collections, urls } from "~~/server/db/schema";
 
 // Malformed (non-uuid) route params must not reach the driver as raw
 // strings — see `collections/[id].get.ts` for why.
@@ -28,17 +28,32 @@ export default defineEventHandler(async event => {
     throw createError({ statusCode: 404, statusMessage: "Not Found" });
   }
 
-  // Only removes the `collection_items` row — the `urls` row is deliberately
-  // never deleted here, since it may be shared by other collections owned by
-  // the same user (see `server/db/schema.ts`'s comment on `urls`).
   const deleted = await db
     .delete(collectionItems)
     .where(and(eq(collectionItems.id, linkId), eq(collectionItems.collectionId, collectionId)))
-    .returning();
+    .returning({ urlId: collectionItems.urlId });
 
   if (deleted.length === 0) {
     throw createError({ statusCode: 404, statusMessage: "Not Found" });
   }
+
+  // The `urls` row (title/description/imageUrl cache) is shared across a
+  // user's collections — see `server/db/schema.ts`'s comment on `urls` — so
+  // it's only hard-deleted here once it's orphaned (no other collection_items
+  // row references it anymore). This is what makes a deleted link's data not
+  // resurface via the `existingUrl` reuse branch in `index.post.ts` if the
+  // same URL is re-added later, while leaving it untouched if it's still in
+  // use elsewhere. Expressed as a single self-atomic statement (not an app
+  // transaction) since the neon-http driver doesn't support `db.transaction`.
+  const { urlId } = deleted[0]!;
+  await db
+    .delete(urls)
+    .where(
+      and(
+        eq(urls.id, urlId),
+        notExists(db.select().from(collectionItems).where(eq(collectionItems.urlId, urlId)))
+      )
+    );
 
   setResponseStatus(event, 204);
   return null;
