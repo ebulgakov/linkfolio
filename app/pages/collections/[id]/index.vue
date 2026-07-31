@@ -31,6 +31,15 @@ const links = computed(() => data.value?.[1]);
 
 const isNotFound = computed(() => error.value?.statusCode === 404);
 
+// useAsyncData's refresh() never rejects on a fetch failure - it catches the
+// error internally into `error.value` and resolves. Re-throwing here is what
+// lets useCollectionLinks' onDeleted catch actually see the failure and
+// surface it via refreshError.
+async function refreshLinks() {
+  await refresh();
+  if (error.value) throw error.value;
+}
+
 const {
   isDialogOpen,
   deletePending,
@@ -38,13 +47,19 @@ const {
   refreshError,
   requestDelete,
   confirmDelete
-} = useCollectionLinks(id, () => refresh());
+} = useCollectionLinks(id, refreshLinks);
 </script>
 
 <template>
   <v-container>
+    <!--
+      Gated on `!error`: a refresh failure sets both refreshError (via
+      refreshLinks() re-throwing) and the useAsyncData `error` ref itself
+      (which also resets `data`/`collection` to undefined) - without this
+      guard the two alerts below would stack and say the same thing twice.
+    -->
     <v-alert
-      v-if="refreshError"
+      v-if="refreshError && !error"
       type="error"
       class="mb-4"
       closable
