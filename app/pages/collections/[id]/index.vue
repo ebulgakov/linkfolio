@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import type { Collection, LinkItem } from "~/shared/api";
+import type { LinkItem } from "~/shared/api";
 
 import { LinkCard, useCollectionLinks } from "~/features/collection-links";
-import { useAuth } from "~/shared/api";
+import { useCollection } from "~/shared/api";
 
 definePageMeta({ middleware: "auth" });
 
@@ -10,34 +10,39 @@ const { t } = useI18n();
 const route = useRoute();
 const id = route.params.id as string;
 
-// The `auth` middleware already guarantees a session exists (it redirects
-// otherwise), but doesn't expose the resolved session to the page. Re-resolve
-// it here via the same useAuth()/getSession() call the middleware uses, so
-// the cache key below can be scoped per-user identically on SSR and client.
-const { data: session } = await useAuth().getSession();
+const {
+  collection,
+  error: collectionError,
+  isNotFound: collectionIsNotFound,
+  userId
+} = await useCollection(id);
 
 const requestFetch = useRequestFetch();
-const { data, error, refresh } = await useAsyncData(
-  `collection-detail-${session?.user.id}-${id}`,
-  () =>
-    Promise.all([
-      requestFetch<Collection>(`/api/collections/${id}`),
-      requestFetch<LinkItem[]>(`/api/collections/${id}/links`)
-    ])
+const {
+  data: links,
+  error: linksError,
+  refresh: refreshLinksData
+} = await useAsyncData(`collection-links-${userId}-${id}`, () =>
+  requestFetch<LinkItem[]>(`/api/collections/${id}/links`)
 );
 
-const collection = computed(() => data.value?.[0]);
-const links = computed(() => data.value?.[1]);
-
-const isNotFound = computed(() => error.value?.statusCode === 404);
+// The links endpoint 404s independently on a missing/foreign collection id
+// (see server/api/collections/[id]/links/index.get.ts), so either fetch can
+// be the source of the not-found/error state - both must be checked.
+const error = computed(() => collectionError.value ?? linksError.value);
+const isNotFound = computed(
+  () => collectionIsNotFound.value || linksError.value?.statusCode === 404
+);
 
 // useAsyncData's refresh() never rejects on a fetch failure - it catches the
 // error internally into `error.value` and resolves. Re-throwing here is what
 // lets useCollectionLinks' onDeleted catch actually see the failure and
-// surface it via refreshError.
+// surface it via refreshError. Only the links list is re-fetched (not the
+// collection) since deleting a link cannot affect the collection's name or
+// description.
 async function refreshLinks() {
-  await refresh();
-  if (error.value) throw error.value;
+  await refreshLinksData();
+  if (linksError.value) throw linksError.value;
 }
 
 const {
@@ -54,9 +59,9 @@ const {
   <v-container>
     <!--
       Gated on `!error`: a refresh failure sets both refreshError (via
-      refreshLinks() re-throwing) and the useAsyncData `error` ref itself
-      (which also resets `data`/`collection` to undefined) - without this
-      guard the two alerts below would stack and say the same thing twice.
+      refreshLinks() re-throwing) and linksError (which feeds the combined
+      `error` computed below) - without this guard the two alerts below
+      would stack and say the same thing twice.
     -->
     <v-alert
       v-if="refreshError && !error"
