@@ -31,9 +31,7 @@ export default defineEventHandler(async event => {
   headers["x-forwarded-proto"] = "https";
   headers["x-forwarded-host"] = new URL(target).host;
 
-  const body = PAYLOAD_METHODS.has(event.method)
-    ? await readRawBody(event, false).catch(() => undefined)
-    : undefined;
+  const body = PAYLOAD_METHODS.has(event.method) ? await readRawBody(event, false) : undefined;
 
   return sendProxy(event, target, {
     fetchOptions: {
