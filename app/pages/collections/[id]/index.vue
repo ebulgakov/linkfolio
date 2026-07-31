@@ -2,6 +2,7 @@
 import type { LinkItem } from "~/shared/api";
 
 import { LinkCard, useCollectionLinks } from "~/features/collection-links";
+import { CollectionShareLink } from "~/features/collection-share-link";
 import { useCollection } from "~/shared/api";
 
 definePageMeta({ middleware: "auth" });
@@ -88,6 +89,8 @@ const {
           t("links.list.addButton")
         }}</v-btn>
       </div>
+
+      <CollectionShareLink v-if="collection.shared" :slug="collection.slug" />
 
       <v-alert v-if="!links?.length" type="info">{{ t("links.list.empty") }}</v-alert>
 
