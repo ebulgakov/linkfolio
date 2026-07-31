@@ -55,6 +55,10 @@ const MAX_REDIRECTS = 3;
 /** Response body size cap (~1MB) — we only need `<head>`, so anything beyond this is wasted work and a potential memory-exhaustion vector. Enforced by streaming and stopping, not by reading everything then measuring. */
 const MAX_BODY_BYTES = 1_000_000;
 
+/** Sent on every guarded fetch. Real sites branch on this: e.g. Instagram redirects a UA-less request away from the real page but serves it normally to a generic browser UA. A self-identifying bot UA (`Linkfolio/1.0 (+url)`) doesn't help here — sites that special-case crawlers only allowlist specific known tokens (facebookexternalhit, Twitterbot, Slackbot, etc.); a novel token gets the same generic-bot treatment as no UA at all. Impersonating a browser is deliberate and justified by volume: one user-initiated fetch per link add, not mass crawling. */
+const LINK_PREVIEW_USER_AGENT =
+  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36";
+
 export interface GuardedFetchResult {
   html: string;
   /** The URL of the response actually used (after following redirects) — needed by `link-preview.ts` to resolve relative `og:image` paths. */
@@ -226,8 +230,14 @@ async function readBodyCapped(response: Response, maxBytes: number): Promise<str
       if (value) {
         total += value.byteLength;
         if (total > maxBytes) {
+          // Stop reading, but don't discard what's already been collected:
+          // we only ever need `<head>`, which arrives well before this cap
+          // on every real page we've seen (including pages whose full body
+          // exceeds it) - discarding it here would turn "page has a large
+          // body" into a spurious full failure instead of a successful,
+          // truncated parse.
           await reader.cancel().catch(() => undefined);
-          return null;
+          break;
         }
         chunks.push(value);
       }
@@ -282,7 +292,10 @@ async function guardedFetchInner(initialUrl: string): Promise<GuardedFetchResult
           redirect: "manual",
           dispatcher: agent,
           signal: controller.signal,
-          headers: { accept: "text/html,application/xhtml+xml;q=0.9,*/*;q=0.1" }
+          headers: {
+            accept: "text/html,application/xhtml+xml;q=0.9,*/*;q=0.1",
+            "user-agent": LINK_PREVIEW_USER_AGENT
+          }
         })) as unknown as Response;
       } catch {
         return null;
