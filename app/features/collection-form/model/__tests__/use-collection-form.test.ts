@@ -31,6 +31,7 @@ function makeCollection(overrides: Partial<Collection> = {}): Collection {
     description: null,
     shared: false,
     slug: "my-collection",
+    password: null,
     createdAt: "2024-01-01T00:00:00.000Z",
     updatedAt: "2024-01-01T00:00:00.000Z",
     ...overrides
@@ -89,7 +90,7 @@ describe("useCollectionForm - create vs edit mode", () => {
   it("create mode: initializes an empty form and reflects create mode", () => {
     const { form, mode, isEditing, slugStatus } = withEffectScope(() => useCollectionForm());
 
-    expect(form).toEqual({ name: "", description: "", shared: false, slug: "" });
+    expect(form).toEqual({ name: "", description: "", shared: false, slug: "", password: "" });
     expect(mode).toBe("create");
     expect(isEditing).toBe(false);
     // Distinct from edit mode's own-slug skip, which starts at 'free' - and
@@ -104,14 +105,29 @@ describe("useCollectionForm - create vs edit mode", () => {
       name: "My List",
       description: "desc",
       shared: true,
-      slug: "my-list"
+      slug: "my-list",
+      password: "secret"
     });
 
     const { form, mode, isEditing } = withEffectScope(() => useCollectionForm(existing));
 
-    expect(form).toEqual({ name: "My List", description: "desc", shared: true, slug: "my-list" });
+    expect(form).toEqual({
+      name: "My List",
+      description: "desc",
+      shared: true,
+      slug: "my-list",
+      password: "secret"
+    });
     expect(mode).toBe("edit");
     expect(isEditing).toBe(true);
+  });
+
+  it("edit mode: round-trips a null existing password into an empty form field", () => {
+    const existing = makeCollection({ password: null });
+
+    const { form } = withEffectScope(() => useCollectionForm(existing));
+
+    expect(form.password).toBe("");
   });
 });
 
@@ -352,7 +368,8 @@ describe("useCollectionForm - submit: 23505 field-error mapping", () => {
       name: "Test Collection",
       description: null,
       shared: false,
-      slug: "test-collection"
+      slug: "test-collection",
+      password: null
     });
     expect(errors.value).toEqual({ slug: ["This slug is already taken."] });
     expect(errorMessage.value).toBeNull();
@@ -411,8 +428,29 @@ describe("useCollectionForm - toPayload trimming", () => {
       name: "Test Collection",
       description: null,
       shared: false,
-      slug: "test-collection"
+      slug: "test-collection",
+      password: null
     });
+  });
+
+  it("collapses a whitespace-only password to null, and trims a padded one", async () => {
+    createCollectionMock.mockResolvedValue(makeCollection());
+
+    const { form, submit } = withEffectScope(() => useCollectionForm());
+    form.name = "Test Collection";
+    await nextTick();
+
+    form.password = "   ";
+    await submit();
+    expect(createCollectionMock).toHaveBeenLastCalledWith(
+      expect.objectContaining({ password: null })
+    );
+
+    form.password = "  secret  ";
+    await submit();
+    expect(createCollectionMock).toHaveBeenLastCalledWith(
+      expect.objectContaining({ password: "secret" })
+    );
   });
 
   it("edit: trims a padded name and collapses a whitespace-only description to null", async () => {
@@ -431,7 +469,8 @@ describe("useCollectionForm - toPayload trimming", () => {
       name: "Test Collection",
       description: null,
       shared: false,
-      slug: "my-collection"
+      slug: "my-collection",
+      password: null
     });
   });
 });
@@ -480,7 +519,8 @@ describe("useCollectionForm - shared-link-change confirmation gate", () => {
       name: "My Collection",
       description: null,
       shared: true,
-      slug: "old-slug"
+      slug: "old-slug",
+      password: null
     });
     expect(showShareWarning.value).toBe(false);
   });

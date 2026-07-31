@@ -13,7 +13,8 @@ const collectionSchema = z.object({
     .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/)
     .min(3)
     .max(64)
-    .refine(s => !["new", "edit"].includes(s), { message: "This slug is reserved." })
+    .refine(s => !["new", "edit"].includes(s), { message: "This slug is reserved." }),
+  password: z.string().trim().max(255).optional().nullable()
 });
 
 // A malformed (non-uuid) `:id` must not reach the driver as a raw string —
@@ -56,6 +57,9 @@ export default defineEventHandler(async event => {
         description: parsed.data.description ?? null,
         shared: parsed.data.shared,
         slug: parsed.data.slug,
+        // See index.post.ts for why this collapses "" to null too, not just
+        // undefined/null.
+        password: parsed.data.password || null,
         updatedAt: new Date()
       })
       .where(and(eq(collections.id, id), eq(collections.userId, userId)))

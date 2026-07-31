@@ -12,7 +12,8 @@ const collectionSchema = z.object({
     .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/)
     .min(3)
     .max(64)
-    .refine(s => !["new", "edit"].includes(s), { message: "This slug is reserved." })
+    .refine(s => !["new", "edit"].includes(s), { message: "This slug is reserved." }),
+  password: z.string().trim().max(255).optional().nullable()
 });
 
 export default defineEventHandler(async event => {
@@ -33,7 +34,13 @@ export default defineEventHandler(async event => {
         name: parsed.data.name,
         description: parsed.data.description ?? null,
         shared: parsed.data.shared,
-        slug: parsed.data.slug
+        slug: parsed.data.slug,
+        // Unlike `description`'s `?? null` (which only catches
+        // undefined/null), `password` uses `|| null` so a trimmed empty
+        // string also collapses to null - "empty = no password" must hold
+        // even if a client bypasses the form's own toPayload() normalization
+        // and posts "" directly.
+        password: parsed.data.password || null
       })
       .returning();
 

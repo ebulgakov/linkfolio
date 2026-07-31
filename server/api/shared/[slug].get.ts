@@ -16,9 +16,11 @@ export default defineEventHandler(async event => {
 
   const [collection] = await db
     .select({
+      id: collections.id,
       name: collections.name,
       description: collections.description,
-      slug: collections.slug
+      slug: collections.slug,
+      password: collections.password
     })
     .from(collections)
     .where(and(eq(collections.slug, parsedSlug.data), eq(collections.shared, true)));
@@ -29,5 +31,16 @@ export default defineEventHandler(async event => {
     throw createError({ statusCode: 404, statusMessage: "Not Found" });
   }
 
-  return collection;
+  const hasPassword = collection.password !== null;
+
+  // The raw password never leaves the server - only whether one is set, and
+  // whether this caller has already unlocked it (via the cookie set by
+  // server/api/shared/[slug]/unlock.post.ts).
+  return {
+    name: collection.name,
+    description: collection.description,
+    slug: collection.slug,
+    hasPassword,
+    unlocked: !hasPassword || isUnlocked(event, collection.id, collection.password!)
+  };
 });

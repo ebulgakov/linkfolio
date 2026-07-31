@@ -2,6 +2,8 @@ export interface SharedCollection {
   name: string;
   description: string | null;
   slug: string;
+  hasPassword: boolean;
+  unlocked: boolean;
 }
 
 export interface SharedLinkItem {
@@ -24,4 +26,11 @@ export function listSharedLinks(
   opts?: { headers?: HeadersInit }
 ): Promise<SharedLinkItem[]> {
   return $fetch<SharedLinkItem[]>(`/api/shared/${slug}/links`, { headers: opts?.headers });
+}
+
+export function unlockSharedCollection(slug: string, password: string): Promise<SharedLinkItem[]> {
+  return $fetch<SharedLinkItem[]>(`/api/shared/${slug}/unlock`, {
+    method: "POST",
+    body: { password }
+  });
 }
