@@ -179,33 +179,53 @@ describe("useCollectionLinks - confirmDelete: failure", () => {
 });
 
 describe("useCollectionLinks - onDeleted rejection after a successful delete", () => {
-  // FLAG FOR TEAM-LEAD: pendingDeleteLinkId is cleared (closing the dialog,
-  // since isDialogOpen derives from it) BEFORE `await onDeleted()` runs. If
-  // onDeleted (a page's refresh()) rejects, the catch block still sets
-  // errorMessage - but by then isDialogOpen is already false. In
-  // app/pages/collections/[id]/index.vue, the `<v-alert>` showing
-  // errorMessage lives *inside* the `<v-dialog v-model="isDialogOpen">`, so
-  // this error becomes unreachable/invisible to the user on a closed dialog
-  // rather than a source bug this test file should fix inline - documenting
-  // the current behavior here per the qa-specialist "don't fix source
-  // inline" rule.
-  it("documents that a rejected onDeleted still sets errorMessage even though the dialog has already closed", async () => {
+  // pendingDeleteLinkId is cleared (closing the dialog, since isDialogOpen
+  // derives from it) before `await onDeleted()` runs, so a rejection here
+  // can't be surfaced through the dialog's errorMessage - the closed dialog
+  // is no longer visible. `refreshError` is a separate, page-level piece of
+  // state for exactly this case.
+  it("closes the dialog on a successful delete but surfaces a page-level refreshError when onDeleted rejects", async () => {
     deleteLinkMock.mockResolvedValue(undefined);
     const onDeleted = vi.fn().mockRejectedValue(new Error("refresh failed"));
 
-    const { pendingDeleteLinkId, isDialogOpen, errorMessage, requestDelete, confirmDelete } =
-      useCollectionLinks("collection-1", onDeleted);
+    const {
+      pendingDeleteLinkId,
+      isDialogOpen,
+      errorMessage,
+      refreshError,
+      requestDelete,
+      confirmDelete
+    } = useCollectionLinks("collection-1", onDeleted);
 
     requestDelete("link-1");
     await confirmDelete();
 
     expect(deleteLinkMock).toHaveBeenCalledWith("collection-1", "link-1");
-    // The dialog is already closed at this point...
     expect(pendingDeleteLinkId.value).toBeNull();
     expect(isDialogOpen.value).toBe(false);
-    // ...yet errorMessage is still set, with nowhere in the current UI to
-    // display it.
-    expect(errorMessage.value).toBe(GENERIC_ERROR);
+    expect(errorMessage.value).toBeNull();
+    expect(refreshError.value).toBe(GENERIC_ERROR);
+  });
+
+  it("clears a stale refreshError once a later refresh succeeds", async () => {
+    deleteLinkMock.mockResolvedValue(undefined);
+    const onDeleted = vi
+      .fn()
+      .mockRejectedValueOnce(new Error("refresh failed"))
+      .mockResolvedValueOnce(undefined);
+
+    const { refreshError, requestDelete, confirmDelete } = useCollectionLinks(
+      "collection-1",
+      onDeleted
+    );
+
+    requestDelete("link-1");
+    await confirmDelete();
+    expect(refreshError.value).toBe(GENERIC_ERROR);
+
+    requestDelete("link-2");
+    await confirmDelete();
+    expect(refreshError.value).toBeNull();
   });
 });
 

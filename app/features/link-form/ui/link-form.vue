@@ -101,6 +101,14 @@ async function onSubmit() {
     </v-text-field>
 
     <!--
+      The hint above conveys checking/fetched/failed transitions visually
+      only. This mirrors it into an aria-live region (visually hidden, since
+      the hint text is already visible) so screen-reader users are notified
+      of the async prefill too.
+    -->
+    <span class="visually-hidden" aria-live="polite">{{ previewStatusMessage }}</span>
+
+    <!--
       Deliberately :model-value + @update:model-value instead of v-model:
       the on*Input handlers flip the composable's per-field dirty flag
       before writing the form value. Switching these to v-model would bypass
@@ -134,3 +142,17 @@ async function onSubmit() {
     </v-btn>
   </v-form>
 </template>
+
+<style scoped>
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+</style>

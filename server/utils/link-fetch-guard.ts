@@ -117,9 +117,9 @@ function ipv6ToBigInt(address: string): bigint {
     8
   );
 
-  let value = 0n;
+  let value = BigInt(0);
   for (const group of groups) {
-    value = (value << 16n) | BigInt(parseInt(group || "0", 16));
+    value = (value << BigInt(16)) | BigInt(parseInt(group || "0", 16));
   }
   return value;
 }
@@ -129,23 +129,23 @@ function isPrivateIPv6(address: string): boolean {
     const value = ipv6ToBigInt(address);
     const prefix = (bits: number) => value >> BigInt(128 - bits);
 
-    if (value === 0n) return true; // :: unspecified
-    if (value === 1n) return true; // ::1 loopback
-    if (prefix(10) === 0b1111111010n) return true; // fe80::/10 link-local
-    if (prefix(7) === 0b1111110n) return true; // fc00::/7 unique local (ULA)
-    if (prefix(8) === 0b11111111n) return true; // ff00::/8 multicast
+    if (value === BigInt(0)) return true; // :: unspecified
+    if (value === BigInt(1)) return true; // ::1 loopback
+    if (prefix(10) === BigInt(0b1111111010)) return true; // fe80::/10 link-local
+    if (prefix(7) === BigInt(0b1111110)) return true; // fc00::/7 unique local (ULA)
+    if (prefix(8) === BigInt(0b11111111)) return true; // ff00::/8 multicast
 
     // IPv4-mapped (::ffff:a.b.c.d) and deprecated IPv4-compatible (::a.b.c.d)
     // addresses decode to an embedded IPv4 address that must be checked too
     // — otherwise `::ffff:169.254.169.254` would sail through as "not an
     // IPv4 literal" even though it resolves to the same metadata endpoint.
-    if (prefix(96) === 0xffffn || prefix(96) === 0n) {
-      const v4 = value & 0xffffffffn;
+    if (prefix(96) === BigInt(0xffff) || prefix(96) === BigInt(0)) {
+      const v4 = value & BigInt(0xffffffff);
       const octets = [
-        Number((v4 >> 24n) & 0xffn),
-        Number((v4 >> 16n) & 0xffn),
-        Number((v4 >> 8n) & 0xffn),
-        Number(v4 & 0xffn)
+        Number((v4 >> BigInt(24)) & BigInt(0xff)),
+        Number((v4 >> BigInt(16)) & BigInt(0xff)),
+        Number((v4 >> BigInt(8)) & BigInt(0xff)),
+        Number(v4 & BigInt(0xff))
       ];
       return isPrivateIPv4(octets.join("."));
     }

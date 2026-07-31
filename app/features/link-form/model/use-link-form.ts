@@ -13,10 +13,17 @@ import {
 } from "~/shared/api";
 import { url as urlValidator } from "~/shared/lib";
 
-const LINK_PREVIEW_DEBOUNCE_MS = 400;
+// Exported so the timer-based tests in `__tests__/use-link-form.test.ts`
+// stay driven by the same value instead of a hardcoded duplicate that could
+// silently drift out of sync.
+export const LINK_PREVIEW_DEBOUNCE_MS = 400;
 
 export type PreviewStatus = "idle" | "checking" | "fetched" | "failed";
 
+// `urlValidator` is Vuetify's rule shape (returns `true` or a message
+// string), reused here as a boolean predicate since it's the shared source
+// of truth for "is this a valid URL" - this helper just adapts that return
+// shape to a plain boolean for the preview-fetch gate below.
 function isValidUrlFormat(value: string): boolean {
   return value.trim() !== "" && urlValidator("")(value) === true;
 }
@@ -118,16 +125,21 @@ export function useLinkForm(collectionId: string, existing?: LinkItem) {
   function onTitleInput(value: string) {
     titleDirty.value = true;
     form.title = value;
+    // A server-side field error stays visible otherwise, even as the user
+    // edits the field it's attached to - clear it here for faster feedback.
+    if (errors.value.title) errors.value = { ...errors.value, title: undefined };
   }
 
   function onDescriptionInput(value: string) {
     descriptionDirty.value = true;
     form.description = value;
+    if (errors.value.description) errors.value = { ...errors.value, description: undefined };
   }
 
   function onImageUrlInput(value: string) {
     imageUrlDirty.value = true;
     form.imageUrl = value;
+    if (errors.value.imageUrl) errors.value = { ...errors.value, imageUrl: undefined };
   }
 
   // Unlike the slug-availability check (which blocks submission because a

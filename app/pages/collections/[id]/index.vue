@@ -35,6 +35,7 @@ const {
   isDialogOpen,
   deletePending,
   errorMessage: deleteErrorMessage,
+  refreshError,
   requestDelete,
   confirmDelete
 } = useCollectionLinks(id, () => refresh());
@@ -42,6 +43,15 @@ const {
 
 <template>
   <v-container>
+    <v-alert
+      v-if="refreshError"
+      type="error"
+      class="mb-4"
+      closable
+      @click:close="refreshError = null"
+      >{{ refreshError }}</v-alert
+    >
+
     <v-alert v-if="error" type="error" class="mb-4">{{
       isNotFound ? t("collections.errors.notFound") : t("collections.errors.loadFailed")
     }}</v-alert>

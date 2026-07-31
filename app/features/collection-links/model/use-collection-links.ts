@@ -14,6 +14,11 @@ export function useCollectionLinks(collectionId: string, onDeleted: () => void |
   const pendingDeleteLinkId = ref<string | null>(null);
   const deletePending = ref(false);
   const errorMessage = ref<string | null>(null);
+  // Separate from `errorMessage`: the dialog has already closed (and
+  // `errorMessage` reset) by the time `onDeleted()` runs, so a rejection here
+  // needs page-level feedback rather than reusing the closed dialog's error
+  // state.
+  const refreshError = ref<string | null>(null);
 
   // Convenience for a page that wants to bind the dialog with `v-model`
   // instead of wiring `pendingDeleteLinkId`/`cancelDelete` manually - setting
@@ -44,13 +49,22 @@ export function useCollectionLinks(collectionId: string, onDeleted: () => void |
 
     try {
       await deleteLink(collectionId, pendingDeleteLinkId.value);
-      pendingDeleteLinkId.value = null;
-      await onDeleted();
     } catch {
       // Keep the dialog open and surface the failure rather than silently
       // closing - the link may already be gone (404), or the request may
       // have failed on the network, and the user needs to see that.
       errorMessage.value = t("errors.generic");
+      deletePending.value = false;
+      return;
+    }
+
+    pendingDeleteLinkId.value = null;
+
+    try {
+      await onDeleted();
+      refreshError.value = null;
+    } catch {
+      refreshError.value = t("errors.generic");
     } finally {
       deletePending.value = false;
     }
@@ -60,6 +74,7 @@ export function useCollectionLinks(collectionId: string, onDeleted: () => void |
     pendingDeleteLinkId,
     deletePending,
     errorMessage,
+    refreshError,
     isDialogOpen,
     requestDelete,
     confirmDelete,

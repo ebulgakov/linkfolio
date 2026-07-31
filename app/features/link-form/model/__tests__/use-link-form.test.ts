@@ -21,9 +21,7 @@ import { navigateToMock } from "~/shared/testing/mocks/navigate";
 // before the mocks are registered, so `pnpm lint:fix`/editors must not
 // reorder this.
 // eslint-disable-next-line import/order
-import { useLinkForm } from "../use-link-form";
-
-const PREVIEW_DEBOUNCE_MS = 400;
+import { LINK_PREVIEW_DEBOUNCE_MS, useLinkForm } from "../use-link-form";
 
 function makeLinkItem(overrides: Partial<LinkItem> = {}): LinkItem {
   return {
@@ -143,7 +141,7 @@ describe("useLinkForm - create vs edit mode", () => {
 
     form.url = "https://new.example.com";
     await nextTick();
-    await vi.advanceTimersByTimeAsync(PREVIEW_DEBOUNCE_MS);
+    await vi.advanceTimersByTimeAsync(LINK_PREVIEW_DEBOUNCE_MS);
 
     expect(previewStatus.value).toBe("idle");
     expect(fetchLinkPreviewMock).not.toHaveBeenCalled();
@@ -162,7 +160,7 @@ describe("useLinkForm - debounced preview fetch", () => {
     expect(previewStatus.value).toBe("checking");
     expect(fetchLinkPreviewMock).not.toHaveBeenCalled();
 
-    await vi.advanceTimersByTimeAsync(PREVIEW_DEBOUNCE_MS);
+    await vi.advanceTimersByTimeAsync(LINK_PREVIEW_DEBOUNCE_MS);
     expect(fetchLinkPreviewMock).toHaveBeenCalledWith("https://example.com");
 
     resolve(
@@ -184,7 +182,7 @@ describe("useLinkForm - debounced preview fetch", () => {
 
     form.url = "https://example.com";
     await nextTick();
-    await vi.advanceTimersByTimeAsync(PREVIEW_DEBOUNCE_MS);
+    await vi.advanceTimersByTimeAsync(LINK_PREVIEW_DEBOUNCE_MS);
 
     resolve(makePreview({ fetchStatus: "failed", title: "Should not apply" }));
     await promise;
@@ -203,7 +201,7 @@ describe("useLinkForm - debounced preview fetch", () => {
 
     form.url = "https://example.com";
     await nextTick();
-    await vi.advanceTimersByTimeAsync(PREVIEW_DEBOUNCE_MS);
+    await vi.advanceTimersByTimeAsync(LINK_PREVIEW_DEBOUNCE_MS);
     expect(previewStatus.value).toBe("checking");
 
     reject(new Error("network down"));
@@ -247,12 +245,12 @@ describe("useLinkForm - debounced preview fetch", () => {
 
     form.url = "https://first.example.com";
     await nextTick();
-    await vi.advanceTimersByTimeAsync(PREVIEW_DEBOUNCE_MS);
+    await vi.advanceTimersByTimeAsync(LINK_PREVIEW_DEBOUNCE_MS);
     expect(fetchLinkPreviewMock).toHaveBeenCalledTimes(1);
 
     form.url = "https://second.example.com";
     await nextTick();
-    await vi.advanceTimersByTimeAsync(PREVIEW_DEBOUNCE_MS);
+    await vi.advanceTimersByTimeAsync(LINK_PREVIEW_DEBOUNCE_MS);
     expect(fetchLinkPreviewMock).toHaveBeenCalledTimes(2);
 
     // Resolve the FIRST (now-superseded) request as fetched - it must be
@@ -278,7 +276,7 @@ describe("useLinkForm - debounced preview fetch", () => {
 
     form.url = "https://first.example.com";
     await nextTick();
-    await vi.advanceTimersByTimeAsync(PREVIEW_DEBOUNCE_MS);
+    await vi.advanceTimersByTimeAsync(LINK_PREVIEW_DEBOUNCE_MS);
     expect(fetchLinkPreviewMock).toHaveBeenCalledTimes(1);
 
     form.url = "not-a-url";
@@ -305,7 +303,7 @@ describe("useLinkForm - dirty-flag gating", () => {
     form.url = "https://example.com";
     onTitleInput("My own title");
     await nextTick();
-    await vi.advanceTimersByTimeAsync(PREVIEW_DEBOUNCE_MS);
+    await vi.advanceTimersByTimeAsync(LINK_PREVIEW_DEBOUNCE_MS);
 
     resolve(
       makePreview({
@@ -333,7 +331,7 @@ describe("useLinkForm - dirty-flag gating", () => {
     onDescriptionInput("My own description");
     onImageUrlInput("https://my-own-image");
     await nextTick();
-    await vi.advanceTimersByTimeAsync(PREVIEW_DEBOUNCE_MS);
+    await vi.advanceTimersByTimeAsync(LINK_PREVIEW_DEBOUNCE_MS);
 
     resolve(
       makePreview({
@@ -371,7 +369,7 @@ describe("useLinkForm - submitDisabled", () => {
 
     form.url = "https://example.com";
     await nextTick();
-    await vi.advanceTimersByTimeAsync(PREVIEW_DEBOUNCE_MS);
+    await vi.advanceTimersByTimeAsync(LINK_PREVIEW_DEBOUNCE_MS);
     expect(previewStatus.value).toBe("checking");
     expect(submitDisabled.value).toBe(false);
 
@@ -558,7 +556,7 @@ describe("useLinkForm - teardown", () => {
 
     scope.stop();
 
-    await vi.advanceTimersByTimeAsync(PREVIEW_DEBOUNCE_MS);
+    await vi.advanceTimersByTimeAsync(LINK_PREVIEW_DEBOUNCE_MS);
     expect(fetchLinkPreviewMock).not.toHaveBeenCalled();
   });
 });

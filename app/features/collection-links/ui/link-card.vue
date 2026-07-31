@@ -16,7 +16,10 @@ const statusConfig = computed(() => {
     case "failed":
       return { label: t("links.card.statusFailed"), color: "error" };
     default:
-      return { label: t("links.card.statusPending"), color: "default" };
+      // No `color` - Vuetify has no "default" theme color, so passing one
+      // would be a fragile unrecognized token; omitting it gives the same
+      // neutral chip styling by falling back to the chip's own default.
+      return { label: t("links.card.statusPending"), color: undefined };
   }
 });
 
