@@ -1,8 +1,8 @@
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 
-import { db } from "../../../../db";
-import { collectionItems, collections, urls } from "../../../../db/schema";
+import { db } from "~~/server/db";
+import { collectionItems, collections, urls } from "~~/server/db/schema";
 
 // Malformed (non-uuid) route params must not reach the driver as raw
 // strings — see `collections/[id].get.ts` for why.

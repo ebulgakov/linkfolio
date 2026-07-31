@@ -1,7 +1,7 @@
 import { and, eq } from "drizzle-orm";
 
-import { db } from "../db";
-import { collectionItems } from "../db/schema";
+import { db } from "~~/server/db";
+import { collectionItems } from "~~/server/db/schema";
 
 // Nitro auto-imports everything under `server/utils/*`. Mirrors
 // `collection-errors.ts`'s structure exactly, scoped to the one constraint

@@ -1,8 +1,8 @@
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 
-import { db } from "../../db";
-import { collections } from "../../db/schema";
+import { db } from "~~/server/db";
+import { collections } from "~~/server/db/schema";
 
 const collectionSchema = z.object({
   name: z.string().trim().min(1).max(255),
