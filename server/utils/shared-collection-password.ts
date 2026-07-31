@@ -22,16 +22,26 @@ function unlockToken(collectionId: string, password: string): string {
   return createHash("sha256").update(`${collectionId}:${password}`).digest("hex");
 }
 
+// Constant-time comparison for two arbitrary strings (unequal lengths short-
+// circuit safely rather than throwing, unlike a bare `timingSafeEqual`).
+// Shared by `isUnlocked` below (cookie vs. recomputed token) and
+// server/api/shared/[slug]/unlock.post.ts (submitted vs. stored password) -
+// with no attempt limiting on the unlock route, a non-constant-time `!==`
+// there would let an attacker recover the password character-by-character
+// via a timing side channel, which is far more practical than the brute-
+// force risk the "no cap" design already accepts.
+export function passwordsMatch(a: string, b: string): boolean {
+  const bufferA = Buffer.from(a);
+  const bufferB = Buffer.from(b);
+  return bufferA.length === bufferB.length && timingSafeEqual(bufferA, bufferB);
+}
+
 /** `password` must be the collection's current stored (non-null) password. */
 export function isUnlocked(event: H3Event, collectionId: string, password: string): boolean {
   const cookie = getCookie(event, cookieName(collectionId));
   if (!cookie) return false;
 
-  const expected = unlockToken(collectionId, password);
-  const actual = Buffer.from(cookie);
-  const expectedBuffer = Buffer.from(expected);
-
-  return actual.length === expectedBuffer.length && timingSafeEqual(actual, expectedBuffer);
+  return passwordsMatch(cookie, unlockToken(collectionId, password));
 }
 
 /** `password` must be the collection's current stored (non-null) password. */
@@ -39,6 +49,12 @@ export function setUnlockCookie(event: H3Event, collectionId: string, password: 
   setCookie(event, cookieName(collectionId), unlockToken(collectionId, password), {
     httpOnly: true,
     sameSite: "lax",
+    // Deployed traffic is always HTTPS (Vercel) - without this, the cookie
+    // would be sent over any plain-HTTP hop too, letting the unlock be
+    // captured and replayed. Modern browsers still set/send Secure cookies
+    // on http://localhost during local dev (it's treated as a secure
+    // context), so this doesn't need an env-based opt-out.
+    secure: true,
     // Must be "/", not scoped to /api/shared/... - otherwise the browser
     // won't send it on navigation to /shared/:slug itself, and SSR would
     // never see a previously-unlocked guest as unlocked.

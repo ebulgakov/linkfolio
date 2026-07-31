@@ -57,9 +57,13 @@ export default defineEventHandler(async event => {
         description: parsed.data.description ?? null,
         shared: parsed.data.shared,
         slug: parsed.data.slug,
-        // See index.post.ts for why this collapses "" to null too, not just
-        // undefined/null.
-        password: parsed.data.password || null,
+        // `password` is optional in the schema (unlike the fields above), so
+        // a caller that omits it entirely must leave the existing value
+        // untouched rather than clearing it - only fold "" to null when the
+        // field was actually sent. See index.post.ts for the insert-path
+        // equivalent (there's no existing value to preserve on insert, so it
+        // always collapses "" to null).
+        ...(parsed.data.password === undefined ? {} : { password: parsed.data.password || null }),
         updatedAt: new Date()
       })
       .where(and(eq(collections.id, id), eq(collections.userId, userId)))
