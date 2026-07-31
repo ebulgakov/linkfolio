@@ -131,6 +131,11 @@
       "confirm": "Yes, change it",
       "cancel": "Cancel"
     },
+    "detail": {
+      "shareLinkLabel": "Public link",
+      "copyButton": "Copy link",
+      "copied": "Link copied to clipboard"
+    },
     "errors": {
       "notFound": "Collection not found.",
       "loadFailed": "Failed to load this collection."
@@ -173,5 +178,10 @@
       "loadFailed": "Failed to load this link.",
       "alreadyInCollection": "This link is already in this collection."
     }
+  },
+  "sharedCollection": {
+    "empty": "This collection doesn't have any links yet.",
+    "notFound": "This collection doesn't exist or is no longer shared.",
+    "loadFailed": "Failed to load this collection."
   }
 }
