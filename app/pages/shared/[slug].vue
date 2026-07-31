@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { SharedLinkItem } from "~/shared/api";
 
-import { SharedLinkCard } from "~/features/shared-collection";
+import { CollectionPasswordPrompt, SharedLinkCard } from "~/features/shared-collection";
 import { useSharedCollection } from "~/shared/api";
 
 const { t } = useI18n();
@@ -14,11 +14,32 @@ const {
   isNotFound: collectionIsNotFound
 } = await useSharedCollection(slug);
 
+// A password-protected collection the caller hasn't unlocked yet (no valid
+// cookie forwarded with this request) skips the links fetch entirely rather
+// than firing it and catching the resulting 403 - simpler branching, and it
+// keeps `linksError` free for the existing notFound/loadFailed handling
+// below instead of teaching it about a third status code.
+const needsUnlock = computed(() => !!collection.value?.hasPassword && !collection.value.unlocked);
+
 const requestFetch = useRequestFetch();
-const { data: links, error: linksError } = await useAsyncData(`shared-links-${slug}`, () =>
-  requestFetch<SharedLinkItem[]>(`/api/shared/${slug}/links`)
+const { data: links, error: linksError } = await useAsyncData(
+  `shared-links-${slug}`,
+  () => requestFetch<SharedLinkItem[]>(`/api/shared/${slug}/links`),
+  { immediate: !needsUnlock.value }
 );
 
+// Populated by CollectionPasswordPrompt's `unlocked` emit once the guest
+// submits the correct password client-side - `links` above was never
+// fetched (immediate: false) in that case.
+const unlockedLinks = ref<SharedLinkItem[] | null>(null);
+const justUnlocked = ref(false);
+
+function onUnlocked(result: SharedLinkItem[]) {
+  unlockedLinks.value = result;
+  justUnlocked.value = true;
+}
+
+const displayLinks = computed(() => unlockedLinks.value ?? links.value);
 const error = computed(() => collectionError.value ?? linksError.value);
 const isNotFound = computed(
   () => collectionIsNotFound.value || linksError.value?.statusCode === 404
@@ -39,13 +60,23 @@ const isNotFound = computed(
         </p>
       </div>
 
-      <v-alert v-if="!links?.length" type="info">{{ t("sharedCollection.empty") }}</v-alert>
+      <CollectionPasswordPrompt
+        v-if="needsUnlock && !justUnlocked"
+        :slug="slug"
+        @unlocked="onUnlocked"
+      />
 
-      <v-row v-else>
-        <v-col v-for="link in links" :key="link.id" cols="12" sm="6" md="4">
-          <SharedLinkCard :link="link" />
-        </v-col>
-      </v-row>
+      <template v-else>
+        <v-alert v-if="!displayLinks?.length" type="info">{{
+          t("sharedCollection.empty")
+        }}</v-alert>
+
+        <v-row v-else>
+          <v-col v-for="link in displayLinks" :key="link.id" cols="12" sm="6" md="4">
+            <SharedLinkCard :link="link" />
+          </v-col>
+        </v-row>
+      </template>
     </template>
   </v-container>
 </template>

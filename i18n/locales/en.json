@@ -116,6 +116,8 @@
       "nameLabel": "Name",
       "descriptionLabel": "Description",
       "sharedLabel": "Shared",
+      "passwordLabel": "Password",
+      "passwordHint": "Leave empty for no password. Anyone with the link can view without one.",
       "slugLabel": "Slug",
       "slugChecking": "Checking availability…",
       "slugAvailable": "Slug is available",
@@ -182,6 +184,11 @@
   "sharedCollection": {
     "empty": "This collection doesn't have any links yet.",
     "notFound": "This collection doesn't exist or is no longer shared.",
-    "loadFailed": "Failed to load this collection."
+    "loadFailed": "Failed to load this collection.",
+    "passwordPrompt": {
+      "label": "Password",
+      "submit": "Unlock",
+      "incorrect": "Incorrect password. Try again."
+    }
   }
 }

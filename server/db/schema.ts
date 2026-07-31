@@ -30,6 +30,14 @@ export const collections = pgTable(
     // AJAX endpoint before submit. Globally unique (not scoped per-user).
     // `shared` is purely a visibility gate, not a slug-regeneration trigger.
     slug: text("slug").notNull().unique(),
+    // Stored as plaintext, deliberately not hashed: the owner's edit form
+    // redisplays the current password as a plain (unmasked) text field,
+    // which a one-way hash would make impossible. NULL means "no password
+    // set" - an empty string is never stored, normalized to NULL at the
+    // zod-validation boundary in the collections POST/PATCH routes. See
+    // server/utils/shared-collection-password.ts for how guest access is
+    // gated against this column.
+    password: text("password"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     // Set explicitly on every update in app code — no DB trigger.
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow()

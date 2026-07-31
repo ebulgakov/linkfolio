@@ -39,7 +39,8 @@ export function useCollectionForm(existing?: Collection) {
     name: existing?.name ?? "",
     description: existing?.description ?? "",
     shared: existing?.shared ?? false,
-    slug: existing?.slug ?? ""
+    slug: existing?.slug ?? "",
+    password: existing?.password ?? ""
   });
 
   // In edit mode the slug is already "set" by the existing collection, so
@@ -154,7 +155,8 @@ export function useCollectionForm(existing?: Collection) {
       name: form.name.trim(),
       description: trimmedDescription || null,
       shared: form.shared,
-      slug: form.slug
+      slug: form.slug,
+      password: form.password.trim() || null
     };
   }
 

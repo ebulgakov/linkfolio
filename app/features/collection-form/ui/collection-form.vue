@@ -117,6 +117,20 @@ async function onSubmit() {
       :error-messages="errors.shared"
     />
 
+    <!--
+      Deliberately a plain, unmasked text field (no type="password") - the
+      owner must always be able to see the current value here, unlike a real
+      password input. See use-collection-form.ts: this is stored and
+      round-tripped as plain text, not hashed.
+    -->
+    <v-text-field
+      v-model="form.password"
+      :label="t('collections.form.passwordLabel')"
+      :hint="t('collections.form.passwordHint')"
+      persistent-hint
+      :error-messages="errors.password"
+    />
+
     <v-btn type="submit" color="primary" :loading="pending" :disabled="submitDisabled" block>
       {{ isEditing ? t("collections.form.editSubmit") : t("collections.form.createSubmit") }}
     </v-btn>
