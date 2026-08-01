@@ -2,6 +2,7 @@
 import type { PublishedCollection } from "~/shared/api";
 
 import { CollectionsList } from "~/features/collections";
+import { LandingHero, LandingHighlights } from "~/features/home-landing";
 import {
   PublishedCollectionCard,
   useHomepagePublishedCollections
@@ -37,7 +38,10 @@ if (!session) {
 <template>
   <CollectionsList v-if="session" />
   <v-container v-else>
-    <h1 class="text-center mb-4">{{ t("pages.home.title") }}</h1>
+    <LandingHero />
+    <LandingHighlights />
+
+    <h2 class="text-h6 text-center mb-4">{{ t("pages.home.showcase.title") }}</h2>
 
     <v-row>
       <v-col
