@@ -37,6 +37,12 @@ export function useDeleteCollection(onDeleted: () => void | Promise<void>) {
   }
 
   function cancelDelete() {
+    // No-op while a delete is in flight: otherwise dismissing the dialog
+    // here (and immediately requestDelete-ing a different collection) lets
+    // the in-flight confirmDelete's continuation null out the *new* pending
+    // id once it resolves, silently closing a dialog the user just opened
+    // for a different collection without ever deleting it.
+    if (deletePending.value) return;
     pendingDeleteCollectionId.value = null;
     errorMessage.value = null;
   }

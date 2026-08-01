@@ -114,7 +114,9 @@ const {
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn @click="isDialogOpen = false">{{ t("collections.deleteConfirm.cancel") }}</v-btn>
+          <v-btn :disabled="deletePending" @click="isDialogOpen = false">{{
+            t("collections.deleteConfirm.cancel")
+          }}</v-btn>
           <v-btn color="error" :loading="deletePending" @click="confirmDelete">{{
             t("collections.deleteConfirm.confirm")
           }}</v-btn>

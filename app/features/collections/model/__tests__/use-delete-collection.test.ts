@@ -101,6 +101,41 @@ describe("useDeleteCollection - dialog state transitions", () => {
     expect(pendingDeleteCollectionId.value).toBeNull();
     expect(isDialogOpen.value).toBe(false);
   });
+
+  it("cancelDelete (and the isDialogOpen v-model setter) is a no-op while a delete is in flight", async () => {
+    const { promise, resolve } = deferred();
+    deleteCollectionMock.mockReturnValue(promise);
+    const onDeleted = vi.fn().mockResolvedValue(undefined);
+
+    const { pendingDeleteCollectionId, isDialogOpen, requestDelete, confirmDelete, cancelDelete } =
+      useDeleteCollection(onDeleted);
+
+    requestDelete("collection-1");
+    const pending = confirmDelete();
+
+    // The dialog must stay open and targeting collection-1 for the duration
+    // of the in-flight request - dismissing it here (Cancel button or the
+    // dialog's own scrim/ESC dismissal, both wired through these two paths)
+    // would otherwise let the request's own continuation null out whatever
+    // pending id happens to be current once it resolves, which is only safe
+    // to do if nothing could have re-targeted the dialog in the meantime.
+    cancelDelete();
+    expect(pendingDeleteCollectionId.value).toBe("collection-1");
+    expect(isDialogOpen.value).toBe(true);
+
+    isDialogOpen.value = false;
+    expect(pendingDeleteCollectionId.value).toBe("collection-1");
+    expect(isDialogOpen.value).toBe(true);
+
+    resolve();
+    await pending;
+
+    expect(deleteCollectionMock).toHaveBeenCalledWith("collection-1");
+    expect(deleteCollectionMock).toHaveBeenCalledTimes(1);
+    expect(pendingDeleteCollectionId.value).toBeNull();
+    expect(isDialogOpen.value).toBe(false);
+    expect(onDeleted).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe("useDeleteCollection - confirmDelete: success", () => {
