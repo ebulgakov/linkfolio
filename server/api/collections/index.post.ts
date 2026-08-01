@@ -13,7 +13,13 @@ const collectionSchema = z.object({
     .min(3)
     .max(64)
     .refine(s => !["new", "edit"].includes(s), { message: "This slug is reserved." }),
-  password: z.string().trim().max(255).optional().nullable()
+  password: z.string().trim().max(255).optional().nullable(),
+  published: z.boolean(),
+  imageUrl: z
+    .url({ protocol: /^https?$/ })
+    .max(2048)
+    .optional()
+    .nullable()
 });
 
 export default defineEventHandler(async event => {
@@ -40,7 +46,9 @@ export default defineEventHandler(async event => {
         // string also collapses to null - "empty = no password" must hold
         // even if a client bypasses the form's own toPayload() normalization
         // and posts "" directly.
-        password: parsed.data.password || null
+        password: parsed.data.password || null,
+        published: parsed.data.published,
+        imageUrl: parsed.data.imageUrl ?? null
       })
       .returning();
 

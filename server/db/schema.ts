@@ -38,6 +38,8 @@ export const collections = pgTable(
     // server/utils/shared-collection-password.ts for how guest access is
     // gated against this column.
     password: text("password"),
+    published: boolean("published").notNull().default(false),
+    imageUrl: text("image_url"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     // Set explicitly on every update in app code — no DB trigger.
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow()

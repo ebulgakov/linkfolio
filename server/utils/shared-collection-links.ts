@@ -1,4 +1,4 @@
-import { and, asc, eq } from "drizzle-orm";
+import { and, asc, eq, or } from "drizzle-orm";
 
 import { db } from "~~/server/db";
 import { collectionItems, collections, urls } from "~~/server/db/schema";
@@ -18,6 +18,7 @@ export interface SharedCollectionLink {
 export interface SharedCollectionLinksResult {
   collectionId: string;
   password: string | null;
+  published: boolean;
   links: SharedCollectionLink[];
 }
 
@@ -38,12 +39,18 @@ export async function getSharedCollectionLinks(
     .select({
       collectionId: collections.id,
       password: collections.password,
+      published: collections.published,
       link: sharedLinkSelection
     })
     .from(collections)
     .leftJoin(collectionItems, eq(collectionItems.collectionId, collections.id))
     .leftJoin(urls, eq(collectionItems.urlId, urls.id))
-    .where(and(eq(collections.slug, slug), eq(collections.shared, true)))
+    .where(
+      and(
+        eq(collections.slug, slug),
+        or(eq(collections.shared, true), eq(collections.published, true))
+      )
+    )
     .orderBy(asc(collectionItems.position));
 
   if (rows.length === 0) {
@@ -56,6 +63,7 @@ export async function getSharedCollectionLinks(
   return {
     collectionId: rows[0]!.collectionId,
     password: rows[0]!.password,
+    published: rows[0]!.published,
     // The left join types every `link.*` column as nullable, but a non-null
     // `id` means this row is a real match (not the phantom all-null row a
     // linkless collection produces), so the rest of `link` is safe to treat

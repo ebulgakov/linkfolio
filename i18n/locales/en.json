@@ -6,7 +6,8 @@
   "nav": {
     "logIn": "Log In",
     "logOut": "Log Out",
-    "signUp": "Sign Up"
+    "signUp": "Sign Up",
+    "publishedCollections": "Published Collections"
   },
   "footer": {
     "languageSwitcherLabel": "Switch language",
@@ -14,7 +15,8 @@
   },
   "pages": {
     "home": {
-      "title": "Hello World"
+      "title": "Hello World",
+      "viewAllPublished": "View all published collections"
     },
     "login": {
       "title": "Log in"
@@ -45,6 +47,12 @@
     },
     "editLink": {
       "title": "Edit link"
+    },
+    "publishedCollections": {
+      "title": "Published Collections",
+      "searchLabel": "Search collections",
+      "empty": "No published collections yet.",
+      "loadFailed": "Failed to load published collections."
     }
   },
   "forms": {
@@ -110,12 +118,15 @@
       "empty": "You don't have any collections yet.",
       "createLink": "New collection",
       "editLink": "Edit",
-      "sharedBadge": "Shared"
+      "sharedBadge": "Shared",
+      "publishedBadge": "Published"
     },
     "form": {
       "nameLabel": "Name",
       "descriptionLabel": "Description",
       "sharedLabel": "Shared",
+      "publishedLabel": "Published",
+      "imageUrlLabel": "Image URL",
       "passwordLabel": "Password",
       "passwordHint": "Leave empty for no password. Anyone with the link can view without one.",
       "slugLabel": "Slug",
@@ -128,8 +139,8 @@
       "editTitle": "Edit collection"
     },
     "shareWarning": {
-      "title": "Changing the link for a shared collection",
-      "message": "This collection is shared, and its link is changing. The old public link will stop working. Continue?",
+      "title": "Changing the link for a public collection",
+      "message": "This collection is public, and its link is changing. The old public link will stop working. Continue?",
       "confirm": "Yes, change it",
       "cancel": "Cancel"
     },

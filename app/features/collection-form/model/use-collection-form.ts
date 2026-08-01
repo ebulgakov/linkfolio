@@ -40,8 +40,17 @@ export function useCollectionForm(existing?: Collection) {
     description: existing?.description ?? "",
     shared: existing?.shared ?? false,
     slug: existing?.slug ?? "",
-    password: existing?.password ?? ""
+    password: existing?.password ?? "",
+    published: existing?.published ?? false,
+    imageUrl: existing?.imageUrl ?? ""
   });
+
+  // Tri-state visibility for the password field: hidden by default, shown
+  // once the collection is shared, hidden again once it's published (a
+  // published collection is publicly listed, so a password gate on it would
+  // be misleading). Not clearing form.password when hidden is deliberate -
+  // see toPayload() below.
+  const showPassword = computed(() => form.shared && !form.published);
 
   // In edit mode the slug is already "set" by the existing collection, so
   // auto-sync from `name` must not kick in on load — treat it as if the
@@ -146,7 +155,9 @@ export function useCollectionForm(existing?: Collection) {
   );
 
   function needsShareWarning(): boolean {
-    return isEditing && !!existing!.shared && form.slug !== existing!.slug;
+    return (
+      isEditing && (!!existing!.shared || !!existing!.published) && form.slug !== existing!.slug
+    );
   }
 
   function toPayload(): CollectionInput {
@@ -156,7 +167,9 @@ export function useCollectionForm(existing?: Collection) {
       description: trimmedDescription || null,
       shared: form.shared,
       slug: form.slug,
-      password: form.password.trim() || null
+      password: form.password.trim() || null,
+      published: form.published,
+      imageUrl: form.imageUrl.trim() || null
     };
   }
 
@@ -214,6 +227,7 @@ export function useCollectionForm(existing?: Collection) {
     slugStatus,
     submitDisabled,
     showShareWarning,
+    showPassword,
     onSlugInput,
     submit,
     confirmAndSubmit,

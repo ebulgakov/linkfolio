@@ -26,11 +26,15 @@ export default defineEventHandler(async event => {
   // comparison itself must still be constant-time (passwordsMatch, also
   // used by isUnlocked's cookie check) - otherwise a timing side channel
   // would let an attacker recover the password character-by-character.
-  if (result.password && !passwordsMatch(result.password, parsedBody.data.password)) {
+  if (
+    result.password &&
+    !result.published &&
+    !passwordsMatch(result.password, parsedBody.data.password)
+  ) {
     throw createError({ statusCode: 403, statusMessage: "Incorrect Password" });
   }
 
-  if (result.password) {
+  if (result.password && !result.published) {
     setUnlockCookie(event, result.collectionId, result.password);
   }
 

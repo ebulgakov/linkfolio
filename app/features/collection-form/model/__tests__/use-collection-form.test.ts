@@ -32,6 +32,8 @@ function makeCollection(overrides: Partial<Collection> = {}): Collection {
     shared: false,
     slug: "my-collection",
     password: null,
+    published: false,
+    imageUrl: null,
     createdAt: "2024-01-01T00:00:00.000Z",
     updatedAt: "2024-01-01T00:00:00.000Z",
     ...overrides
@@ -90,7 +92,15 @@ describe("useCollectionForm - create vs edit mode", () => {
   it("create mode: initializes an empty form and reflects create mode", () => {
     const { form, mode, isEditing, slugStatus } = withEffectScope(() => useCollectionForm());
 
-    expect(form).toEqual({ name: "", description: "", shared: false, slug: "", password: "" });
+    expect(form).toEqual({
+      name: "",
+      description: "",
+      shared: false,
+      slug: "",
+      password: "",
+      published: false,
+      imageUrl: ""
+    });
     expect(mode).toBe("create");
     expect(isEditing).toBe(false);
     // Distinct from edit mode's own-slug skip, which starts at 'free' - and
@@ -116,7 +126,9 @@ describe("useCollectionForm - create vs edit mode", () => {
       description: "desc",
       shared: true,
       slug: "my-list",
-      password: "secret"
+      password: "secret",
+      published: false,
+      imageUrl: ""
     });
     expect(mode).toBe("edit");
     expect(isEditing).toBe(true);
@@ -369,7 +381,9 @@ describe("useCollectionForm - submit: 23505 field-error mapping", () => {
       description: null,
       shared: false,
       slug: "test-collection",
-      password: null
+      password: null,
+      published: false,
+      imageUrl: null
     });
     expect(errors.value).toEqual({ slug: ["This slug is already taken."] });
     expect(errorMessage.value).toBeNull();
@@ -429,7 +443,9 @@ describe("useCollectionForm - toPayload trimming", () => {
       description: null,
       shared: false,
       slug: "test-collection",
-      password: null
+      password: null,
+      published: false,
+      imageUrl: null
     });
   });
 
@@ -470,7 +486,9 @@ describe("useCollectionForm - toPayload trimming", () => {
       description: null,
       shared: false,
       slug: "my-collection",
-      password: null
+      password: null,
+      published: false,
+      imageUrl: null
     });
   });
 });
@@ -520,7 +538,41 @@ describe("useCollectionForm - shared-link-change confirmation gate", () => {
       description: null,
       shared: true,
       slug: "old-slug",
-      password: null
+      password: null,
+      published: false,
+      imageUrl: null
+    });
+    expect(showShareWarning.value).toBe(false);
+  });
+
+  it("blocks submit and shows the warning when a published (but not shared) collection's slug changes", async () => {
+    const existing = makeCollection({ published: true, shared: false, slug: "old-slug" });
+    const { onSlugInput, submit, showShareWarning } = withEffectScope(() =>
+      useCollectionForm(existing)
+    );
+
+    onSlugInput("new-slug");
+    await submit();
+
+    expect(updateCollectionMock).not.toHaveBeenCalled();
+    expect(showShareWarning.value).toBe(true);
+  });
+
+  it("submits immediately with no warning when published (but not shared) and the slug is unchanged", async () => {
+    const existing = makeCollection({ published: true, shared: false, slug: "old-slug" });
+    updateCollectionMock.mockResolvedValue(existing);
+
+    const { submit, showShareWarning } = withEffectScope(() => useCollectionForm(existing));
+    await submit();
+
+    expect(updateCollectionMock).toHaveBeenCalledWith("collection-1", {
+      name: "My Collection",
+      description: null,
+      shared: false,
+      slug: "old-slug",
+      password: null,
+      published: true,
+      imageUrl: null
     });
     expect(showShareWarning.value).toBe(false);
   });
@@ -553,6 +605,40 @@ describe("useCollectionForm - shared-link-change confirmation gate", () => {
 
     expect(showShareWarning.value).toBe(false);
     expect(updateCollectionMock).not.toHaveBeenCalled();
+  });
+});
+
+describe("useCollectionForm - showPassword tri-state", () => {
+  it("create mode: hidden by default (shared: false, published: false)", () => {
+    const { showPassword } = withEffectScope(() => useCollectionForm());
+
+    expect(showPassword.value).toBe(false);
+  });
+
+  it("edit mode: hidden for an existing collection with shared: false, published: false", () => {
+    const existing = makeCollection({ shared: false, published: false });
+    const { showPassword } = withEffectScope(() => useCollectionForm(existing));
+
+    expect(showPassword.value).toBe(false);
+  });
+
+  it("shown once shared toggles on, hidden again once published also toggles on, then shown again once published toggles back off - form.password is left untouched throughout", () => {
+    const { form, showPassword } = withEffectScope(() => useCollectionForm());
+
+    form.password = "secret";
+    expect(showPassword.value).toBe(false);
+
+    form.shared = true;
+    expect(showPassword.value).toBe(true);
+    expect(form.password).toBe("secret");
+
+    form.published = true;
+    expect(showPassword.value).toBe(false); // hidden again even though shared is still true
+    expect(form.password).toBe("secret");
+
+    form.published = false;
+    expect(showPassword.value).toBe(true); // shared is still true, published is false again
+    expect(form.password).toBe("secret");
   });
 });
 

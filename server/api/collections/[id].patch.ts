@@ -14,7 +14,13 @@ const collectionSchema = z.object({
     .min(3)
     .max(64)
     .refine(s => !["new", "edit"].includes(s), { message: "This slug is reserved." }),
-  password: z.string().trim().max(255).optional().nullable()
+  password: z.string().trim().max(255).optional().nullable(),
+  published: z.boolean(),
+  imageUrl: z
+    .url({ protocol: /^https?$/ })
+    .max(2048)
+    .optional()
+    .nullable()
 });
 
 // A malformed (non-uuid) `:id` must not reach the driver as a raw string —
@@ -64,6 +70,11 @@ export default defineEventHandler(async event => {
         // equivalent (there's no existing value to preserve on insert, so it
         // always collapses "" to null).
         ...(parsed.data.password === undefined ? {} : { password: parsed.data.password || null }),
+        published: parsed.data.published,
+        // Same "preserve if omitted" contract as password above - imageUrl is
+        // optional in the schema, so a caller that leaves it out must not
+        // have the stored image silently cleared.
+        ...(parsed.data.imageUrl === undefined ? {} : { imageUrl: parsed.data.imageUrl }),
         updatedAt: new Date()
       })
       .where(and(eq(collections.id, id), eq(collections.userId, userId)))

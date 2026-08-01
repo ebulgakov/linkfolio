@@ -2,8 +2,18 @@ export interface SharedCollection {
   name: string;
   description: string | null;
   slug: string;
+  imageUrl: string | null;
+  published: boolean;
   hasPassword: boolean;
   unlocked: boolean;
+}
+
+export interface PublishedCollection {
+  id: string;
+  name: string;
+  description: string | null;
+  slug: string;
+  imageUrl: string | null;
 }
 
 export interface SharedLinkItem {
@@ -33,4 +43,10 @@ export function unlockSharedCollection(slug: string, password: string): Promise<
     method: "POST",
     body: { password }
   });
+}
+
+export function listPublishedCollections(opts?: {
+  headers?: HeadersInit;
+}): Promise<PublishedCollection[]> {
+  return $fetch<PublishedCollection[]>("/api/shared", { headers: opts?.headers });
 }

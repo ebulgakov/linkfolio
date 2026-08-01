@@ -20,7 +20,11 @@ export default defineEventHandler(async event => {
   // session" elsewhere in this codebase (requireUserId). This is a
   // different failure mode: the resource exists and is shared, it just
   // needs a password. See server/api/shared/[slug]/unlock.post.ts.
-  if (result.password && !isUnlocked(event, result.collectionId, result.password)) {
+  if (
+    result.password &&
+    !result.published &&
+    !isUnlocked(event, result.collectionId, result.password)
+  ) {
     throw createError({ statusCode: 403, statusMessage: "Password Required" });
   }
 

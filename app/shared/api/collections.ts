@@ -6,6 +6,8 @@ export interface Collection {
   shared: boolean;
   slug: string;
   password: string | null;
+  published: boolean;
+  imageUrl: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -16,6 +18,8 @@ export interface CollectionInput {
   shared: boolean;
   slug: string;
   password?: string | null;
+  published: boolean;
+  imageUrl?: string | null;
 }
 
 export interface FieldErrors {
@@ -24,6 +28,8 @@ export interface FieldErrors {
   description?: string[];
   shared?: string[];
   password?: string[];
+  published?: string[];
+  imageUrl?: string[];
 }
 
 export function listCollections(opts?: { headers?: HeadersInit }): Promise<Collection[]> {
@@ -56,7 +62,15 @@ function isFieldErrors(value: unknown): value is FieldErrors {
     return false;
   }
   const candidate = value as Record<string, unknown>;
-  const keys: (keyof FieldErrors)[] = ["name", "slug", "description", "shared", "password"];
+  const keys: (keyof FieldErrors)[] = [
+    "name",
+    "slug",
+    "description",
+    "shared",
+    "password",
+    "published",
+    "imageUrl"
+  ];
   const isValidField = (field: unknown) =>
     field === undefined || (Array.isArray(field) && field.every(item => typeof item === "string"));
 
