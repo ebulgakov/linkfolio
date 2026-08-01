@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useCollections } from "~/features/collections";
+import { useCollections, useDeleteCollection } from "~/features/collections";
 import { useAuth } from "~/shared/api";
 
 const { t } = useI18n();
@@ -9,7 +9,30 @@ const { t } = useI18n();
 // have already guaranteed a session via the `auth` middleware).
 const { data: session } = await useAuth().getSession();
 
-const { data: collections, pending, error } = await useCollections(session?.user.id);
+const {
+  data: collections,
+  pending,
+  error,
+  refresh: refreshCollectionsData
+} = await useCollections(session?.user.id);
+
+// useAsyncData's refresh() never rejects on a fetch failure - it catches the
+// error internally into `error.value` and resolves. Re-throwing here is what
+// lets useDeleteCollection's onDeleted actually see the failure and surface
+// it via refreshError.
+async function refreshCollections() {
+  await refreshCollectionsData();
+  if (error.value) throw error.value;
+}
+
+const {
+  isDialogOpen,
+  deletePending,
+  errorMessage: deleteErrorMessage,
+  refreshError,
+  requestDelete,
+  confirmDelete
+} = useDeleteCollection(refreshCollections);
 </script>
 
 <template>
@@ -18,6 +41,21 @@ const { data: collections, pending, error } = await useCollections(session?.user
       <h1>{{ t("pages.collections.title") }}</h1>
       <v-btn to="/new-collection" color="primary">{{ t("collections.list.createLink") }}</v-btn>
     </div>
+
+    <!--
+      Gated on `!error`: a refresh failure sets both refreshError (via
+      refreshCollections() re-throwing) and error (the useCollections fetch
+      error) - without this guard the two alerts below would stack and say
+      the same thing twice.
+    -->
+    <v-alert
+      v-if="refreshError && !error"
+      type="error"
+      class="mb-4"
+      closable
+      @click:close="refreshError = null"
+      >{{ refreshError }}</v-alert
+    >
 
     <v-alert v-if="error" type="error" class="mb-4">{{ t("errors.generic") }}</v-alert>
 
@@ -47,12 +85,43 @@ const { data: collections, pending, error } = await useCollections(session?.user
           </template>
           <template #subtitle>{{ collection.description }}</template>
           <template #append>
-            <NuxtLink :to="`/collections/${collection.id}/edit`" class="text-primary">{{
-              t("collections.list.editLink")
-            }}</NuxtLink>
+            <div class="d-flex align-center ga-2">
+              <NuxtLink :to="`/collections/${collection.id}/edit`" class="text-primary">{{
+                t("collections.list.editLink")
+              }}</NuxtLink>
+              <v-btn
+                icon="mdi-delete"
+                variant="text"
+                color="error"
+                size="small"
+                :aria-label="t('collections.list.deleteButton')"
+                @click="requestDelete(collection.id)"
+              />
+            </div>
           </template>
         </v-list-item>
       </v-list>
     </template>
+
+    <v-dialog v-model="isDialogOpen" max-width="480">
+      <v-card>
+        <v-card-title>{{ t("collections.deleteConfirm.title") }}</v-card-title>
+        <v-card-text>
+          {{ t("collections.deleteConfirm.message") }}
+          <v-alert v-if="deleteErrorMessage" type="error" class="mt-4">{{
+            deleteErrorMessage
+          }}</v-alert>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn :disabled="deletePending" @click="isDialogOpen = false">{{
+            t("collections.deleteConfirm.cancel")
+          }}</v-btn>
+          <v-btn color="error" :loading="deletePending" @click="confirmDelete">{{
+            t("collections.deleteConfirm.confirm")
+          }}</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
