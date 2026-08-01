@@ -40,6 +40,9 @@ const { data: collections, pending, error } = await useCollections(session?.user
               <v-chip v-if="collection.shared" size="small" color="primary">{{
                 t("collections.list.sharedBadge")
               }}</v-chip>
+              <v-chip v-if="collection.published" size="small" color="secondary">{{
+                t("collections.list.publishedBadge")
+              }}</v-chip>
             </NuxtLink>
           </template>
           <template #subtitle>{{ collection.description }}</template>

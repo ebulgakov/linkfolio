@@ -2,7 +2,7 @@
 import type { Collection } from "~/shared/api";
 
 import { useCollectionForm } from "~/features/collection-form";
-import { required, slug } from "~/shared/lib";
+import { required, slug, url } from "~/shared/lib";
 
 const props = defineProps<{ collection?: Collection }>();
 
@@ -35,6 +35,7 @@ const {
   slugStatus,
   submitDisabled,
   showShareWarning,
+  showPassword,
   onSlugInput,
   submit,
   confirmAndSubmit,
@@ -48,6 +49,7 @@ const slugRules = computed(() => [
   required(t("validation.slugRequired")),
   slug(t("validation.slugInvalid"))
 ]);
+const imageUrlRules = computed(() => [url(t("validation.urlInvalid"))]);
 
 const slugStatusMessage = computed(() => {
   switch (slugStatus.value) {
@@ -117,18 +119,38 @@ async function onSubmit() {
       :error-messages="errors.shared"
     />
 
+    <v-switch
+      v-model="form.published"
+      :label="t('collections.form.publishedLabel')"
+      color="primary"
+      :error-messages="errors.published"
+    />
+
     <!--
       Deliberately a plain, unmasked text field (no type="password") - the
       owner must always be able to see the current value here, unlike a real
       password input. See use-collection-form.ts: this is stored and
       round-tripped as plain text, not hashed.
+
+      v-if="showPassword" - tri-state visibility from the composable: hidden
+      by default, shown once shared, hidden again once published. The value
+      itself is left untouched in form state while hidden, so re-toggling
+      published back off restores it without the user retyping anything.
     -->
     <v-text-field
+      v-if="showPassword"
       v-model="form.password"
       :label="t('collections.form.passwordLabel')"
       :hint="t('collections.form.passwordHint')"
       persistent-hint
       :error-messages="errors.password"
+    />
+
+    <v-text-field
+      v-model="form.imageUrl"
+      :label="t('collections.form.imageUrlLabel')"
+      :rules="imageUrlRules"
+      :error-messages="errors.imageUrl"
     />
 
     <v-btn type="submit" color="primary" :loading="pending" :disabled="submitDisabled" block>

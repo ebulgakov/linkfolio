@@ -90,7 +90,10 @@ const {
         }}</v-btn>
       </div>
 
-      <CollectionShareLink v-if="collection.shared" :slug="collection.slug" />
+      <CollectionShareLink
+        v-if="collection.shared || collection.published"
+        :slug="collection.slug"
+      />
 
       <v-alert v-if="!links?.length" type="info">{{ t("links.list.empty") }}</v-alert>
 

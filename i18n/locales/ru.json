@@ -6,7 +6,8 @@
   "nav": {
     "logIn": "Войти",
     "logOut": "Выйти",
-    "signUp": "Зарегистрироваться"
+    "signUp": "Зарегистрироваться",
+    "publishedCollections": "Опубликованные коллекции"
   },
   "footer": {
     "languageSwitcherLabel": "Переключить язык",
@@ -14,7 +15,8 @@
   },
   "pages": {
     "home": {
-      "title": "Привет, мир"
+      "title": "Привет, мир",
+      "viewAllPublished": "Смотреть все опубликованные коллекции"
     },
     "login": {
       "title": "Вход"
@@ -45,6 +47,12 @@
     },
     "editLink": {
       "title": "Редактирование ссылки"
+    },
+    "publishedCollections": {
+      "title": "Опубликованные коллекции",
+      "searchLabel": "Поиск коллекций",
+      "empty": "Пока нет опубликованных коллекций.",
+      "loadFailed": "Не удалось загрузить опубликованные коллекции."
     }
   },
   "forms": {
@@ -110,12 +118,15 @@
       "empty": "У вас пока нет коллекций.",
       "createLink": "Новая коллекция",
       "editLink": "Редактировать",
-      "sharedBadge": "Публичная"
+      "sharedBadge": "Публичная",
+      "publishedBadge": "Опубликована"
     },
     "form": {
       "nameLabel": "Название",
       "descriptionLabel": "Описание",
       "sharedLabel": "Публичная",
+      "publishedLabel": "Опубликована",
+      "imageUrlLabel": "URL изображения",
       "passwordLabel": "Пароль",
       "passwordHint": "Оставьте пустым, если пароль не нужен. Без пароля коллекция доступна всем по ссылке.",
       "slugLabel": "Слаг",

@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, or } from "drizzle-orm";
 import { z } from "zod";
 
 import { db } from "~~/server/db";
@@ -20,18 +20,28 @@ export default defineEventHandler(async event => {
       name: collections.name,
       description: collections.description,
       slug: collections.slug,
-      password: collections.password
+      password: collections.password,
+      published: collections.published,
+      imageUrl: collections.imageUrl
     })
     .from(collections)
-    .where(and(eq(collections.slug, parsedSlug.data), eq(collections.shared, true)));
+    .where(
+      and(
+        eq(collections.slug, parsedSlug.data),
+        or(eq(collections.shared, true), eq(collections.published, true))
+      )
+    );
 
   // Same 404 whether the slug doesn't exist or the collection exists but
-  // isn't shared - the response must not leak which case it is.
+  // isn't shared/published - the response must not leak which case it is.
   if (!collection) {
     throw createError({ statusCode: 404, statusMessage: "Not Found" });
   }
 
-  const hasPassword = collection.password !== null;
+  // Password enforcement narrows to shared && !published: a published
+  // collection is meant to be openly discoverable, so its password (if any)
+  // is bypassed entirely once published.
+  const hasPassword = collection.password !== null && !collection.published;
 
   // The raw password never leaves the server - only whether one is set, and
   // whether this caller has already unlocked it (via the cookie set by
@@ -40,6 +50,8 @@ export default defineEventHandler(async event => {
     name: collection.name,
     description: collection.description,
     slug: collection.slug,
+    imageUrl: collection.imageUrl,
+    published: collection.published,
     hasPassword,
     unlocked: !hasPassword || isUnlocked(event, collection.id, collection.password!)
   };
