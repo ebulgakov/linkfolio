@@ -15,7 +15,29 @@
   },
   "pages": {
     "home": {
-      "title": "Hello World",
+      "hero": {
+        "title": "Organize your links. Share what matters.",
+        "subtitle": "Linkfolio helps you collect the links you care about, group them into tidy collections, and share them with anyone - no clutter, no noise.",
+        "ctaSignUp": "Get started",
+        "ctaLogIn": "Log in"
+      },
+      "highlights": {
+        "save": {
+          "title": "Save your links",
+          "description": "Keep every link you want to revisit in one calm, organized place."
+        },
+        "organize": {
+          "title": "Organize into collections",
+          "description": "Group related links into collections that make sense to you."
+        },
+        "share": {
+          "title": "Share with anyone",
+          "description": "Publish a collection and share it with a single link, no account required."
+        }
+      },
+      "showcase": {
+        "title": "Featured collections"
+      },
       "viewAllPublished": "View all published collections"
     },
     "login": {
