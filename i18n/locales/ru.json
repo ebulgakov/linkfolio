@@ -7,7 +7,8 @@
     "logIn": "Войти",
     "logOut": "Выйти",
     "signUp": "Зарегистрироваться",
-    "publishedCollections": "Опубликованные коллекции"
+    "publishedCollections": "Опубликованные коллекции",
+    "myCollections": "Мои коллекции"
   },
   "footer": {
     "languageSwitcherLabel": "Переключить язык",

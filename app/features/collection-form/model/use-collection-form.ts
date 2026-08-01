@@ -183,7 +183,7 @@ export function useCollectionForm(existing?: Collection) {
     try {
       if (isEditing) {
         await updateCollection(existing!.id, toPayload());
-        await navigateTo("/");
+        await navigateTo("/collections");
       } else {
         const created = await createCollection(toPayload());
         await navigateTo(`/collections/${created.id}`);

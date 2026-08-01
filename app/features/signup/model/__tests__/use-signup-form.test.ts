@@ -192,7 +192,7 @@ describe("useSignupForm().submit - onError", () => {
 });
 
 describe("useSignupForm().submit - onSuccess", () => {
-  it("navigates to / when getSession resolves with truthy data", async () => {
+  it("navigates to /collections when getSession resolves with truthy data", async () => {
     signUpEmailMock.mockImplementation(async (_credentials, handlers) => {
       await handlers.onSuccess();
     });
@@ -201,7 +201,7 @@ describe("useSignupForm().submit - onSuccess", () => {
     const { submit, errorMessage, pending } = useSignupForm();
     await submit();
 
-    expect(navigateToMock).toHaveBeenCalledWith("/");
+    expect(navigateToMock).toHaveBeenCalledWith("/collections");
     expect(errorMessage.value).toBeNull();
     expect(pending.value).toBe(false);
   });

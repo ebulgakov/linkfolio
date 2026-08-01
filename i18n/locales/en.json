@@ -7,7 +7,8 @@
     "logIn": "Log In",
     "logOut": "Log Out",
     "signUp": "Sign Up",
-    "publishedCollections": "Published Collections"
+    "publishedCollections": "Published Collections",
+    "myCollections": "My Collections"
   },
   "footer": {
     "languageSwitcherLabel": "Switch language",

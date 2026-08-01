@@ -1,5 +1,8 @@
 <script lang="ts" setup>
+import { useLandingHero } from "~/features/home-landing";
+
 const { t } = useI18n();
+const { loggedIn } = await useLandingHero();
 </script>
 
 <template>
@@ -12,7 +15,7 @@ const { t } = useI18n();
       {{ t("pages.home.hero.subtitle") }}
     </p>
 
-    <div class="d-flex justify-center flex-wrap ga-3">
+    <div v-if="!loggedIn" class="d-flex justify-center flex-wrap ga-3">
       <v-btn to="/signup" color="primary" variant="tonal" size="large">
         {{ t("pages.home.hero.ctaSignUp") }}
       </v-btn>

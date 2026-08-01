@@ -30,7 +30,7 @@ export function useSignupForm() {
             const session = await authClient.getSession();
             if (session?.data) {
               await refreshNuxtData("auth-session");
-              await navigateTo("/");
+              await navigateTo("/collections");
             } else {
               errorMessage.value = t("signup.success.unverified");
             }
