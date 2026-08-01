@@ -34,28 +34,31 @@ describe("sanitizeRedirect", () => {
   });
 
   it("rejects a protocol-relative URL pointing off-origin", () => {
-    expect(sanitizeRedirect("//evil.com/phish")).toBe("/");
+    expect(sanitizeRedirect("//evil.com/phish")).toBe("/collections");
   });
 
   it("rejects a cross-origin absolute URL", () => {
-    expect(sanitizeRedirect("https://evil.com/phish")).toBe("/");
+    expect(sanitizeRedirect("https://evil.com/phish")).toBe("/collections");
   });
 
   it("rejects a javascript: scheme without throwing", () => {
-    expect(sanitizeRedirect("javascript:alert(1)")).toBe("/");
+    expect(sanitizeRedirect("javascript:alert(1)")).toBe("/collections");
   });
 
-  it("falls back to / for a malformed URL that throws during parsing", () => {
-    expect(sanitizeRedirect("http://")).toBe("/");
+  it("falls back to /collections for a malformed URL that throws during parsing", () => {
+    expect(sanitizeRedirect("http://")).toBe("/collections");
   });
 
-  it("falls back to / for an empty string", () => {
-    expect(sanitizeRedirect("")).toBe("/");
+  it("falls back to /collections for an empty string", () => {
+    expect(sanitizeRedirect("")).toBe("/collections");
   });
 
-  it.each([null, undefined, 123, {}, []])("falls back to / for non-string input %j", value => {
-    expect(sanitizeRedirect(value)).toBe("/");
-  });
+  it.each([null, undefined, 123, {}, []])(
+    "falls back to /collections for non-string input %j",
+    value => {
+      expect(sanitizeRedirect(value)).toBe("/collections");
+    }
+  );
 });
 
 describe("useLoginForm().submit", () => {
@@ -89,7 +92,7 @@ describe("useLoginForm().submit", () => {
     const { submit } = useLoginForm();
     await submit();
 
-    expect(navigateToMock).toHaveBeenCalledWith("/");
+    expect(navigateToMock).toHaveBeenCalledWith("/collections");
   });
 
   it("sets a specific message on a 401 error", async () => {

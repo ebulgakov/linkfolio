@@ -7,6 +7,7 @@ const { session, logOut, goToLogin, goToSignup } = await useAuthButtons();
 
 <template>
   <template v-if="session?.user">
+    <v-btn to="/collections" variant="text">{{ t("nav.myCollections") }}</v-btn>
     <span class="username">{{ session.user.name || session.user.email }}</span>
     <v-btn @click="logOut">{{ t("nav.logOut") }}</v-btn>
   </template>

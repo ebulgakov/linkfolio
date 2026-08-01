@@ -737,13 +737,13 @@ describe("useCollectionForm - on success", () => {
     expect(navigateToMock).toHaveBeenCalledWith(`/collections/${created.id}`);
   });
 
-  it("navigates to / after a successful edit", async () => {
+  it("navigates to /collections after a successful edit", async () => {
     const existing = makeCollection();
     updateCollectionMock.mockResolvedValue(existing);
 
     const { submit } = withEffectScope(() => useCollectionForm(existing));
     await submit();
 
-    expect(navigateToMock).toHaveBeenCalledWith("/");
+    expect(navigateToMock).toHaveBeenCalledWith("/collections");
   });
 });

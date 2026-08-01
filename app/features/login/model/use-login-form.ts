@@ -3,12 +3,14 @@ import { reactive, ref } from "vue";
 import { authClient } from "~/shared/api";
 
 export function sanitizeRedirect(candidate: unknown): string {
-  if (typeof candidate !== "string" || !candidate) return "/";
+  if (typeof candidate !== "string" || !candidate) return "/collections";
   try {
     const url = new URL(candidate, window.location.origin);
-    return url.origin === window.location.origin ? `${url.pathname}${url.search}${url.hash}` : "/";
+    return url.origin === window.location.origin
+      ? `${url.pathname}${url.search}${url.hash}`
+      : "/collections";
   } catch {
-    return "/";
+    return "/collections";
   }
 }
 
