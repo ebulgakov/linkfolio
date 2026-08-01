@@ -37,6 +37,10 @@ describe("sanitizeRedirect", () => {
     expect(sanitizeRedirect("//evil.com/phish")).toBe("/collections");
   });
 
+  it("rejects a same-origin URL whose pathname smuggles a protocol-relative redirect", () => {
+    expect(sanitizeRedirect(`${origin}//evil.com/phish`)).toBe("/collections");
+  });
+
   it("rejects a cross-origin absolute URL", () => {
     expect(sanitizeRedirect("https://evil.com/phish")).toBe("/collections");
   });
