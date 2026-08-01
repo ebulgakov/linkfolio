@@ -2,7 +2,18 @@ import type { Ref } from "vue";
 import type { PublishedCollection } from "~/shared/api";
 
 function pickRandom<T>(list: T[], count: number): T[] {
-  const shuffled = [...list].sort(() => Math.random() - 0.5);
+  // Fisher-Yates, not `.sort(() => Math.random() - 0.5)` - a sort-based
+  // shuffle is biased (the skew depends on the sort algorithm's comparison
+  // pattern), so some items would be systematically more likely to land in
+  // the first `count` slots this function returns.
+  const shuffled = [...list];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    // Non-null: both indices are within `shuffled`'s bounds by construction
+    // (0 <= j <= i < shuffled.length), TS's noUncheckedIndexedAccess just
+    // can't see that from the loop bounds alone.
+    [shuffled[i], shuffled[j]] = [shuffled[j]!, shuffled[i]!];
+  }
   return shuffled.slice(0, count);
 }
 

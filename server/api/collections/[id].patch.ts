@@ -71,7 +71,10 @@ export default defineEventHandler(async event => {
         // always collapses "" to null).
         ...(parsed.data.password === undefined ? {} : { password: parsed.data.password || null }),
         published: parsed.data.published,
-        imageUrl: parsed.data.imageUrl ?? null,
+        // Same "preserve if omitted" contract as password above - imageUrl is
+        // optional in the schema, so a caller that leaves it out must not
+        // have the stored image silently cleared.
+        ...(parsed.data.imageUrl === undefined ? {} : { imageUrl: parsed.data.imageUrl }),
         updatedAt: new Date()
       })
       .where(and(eq(collections.id, id), eq(collections.userId, userId)))

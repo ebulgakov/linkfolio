@@ -4,9 +4,9 @@ import type { PublishedCollection } from "~/shared/api";
 import { CollectionsList } from "~/features/collections";
 import {
   PublishedCollectionCard,
-  useRandomPublishedCollections
+  useHomepagePublishedCollections
 } from "~/features/published-collections";
-import { useAuth, usePublishedCollections } from "~/shared/api";
+import { useAuth } from "~/shared/api";
 
 const { t } = useI18n();
 
@@ -30,11 +30,7 @@ const { data: session } = await useAuth().getSession();
 // "/" client-side would be stuck with the pick drawn while still logged in.
 const randomPublishedCollections = ref<PublishedCollection[]>([]);
 if (!session) {
-  // usePublishedCollections() must be awaited (data resolved) BEFORE
-  // useRandomPublishedCollections is called - the latter's useState init
-  // only runs once and needs source.value already populated at that point.
-  const { data: publishedCollections } = await usePublishedCollections();
-  randomPublishedCollections.value = useRandomPublishedCollections(publishedCollections).value;
+  randomPublishedCollections.value = (await useHomepagePublishedCollections()).value;
 }
 </script>
 
