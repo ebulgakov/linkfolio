@@ -141,6 +141,7 @@
       "empty": "You don't have any collections yet.",
       "createLink": "New collection",
       "editLink": "Edit",
+      "deleteButton": "Delete collection",
       "sharedBadge": "Shared",
       "publishedBadge": "Published"
     },
@@ -171,6 +172,12 @@
       "shareLinkLabel": "Public link",
       "copyButton": "Copy link",
       "copied": "Link copied to clipboard"
+    },
+    "deleteConfirm": {
+      "title": "Delete this collection?",
+      "message": "This will permanently delete the collection and all links inside it. This can't be undone.",
+      "confirm": "Delete",
+      "cancel": "Cancel"
     },
     "errors": {
       "notFound": "Collection not found.",

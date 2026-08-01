@@ -48,6 +48,15 @@ export function updateCollection(id: string, input: CollectionInput): Promise<Co
   return $fetch<Collection>(`/api/collections/${id}`, { method: "PATCH", body: input });
 }
 
+export async function deleteCollection(id: string): Promise<void> {
+  // Widen to `string` explicitly: Nitro's typed-fetch route matching only
+  // knows this route as GET/PATCH, so a literal "DELETE" method is rejected
+  // by the generated types even though the server route supports it - see
+  // deleteLink in links.ts for the same issue.
+  const endpoint: string = `/api/collections/${id}`;
+  await $fetch(endpoint, { method: "DELETE" });
+}
+
 export function checkSlugAvailability(
   slug: string,
   excludeId?: string

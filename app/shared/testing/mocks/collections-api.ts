@@ -9,9 +9,15 @@ import { vi } from "vitest";
 // `undefined` would make the test vacuous).
 const createCollectionMock = vi.hoisted(() => vi.fn());
 const updateCollectionMock = vi.hoisted(() => vi.fn());
+const deleteCollectionMock = vi.hoisted(() => vi.fn());
 const checkSlugAvailabilityMock = vi.hoisted(() => vi.fn());
 
-export { createCollectionMock, updateCollectionMock, checkSlugAvailabilityMock };
+export {
+  createCollectionMock,
+  updateCollectionMock,
+  deleteCollectionMock,
+  checkSlugAvailabilityMock
+};
 
 vi.mock("~/shared/api/collections", async importOriginal => {
   const actual = await importOriginal<typeof import("~/shared/api/collections")>();
@@ -19,6 +25,7 @@ vi.mock("~/shared/api/collections", async importOriginal => {
     ...actual,
     createCollection: createCollectionMock,
     updateCollection: updateCollectionMock,
+    deleteCollection: deleteCollectionMock,
     checkSlugAvailability: checkSlugAvailabilityMock
   };
 });
@@ -26,5 +33,6 @@ vi.mock("~/shared/api/collections", async importOriginal => {
 export function resetCollectionsApiMocks() {
   createCollectionMock.mockReset();
   updateCollectionMock.mockReset();
+  deleteCollectionMock.mockReset();
   checkSlugAvailabilityMock.mockReset();
 }
