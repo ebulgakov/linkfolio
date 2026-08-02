@@ -10,8 +10,7 @@ export default defineNuxtConfig({
     "@sentry/nuxt/module",
     "@nuxt/image",
     "@nuxtjs/i18n",
-    "nuxt-mcp-dev",
-    "@nuxtjs/storybook"
+    "nuxt-mcp-dev"
   ],
 
   css: ["@mdi/font/css/materialdesignicons.css"],
