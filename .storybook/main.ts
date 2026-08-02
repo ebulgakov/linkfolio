@@ -2,7 +2,7 @@ import type { StorybookConfig } from "@storybook-vue/nuxt";
 
 const config: StorybookConfig = {
   stories: ["../app/**/*.mdx", "../app/**/*.stories.@(js|jsx|ts|tsx|mdx)"],
-  addons: ["@storybook/addon-a11y", "@storybook/addon-docs"],
+  addons: ["@storybook/addon-a11y", "@storybook/addon-docs", "@chromatic-com/storybook"],
   framework: "@storybook-vue/nuxt",
   async viteFinal(config, { configType }) {
     if (configType === "PRODUCTION") {
