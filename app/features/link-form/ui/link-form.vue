@@ -3,6 +3,7 @@ import type { LinkItem } from "~/shared/api";
 
 import { useLinkForm } from "~/features/link-form";
 import { required, url } from "~/shared/lib";
+import { Alert } from "~/shared/ui";
 
 const props = defineProps<{ collectionId: string; link?: LinkItem }>();
 
@@ -61,9 +62,9 @@ async function onSubmit() {
 
 <template>
   <v-form ref="formRef" @submit.prevent="onSubmit">
-    <v-alert v-if="errorMessage" type="error" :text="errorMessage" class="mb-4" />
+    <Alert v-if="errorMessage" type="error" :text="errorMessage" class="mb-4" />
 
-    <v-alert
+    <Alert
       v-if="isEditing"
       type="warning"
       variant="tonal"

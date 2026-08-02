@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { useResetPasswordForm } from "~/features/reset-password";
 import { minLength, required } from "~/shared/lib";
+import { Alert } from "~/shared/ui";
 
 const { t } = useI18n();
 const { form, pending, errorMessage, success, hasValidToken, submit } = useResetPasswordForm();
@@ -22,10 +23,10 @@ async function onSubmit() {
 
 <template>
   <v-form ref="formRef" @submit.prevent="onSubmit">
-    <v-alert v-if="errorMessage" type="error" :text="errorMessage" class="mb-4" />
+    <Alert v-if="errorMessage" type="error" :text="errorMessage" class="mb-4" />
 
     <template v-if="success">
-      <v-alert type="success" :text="t('resetPassword.success')" class="mb-4" />
+      <Alert type="success" :text="t('resetPassword.success')" class="mb-4" />
       <div class="d-flex justify-center mt-4">
         <NuxtLink to="/login" class="text-primary">{{ t("resetPassword.backToLogin") }}</NuxtLink>
       </div>
@@ -49,7 +50,7 @@ async function onSubmit() {
     </template>
 
     <template v-else>
-      <v-alert type="error" :text="t('resetPassword.errors.invalidToken')" class="mb-4" />
+      <Alert type="error" :text="t('resetPassword.errors.invalidToken')" class="mb-4" />
       <div class="d-flex justify-center mt-4">
         <NuxtLink to="/forgot-password" class="text-primary">{{
           t("resetPassword.requestNewLink")

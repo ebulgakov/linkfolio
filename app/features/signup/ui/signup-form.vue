@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { useSignupForm } from "~/features/signup";
 import { email, minLength, required } from "~/shared/lib";
+import { Alert } from "~/shared/ui";
 
 const { t } = useI18n();
 const { form, pending, errorMessage, showForgotPasswordLink, submit } = useSignupForm();
@@ -26,7 +27,7 @@ async function onSubmit() {
 
 <template>
   <v-form ref="formRef" @submit.prevent="onSubmit">
-    <v-alert v-if="errorMessage" type="error" :text="errorMessage" class="mb-4" />
+    <Alert v-if="errorMessage" type="error" :text="errorMessage" class="mb-4" />
 
     <v-text-field
       v-model="form.email"

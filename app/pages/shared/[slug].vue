@@ -3,6 +3,7 @@ import type { SharedLinkItem } from "~/shared/api";
 
 import { CollectionPasswordPrompt, SharedLinkCard } from "~/features/shared-collection";
 import { useSharedCollection } from "~/shared/api";
+import { Alert } from "~/shared/ui";
 
 const { t } = useI18n();
 const route = useRoute();
@@ -48,9 +49,9 @@ const isNotFound = computed(
 
 <template>
   <v-container>
-    <v-alert v-if="error" type="error" class="mb-4">{{
+    <Alert v-if="error" type="error" class="mb-4">{{
       isNotFound ? t("sharedCollection.notFound") : t("sharedCollection.loadFailed")
-    }}</v-alert>
+    }}</Alert>
 
     <template v-else-if="collection">
       <div class="mb-4">
@@ -67,9 +68,7 @@ const isNotFound = computed(
       />
 
       <template v-else>
-        <v-alert v-if="!displayLinks?.length" type="info">{{
-          t("sharedCollection.empty")
-        }}</v-alert>
+        <Alert v-if="!displayLinks?.length" type="info">{{ t("sharedCollection.empty") }}</Alert>
 
         <v-row v-else>
           <v-col v-for="link in displayLinks" :key="link.id" cols="12" sm="6" md="4">
