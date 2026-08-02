@@ -11,6 +11,7 @@ Linkfolio is a Nuxt app for building collections of links and sharing them via a
 - [`@nuxtjs/i18n`](https://i18n.nuxtjs.org) — English/Russian
 - [`@sentry/nuxt`](https://docs.sentry.io/platforms/javascript/guides/nuxt/) — error monitoring
 - Vitest + `@nuxt/test-utils` — testing
+- [Storybook](https://storybook.js.org) + [Chromatic](https://www.chromatic.com) — component development, visual testing
 - ESLint + Prettier + Husky/lint-staged — linting, formatting, pre-commit hooks
 
 ## Prerequisites
@@ -75,6 +76,15 @@ pnpm lint        # or lint:fix
 pnpm format      # or format:fix
 pnpm type-check
 ```
+
+## Storybook
+
+```bash
+pnpm storybook        # dev server at http://localhost:6006
+pnpm build-storybook
+```
+
+Visual tests run via [Chromatic](https://www.chromatic.com) on every push/PR (see `.github/workflows/chromatic.yml`). Published Storybook: https://6a6f82979edc629ca6aeb6b4-awpbuzxeti.chromatic.com/
 
 ## Production
 
