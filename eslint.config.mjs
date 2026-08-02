@@ -1,8 +1,11 @@
+// For more info, see https://github.com/storybookjs/eslint-plugin-storybook#configuration-flat-config-format
 import eslintConfigPrettier from "eslint-config-prettier/flat";
+import storybook from "eslint-plugin-storybook";
 
 import withNuxt from "./.nuxt/eslint.config.mjs";
 
 export default withNuxt(
+  ...storybook.configs["flat/recommended"],
   {
     rules: {
       "no-multiple-empty-lines": ["error", { max: 1 }],

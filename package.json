@@ -16,7 +16,9 @@
     "format:fix": "prettier --write .",
     "format": "prettier --check .",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate"
+    "db:migrate": "drizzle-kit migrate",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "dependencies": {
     "@mdi/font": "^7.4.47",
@@ -39,20 +41,27 @@
   "devDependencies": {
     "@nuxt/eslint": "^1.16.0",
     "@nuxt/test-utils": "^4.1.0",
+    "@nuxtjs/storybook": "^9.0.1",
+    "@storybook-vue/nuxt": "^9.0.1",
+    "@storybook/addon-a11y": "^10.5.5",
+    "@storybook/addon-docs": "^10.5.5",
     "@types/node": "^26.1.1",
     "@vue/test-utils": "^2.4.11",
     "dotenv": "^17.4.2",
     "drizzle-kit": "^0.31.10",
     "eslint": "^10.8.0",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-storybook": "^10.5.5",
     "happy-dom": "^20.11.1",
     "husky": "^9.1.7",
     "lint-staged": "^17.2.0",
     "nuxt-mcp-dev": "^0.3.2",
     "prettier": "^3.9.6",
+    "storybook": "^10.5.5",
     "typescript": "^6.0.3",
     "vitest": "^4.1.10",
-    "vue-tsc": "^3.3.8"
+    "vue-tsc": "^3.3.8",
+    "vuetify": "4.1.6"
   },
   "lint-staged": {
     "*.{js,mjs,cjs,ts,vue}": "eslint --fix",
