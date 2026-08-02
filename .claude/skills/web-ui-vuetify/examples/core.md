@@ -142,33 +142,31 @@ The `configFile` path is relative to the project root. SASS customization requir
 ```scss
 // src/styles/vuetify-settings.scss
 @use "vuetify/settings" with (
-    // Global
-    $body-font-family: "Inter",
-    sans-serif,
-    $heading-font-family: "Poppins",
-    sans-serif,
-    $border-radius-root: 8px,
+  // Global
+  $body-font-family: ("Inter", sans-serif),
+  $heading-font-family: ("Poppins", sans-serif),
+  $border-radius-root: 8px,
 
-    // Buttons
-    $button-height: 44px,
-    $button-border-radius: 8px,
-    $button-text-transform: none,
-    $button-font-weight: 600,
-    $button-letter-spacing: 0,
+  // Buttons
+  $button-height: 44px,
+  $button-border-radius: 8px,
+  $button-text-transform: none,
+  $button-font-weight: 600,
+  $button-letter-spacing: 0,
 
-    // Cards
-    $card-border-radius: 12px,
-    $card-elevation: 2,
+  // Cards
+  $card-border-radius: 12px,
+  $card-elevation: 2,
 
-    // Inputs
-    $text-field-border-radius: 8px,
+  // Inputs
+  $text-field-border-radius: 8px,
 
-    // Navigation
-    $navigation-drawer-border-radius: 0 16px 16px 0,
+  // Navigation
+  $navigation-drawer-border-radius: 0 16px 16px 0,
 
-    // Chips
-    $chip-border-radius: 16px
-  );
+  // Chips
+  $chip-border-radius: 16px
+);
 ```
 
 **When to use SASS vs theme vs defaults:**

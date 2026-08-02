@@ -17,7 +17,7 @@ metadata:
 
 > **If this project has a `CLAUDE.md` or other conventions doc, follow it** (naming style, export style, import ordering, etc.). This skill doesn't assume any particular convention set of its own -- don't apply kebab-case/named-exports/`import type` unless the project's own conventions actually say so.
 
-**(You MUST install and register Vuetify as a Vue plugin via `app.use(vuetify)` -- components will not render without the plugin)**
+**(You MUST install and register Vuetify as a Vue plugin via `app.use(vuetify)` -- components will not render without the plugin. Exception: in a Nuxt project using `vuetify-nuxt-module`, the module owns the `createVuetify()`/`app.use()` lifecycle itself -- configure Vuetify through the module's `vuetify` key in `nuxt.config.ts` instead of calling `app.use(vuetify)` manually)**
 
 **(You MUST use the `defaults` system in `createVuetify()` or `v-defaults-provider` for consistent component props -- never repeat the same prop on every instance)**
 
@@ -313,10 +313,11 @@ Use `vite-plugin-vuetify` (Vite) or `webpack-plugin-vuetify` (Webpack) for autom
 
 ```typescript
 // vite.config.ts
+import vue from "@vitejs/plugin-vue";
 import vuetify from "vite-plugin-vuetify";
 
 export default {
-  plugins: [vuetify({ autoImport: true })]
+  plugins: [vue(), vuetify({ autoImport: true })]
 };
 ```
 
@@ -389,7 +390,7 @@ Need per-section prop defaults? --> Use v-defaults-provider (zero CSS cost)
 
 > **Follow this project's own `CLAUDE.md` or conventions doc if it has one** -- don't assume kebab-case/named-exports/`import type` unless that's actually this project's convention.
 
-**(You MUST install and register Vuetify as a Vue plugin via `app.use(vuetify)` -- components will not render without the plugin)**
+**(You MUST install and register Vuetify as a Vue plugin via `app.use(vuetify)` -- components will not render without the plugin. Exception: in a Nuxt project using `vuetify-nuxt-module`, the module owns the `createVuetify()`/`app.use()` lifecycle itself -- configure Vuetify through the module's `vuetify` key in `nuxt.config.ts` instead of calling `app.use(vuetify)` manually)**
 
 **(You MUST use the `defaults` system in `createVuetify()` or `v-defaults-provider` for consistent component props -- never repeat the same prop on every instance)**
 

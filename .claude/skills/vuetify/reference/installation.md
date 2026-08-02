@@ -28,11 +28,11 @@ Walks through project name, TypeScript y/n, and package manager, then scaffolds 
    ```ts
    import { defineConfig } from "vite";
    import vue from "@vitejs/plugin-vue";
-   import vuetify from "vite-plugin-vuetify";
+   import vuetify, { transformAssetUrls } from "vite-plugin-vuetify";
 
    export default defineConfig({
      plugins: [
-       vue(),
+       vue({ template: { transformAssetUrls } }), // resolves asset URLs in Vuetify components like VImg
        vuetify({ autoImport: true }) // enables auto-import of components/directives
      ]
    });
@@ -84,7 +84,7 @@ Notes:
 - Requires Nuxt's Vite builder (not Webpack).
 - Don't also install `vite-plugin-vuetify` manually — the module errors if it finds one already configured.
 
-Manual alternative (more control, more boilerplate): install `vuetify` + `vite-plugin-vuetify` as in the Vite section above, then wire the plugin into `nuxt.config.ts`'s `vite.plugins` / `hooks['vite:extendConfig']`, and create the Vuetify instance in a `plugins/vuetify.ts` Nuxt plugin (auto-loaded on startup) instead of a `main.ts`. Also add `build: { transpile: ['vuetify'] }` and set `ssr: true` on `createVuetify()` — Nuxt won't detect SSR automatically.
+Manual alternative (more control, more boilerplate): install `vuetify` + `vite-plugin-vuetify` as in the Vite section above, then wire the plugin into `nuxt.config.ts`'s `vite.plugins` / `hooks['vite:extendConfig']`, also setting `vite.vue.template.transformAssetUrls` from `vite-plugin-vuetify`'s `transformAssetUrls` export (same reason as the Vite section — otherwise assets in components like `VImg` can fail to resolve), and create the Vuetify instance in a `plugins/vuetify.ts` Nuxt plugin (auto-loaded on startup) instead of a `main.ts`. Also add `build: { transpile: ['vuetify'] }` and set `ssr: true` on `createVuetify()` — Nuxt won't detect SSR automatically.
 
 ## SSR note
 

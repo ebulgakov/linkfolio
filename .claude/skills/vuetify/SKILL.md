@@ -1,6 +1,6 @@
 ---
 name: vuetify
-description: Look up Vuetify component APIs (props, events, slots), built-in directives (v-ripple, v-scroll, etc.), package exports, and installation/setup steps for Vite, Nuxt, and manual projects. Use this whenever writing, editing, or reviewing code that uses Vuetify components (anything starting with v-, e.g. v-btn, v-data-table, v-navigation-drawer), whenever unsure about a prop name, type, or default value, or whenever setting up Vuetify in a new or existing project. Supports Vuetify 2.x, 3.x, and 4.x.
+description: Look up Vuetify component APIs (props, events, slots), built-in directives (v-ripple, v-scroll, etc.), package exports, and installation/setup steps for Vite, Nuxt, and manual projects. Use this whenever writing, editing, or reviewing code that uses Vuetify components (anything starting with v-, e.g. v-btn, v-data-table, v-navigation-drawer), whenever unsure about a prop name, type, or default value, or whenever setting up Vuetify in a new or existing project. Component/directive/installation lookups support Vuetify 2.x, 3.x, and 4.x; package-export lookups (`vuetify-exports.sh`) only support 3.x/4.x, since Vuetify 2 doesn't publish the import-map files that requires.
 ---
 
 # Vuetify
@@ -9,15 +9,15 @@ Reference and lookup workflows for the Vuetify component library, replacing the 
 
 ## When to use which script
 
-| Need                                                                                                   | Script                                                |
-| ------------------------------------------------------------------------------------------------------ | ----------------------------------------------------- |
-| Props / events / slots for one component (e.g. `VBtn`, `VDataTable`)                                   | `scripts/vuetify-component.sh`                        |
-| Find the exact component name, or browse what exists                                                   | `scripts/vuetify-list.sh`                             |
-| What a package import resolves to (`import { VBtn } from 'vuetify/components'`, labs components, etc.) | `scripts/vuetify-exports.sh`                          |
-| Built-in directives (`v-ripple`, `v-scroll`, `v-tooltip`, ...)                                         | `reference/directives.md` (static, no fetch needed)   |
-| Setting up Vuetify in a project (Vite, Nuxt, manual)                                                   | `reference/installation.md` (static, no fetch needed) |
+| Need                                                                                                                                      | Script                                                |
+| ----------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| Props / events / slots for one component (e.g. `VBtn`, `VDataTable`)                                                                      | `scripts/vuetify-component.sh`                        |
+| Find the exact component name, or browse what exists                                                                                      | `scripts/vuetify-list.sh`                             |
+| What a package import resolves to (`import { VBtn } from 'vuetify/components'`, labs components, etc.) -- Vuetify 3.x/4.x only, see below | `scripts/vuetify-exports.sh`                          |
+| Built-in directives (`v-ripple`, `v-scroll`, `v-tooltip`, ...)                                                                            | `reference/directives.md` (static, no fetch needed)   |
+| Setting up Vuetify in a project (Vite, Nuxt, manual)                                                                                      | `reference/installation.md` (static, no fetch needed) |
 
-All scripts are bash, require `curl` and `jq`, and cache downloaded data under `~/.cache/vuetify-skill/` so repeat lookups in the same session (or across sessions) don't re-download.
+All scripts are bash, require `curl` and `jq`, and cache downloaded data under `~/.cache/vuetify-skill/` so repeat lookups in the same session (or across sessions) don't re-download. Exact semver versions (e.g. `3.7.19`) are cached indefinitely since they never change; dist-tags (`v3-stable`, `v2-stable`, `latest`, `next`) can move to a newer published version over time, so their cache entries expire after 24h and are re-fetched.
 
 ## Component lookup workflow
 
@@ -64,6 +64,8 @@ To check what's importable from the `vuetify` package (useful for tree-shaken im
 ```bash
 bash scripts/vuetify-exports.sh v3-stable
 ```
+
+Vuetify 3.x/4.x only — Vuetify 2 never published the `dist/json/importMap*.json` files this reads, so `vuetify-exports.sh` rejects `v2-stable`/`2.x.y` versions up front rather than failing on a 404.
 
 ## Related skill
 

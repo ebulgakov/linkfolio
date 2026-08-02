@@ -239,19 +239,23 @@ What navigation pattern?
 
 ```scss
 @use "vuetify/settings" with (
-    $body-font-family: "Inter",
-    sans-serif,
-    $heading-font-family: "Poppins",
-    sans-serif,
-    $border-radius-root: 8px,
-    $button-height: 44px,
-    $button-border-radius: 8px,
-    $button-text-transform: none,
-    $button-font-weight: 600,
-    $card-border-radius: 12px,
-    $card-elevation: 2,
-    $text-field-border-radius: 8px
-  );
+  $body-font-family: (
+    "Inter",
+    sans-serif
+  ),
+  $heading-font-family: (
+    "Poppins",
+    sans-serif
+  ),
+  $border-radius-root: 8px,
+  $button-height: 44px,
+  $button-border-radius: 8px,
+  $button-text-transform: none,
+  $button-font-weight: 600,
+  $card-border-radius: 12px,
+  $card-elevation: 2,
+  $text-field-border-radius: 8px
+);
 ```
 
 **Requires build plugin configuration:**

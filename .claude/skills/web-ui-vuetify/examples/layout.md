@@ -205,8 +205,8 @@ Vuetify uses a 12-column flexbox grid: `v-container` > `v-row` > `v-col`.
     <v-app-bar-nav-icon @click="drawer = !drawer" />
     <v-app-bar-title>Dashboard</v-app-bar-title>
     <v-spacer />
-    <v-btn icon="mdi-magnify" />
-    <v-btn icon="mdi-bell" />
+    <v-btn icon="mdi-magnify" aria-label="Search" />
+    <v-btn icon="mdi-bell" aria-label="Notifications" />
     <v-avatar image="/avatar.jpg" size="32" class="me-2" />
   </v-app-bar>
 </template>

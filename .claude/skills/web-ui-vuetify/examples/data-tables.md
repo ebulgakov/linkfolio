@@ -13,7 +13,7 @@
 ## Client-Side Data Table with Custom Columns
 
 ```vue
-<script setup>
+<script setup lang="ts">
 import { ref } from "vue";
 
 const search = ref("");
@@ -24,7 +24,7 @@ const headers = [
   { title: "Email", key: "email" },
   { title: "Status", key: "status" },
   { title: "Role", key: "role" },
-  { title: "Actions", key: "actions", sortable: false, align: "center" as const },
+  { title: "Actions", key: "actions", sortable: false, align: "center" as const }
 ];
 
 interface User {
@@ -73,8 +73,22 @@ function getStatusColor(status: string): string {
     </template>
 
     <template v-slot:item.actions="{ item }">
-      <v-icon size="small" class="me-2" @click="editUser(item)">mdi-pencil</v-icon>
-      <v-icon size="small" color="error" @click="deleteUser(item)">mdi-delete</v-icon>
+      <v-btn
+        icon="mdi-pencil"
+        size="small"
+        variant="text"
+        class="me-2"
+        aria-label="Edit user"
+        @click="editUser(item)"
+      />
+      <v-btn
+        icon="mdi-delete"
+        size="small"
+        variant="text"
+        color="error"
+        aria-label="Delete user"
+        @click="deleteUser(item)"
+      />
     </template>
 
     <template v-slot:no-data>
@@ -134,7 +148,7 @@ const headers = [
 Use `v-data-table-server` when data is fetched from an API. Vuetify emits events for sort/filter/page changes -- you handle the API calls.
 
 ```vue
-<script setup>
+<script setup lang="ts">
 import { ref, watch } from "vue";
 
 const ITEMS_PER_PAGE = 15;
@@ -149,7 +163,7 @@ const sortBy = ref([{ key: "name", order: "asc" as const }]);
 const headers = [
   { title: "Name", key: "name" },
   { title: "Email", key: "email" },
-  { title: "Created", key: "createdAt" },
+  { title: "Created", key: "createdAt" }
 ];
 
 interface LoadOptions {
@@ -165,7 +179,7 @@ async function loadItems(options: LoadOptions) {
       page: options.page,
       limit: options.itemsPerPage,
       sortBy: options.sortBy[0]?.key,
-      sortOrder: options.sortBy[0]?.order,
+      sortOrder: options.sortBy[0]?.order
     });
     items.value = response.data;
     totalItems.value = response.total;
@@ -202,7 +216,7 @@ async function loadItems(options: LoadOptions) {
 ## Row Selection
 
 ```vue
-<script setup>
+<script setup lang="ts">
 import { ref } from "vue";
 
 const selected = ref<number[]>([]);
@@ -213,14 +227,7 @@ function deleteSelected() {
 </script>
 
 <template>
-  <v-data-table
-    v-model="selected"
-    :headers="headers"
-    :items="items"
-    item-value="id"
-    show-select
-    return-object
-  >
+  <v-data-table v-model="selected" :headers="headers" :items="items" item-value="id" show-select>
     <template v-slot:top>
       <v-toolbar flat>
         <v-btn v-if="selected.length > 0" color="error" variant="tonal" @click="deleteSelected">

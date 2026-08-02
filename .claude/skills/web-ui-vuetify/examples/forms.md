@@ -12,28 +12,42 @@
 
 ## Form Validation with useRules (v3.8+)
 
+```typescript
+// plugins/vuetify.ts
+import { createVuetify } from "vuetify";
+import { createRulesPlugin } from "vuetify/labs/rules";
+
+const vuetify = createVuetify();
+
+export { vuetify };
+
+// main.ts -- useRules() throws unless this plugin is installed alongside Vuetify
+// app.use(vuetify);
+// app.use(createRulesPlugin({}, vuetify.locale));
+```
+
 ```vue
-<script setup>
+<script setup lang="ts">
 import { ref } from "vue";
 import { useRules } from "vuetify/labs/rules";
+import type { SubmitEventPromise } from "vuetify";
 
-const form = (ref < HTMLFormElement) | (null > null);
 const name = ref("");
 const email = ref("");
 const password = ref("");
 
 const rules = useRules();
 
-async function onSubmit() {
-  if (!form.value) return;
-  const { valid } = await form.value.validate();
-  if (!valid) return;
-  // All fields passed validation -- proceed
+function onSubmit(event: SubmitEventPromise) {
+  event.then(({ valid }) => {
+    if (!valid) return;
+    // All fields passed validation -- proceed
+  });
 }
 </script>
 
 <template>
-  <v-form ref="form" validate-on="submit" @submit.prevent="onSubmit">
+  <v-form validate-on="submit" @submit.prevent="onSubmit">
     <v-text-field v-model="name" label="Name" :rules="[rules.required()]" />
     <v-text-field
       v-model="email"
@@ -54,10 +68,10 @@ async function onSubmit() {
 
 **Key points:**
 
-- `useRules()` is imported from `"vuetify/labs/rules"` (lab API as of v3.8)
+- `useRules()` is imported from `"vuetify/labs/rules"` (lab API as of v3.8) -- it also requires `createRulesPlugin()` to be installed via `app.use()` alongside `createVuetify()`, or calling it throws
 - Rule builders return validation functions: `rules.required()` returns `(v) => !!v || "Field is required"`
-- `validate-on="submit"` prevents validation noise until the user submits -- alternatives: `"blur"`, `"input"`, `"blur lazy"`, `"submit lazy"`
-- `form.validate()` returns `{ valid: boolean }` -- always `await` it (async validators are supported)
+- `validate-on="submit"` prevents validation noise until the user submits, and runs validation itself before the `submit` event fires -- alternatives: `"blur"`, `"input"`, `"blur lazy"`, `"submit lazy"`
+- Because `validate-on="submit"` already validates, don't call `form.validate()` again inside the handler -- that re-runs (possibly async) rules a second time. Instead type the handler's parameter as `SubmitEventPromise` and read the result off the promise it resolves to, as shown above
 
 ---
 
@@ -111,10 +125,11 @@ const customRules = {
 ## Programmatic Form Control
 
 ```vue
-<script setup>
+<script setup lang="ts">
 import { ref } from "vue";
+import type { VForm } from "vuetify/components";
 
-const form = (ref < HTMLFormElement) | (null > null);
+const form = ref<InstanceType<typeof VForm> | null>(null);
 
 async function validateForm() {
   if (!form.value) return;
@@ -234,8 +249,10 @@ const ACCEPTED_TYPES = "image/png, image/jpeg, image/webp";
 
 const files = ref<File[]>([]);
 
-const fileSizeRule = (file: File) =>
-  file.size < MAX_FILE_SIZE_MB * 1024 * 1024 || `Max size is ${MAX_FILE_SIZE_MB}MB`;
+// v-file-input with `multiple` passes the whole File[] to :rules, not one File at a time
+const fileSizeRule = (value: File[]) =>
+  value.every((file) => file.size <= MAX_FILE_SIZE_MB * 1024 * 1024) ||
+  `Max size is ${MAX_FILE_SIZE_MB}MB`;
 </script>
 
 <template>
