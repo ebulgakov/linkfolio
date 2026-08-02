@@ -65,6 +65,10 @@ To check what's importable from the `vuetify` package (useful for tree-shaken im
 bash scripts/vuetify-exports.sh v3-stable
 ```
 
+## Related skill
+
+This skill only does lookups (exact props/events/slots/directives/install steps) -- it has no opinion on how to structure Vuetify code well. If a `web-ui-vuetify` skill is also installed, use it for idiomatic patterns, the `defaults`/`v-defaults-provider` system, anti-patterns, and decision frameworks (data table variant, input component choice, etc.), and use this skill to confirm the exact API for whatever component that guidance points you to.
+
 ## Notes
 
 - These scripts need network access. In Claude Code this works out of the box. In other environments, check that outbound requests to `unpkg.com` are allowed.
