@@ -1,0 +1,15 @@
+<script>
+  // Workaround for https://github.com/nuxt-modules/storybook/issues/753 (open since 2024):
+  // @storybook-vue/nuxt's generated fetch.mjs/paths.mjs read window.__NUXT__.config.app at
+  // module-evaluation time, before preview.ts's own JS runs. A real Nuxt server populates
+  // this global; Storybook's preview iframe never does, so seed it here in a blocking
+  // inline script that executes before any deferred module script.
+  window.__NUXT__ = {
+    config: {
+      app: {
+        baseURL: "/",
+        cdnURL: ""
+      }
+    }
+  };
+</script>
