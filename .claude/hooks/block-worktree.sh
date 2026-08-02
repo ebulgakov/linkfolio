@@ -5,6 +5,16 @@
 # sitting there and should be closed out first.
 set -euo pipefail
 
+# Fail closed: if anything below errors (e.g. python3 missing), Claude Code
+# only treats exit code 2 as a block — any other non-zero exit is silently
+# non-blocking and would let EnterWorktree through. Trap ERR so a broken hook
+# still denies instead of failing open.
+fail_closed() {
+  printf '%s\n' "block-worktree.sh failed before it could evaluate the policy; denying EnterWorktree to fail closed." >&2
+  exit 2
+}
+trap fail_closed ERR
+
 cd "${CLAUDE_PROJECT_DIR:-.}"
 
 worktree_lines=$(git worktree list --porcelain 2>/dev/null | grep -c '^worktree ' || true)
