@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { useCollections, useDeleteCollection } from "~/features/collections";
 import { useAuth } from "~/shared/api";
+import { Alert } from "~/shared/ui";
 
 const { t } = useI18n();
 
@@ -48,19 +49,19 @@ const {
       error) - without this guard the two alerts below would stack and say
       the same thing twice.
     -->
-    <v-alert
+    <Alert
       v-if="refreshError && !error"
       type="error"
       class="mb-4"
       closable
       @click:close="refreshError = null"
-      >{{ refreshError }}</v-alert
+      >{{ refreshError }}</Alert
     >
 
-    <v-alert v-if="error" type="error" class="mb-4">{{ t("errors.generic") }}</v-alert>
+    <Alert v-if="error" type="error" class="mb-4">{{ t("errors.generic") }}</Alert>
 
     <template v-else-if="!pending">
-      <v-alert v-if="!collections?.length" type="info">{{ t("collections.list.empty") }}</v-alert>
+      <Alert v-if="!collections?.length" type="info">{{ t("collections.list.empty") }}</Alert>
 
       <v-list v-else lines="two">
         <!-- v-list-item intentionally has no `:to` prop here: that would render the
@@ -108,9 +109,9 @@ const {
         <v-card-title>{{ t("collections.deleteConfirm.title") }}</v-card-title>
         <v-card-text>
           {{ t("collections.deleteConfirm.message") }}
-          <v-alert v-if="deleteErrorMessage" type="error" class="mt-4">{{
+          <Alert v-if="deleteErrorMessage" type="error" class="mt-4">{{
             deleteErrorMessage
-          }}</v-alert>
+          }}</Alert>
         </v-card-text>
         <v-card-actions>
           <v-spacer />

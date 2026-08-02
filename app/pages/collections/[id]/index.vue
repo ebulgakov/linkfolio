@@ -4,6 +4,7 @@ import type { LinkItem } from "~/shared/api";
 import { LinkCard, useCollectionLinks } from "~/features/collection-links";
 import { CollectionShareLink } from "~/features/collection-share-link";
 import { useCollection } from "~/shared/api";
+import { Alert } from "~/shared/ui";
 
 definePageMeta({ middleware: "auth" });
 
@@ -64,18 +65,18 @@ const {
       `error` computed below) - without this guard the two alerts below
       would stack and say the same thing twice.
     -->
-    <v-alert
+    <Alert
       v-if="refreshError && !error"
       type="error"
       class="mb-4"
       closable
       @click:close="refreshError = null"
-      >{{ refreshError }}</v-alert
+      >{{ refreshError }}</Alert
     >
 
-    <v-alert v-if="error" type="error" class="mb-4">{{
+    <Alert v-if="error" type="error" class="mb-4">{{
       isNotFound ? t("collections.errors.notFound") : t("collections.errors.loadFailed")
-    }}</v-alert>
+    }}</Alert>
 
     <template v-else-if="collection">
       <div class="d-flex align-center justify-space-between mb-4">
@@ -95,7 +96,7 @@ const {
         :slug="collection.slug"
       />
 
-      <v-alert v-if="!links?.length" type="info">{{ t("links.list.empty") }}</v-alert>
+      <Alert v-if="!links?.length" type="info">{{ t("links.list.empty") }}</Alert>
 
       <v-row v-else>
         <v-col v-for="link in links" :key="link.id" cols="12" sm="6" md="4">
@@ -109,9 +110,9 @@ const {
         <v-card-title>{{ t("links.deleteConfirm.title") }}</v-card-title>
         <v-card-text>
           {{ t("links.deleteConfirm.message") }}
-          <v-alert v-if="deleteErrorMessage" type="error" class="mt-4">{{
+          <Alert v-if="deleteErrorMessage" type="error" class="mt-4">{{
             deleteErrorMessage
-          }}</v-alert>
+          }}</Alert>
         </v-card-text>
         <v-card-actions>
           <v-spacer />

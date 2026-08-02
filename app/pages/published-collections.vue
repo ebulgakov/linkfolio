@@ -4,6 +4,7 @@ import {
   usePublishedCollectionsSearch
 } from "~/features/published-collections";
 import { usePublishedCollections } from "~/shared/api";
+import { Alert } from "~/shared/ui";
 
 const { t } = useI18n();
 
@@ -23,14 +24,12 @@ const { query, results } = usePublishedCollectionsSearch(collections);
       class="mb-4"
     />
 
-    <v-alert v-if="error" type="error" class="mb-4">{{
+    <Alert v-if="error" type="error" class="mb-4">{{
       t("pages.publishedCollections.loadFailed")
-    }}</v-alert>
+    }}</Alert>
 
     <template v-else>
-      <v-alert v-if="!results.length" type="info">{{
-        t("pages.publishedCollections.empty")
-      }}</v-alert>
+      <Alert v-if="!results.length" type="info">{{ t("pages.publishedCollections.empty") }}</Alert>
 
       <v-row v-else>
         <v-col v-for="collection in results" :key="collection.id" cols="12" sm="6" md="4">
