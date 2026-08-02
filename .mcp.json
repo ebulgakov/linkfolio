@@ -4,13 +4,6 @@
       "type": "http",
       "url": "https://mcp.sentry.dev/mcp/home-nbh/linkfolio"
     },
-    "vuetify-mcp": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@vuetify/mcp"
-      ]
-    },
     "nuxt": {
       "type": "sse",
       "url": "http://localhost:3000/__mcp/sse"
