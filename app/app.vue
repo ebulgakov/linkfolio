@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import AppFooter from "~/ui/app-footer/app-footer.vue";
+import AppFooter from "~/ui/app-footer.vue";
 import AppHeader from "~/ui/app-header/app-header.vue";
 </script>
 
