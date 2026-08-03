@@ -1,16 +1,14 @@
 <script lang="ts" setup>
-
 import { AuthButtons } from "~/features/auth-buttons";
 import { NavMenu } from "~/features/nav-menu";
-import { AppLogo } from "~/shared/ui/";
+import { AppLogoWordmark } from "~/shared/ui/";
 </script>
 
 <template>
   <v-app-bar class="px-4">
-    <AppLogo />
+    <AppLogoWordmark />
     <v-spacer />
     <AuthButtons />
-
     <div class="menu">
       <NavMenu />
     </div>

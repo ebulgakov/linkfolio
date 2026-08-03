@@ -4,7 +4,6 @@ const { t } = useI18n();
 
 <template>
   <NuxtLink to="/" class="d-flex align-center ma-0 text-primary text-decoration-none">
-    <nuxt-img src="/linkfolio-logo.svg" :alt="t('common.logoAlt')" width="40" height="40" />
-    <span class="mt-2 text-body-large">{{ t("common.appName") }}</span>
+    <nuxt-img src="/linkfolio-wordmark.svg" :alt="t('common.logoAlt')" width="120" height="40" />
   </NuxtLink>
 </template>
