@@ -1,5 +1,6 @@
 export { authClient } from "./auth-client";
 export { useAuth } from "./use-auth";
+export { useAuthSession } from "./use-session";
 export { useCollection } from "./use-collection";
 export { useSharedCollection } from "./use-shared-collection";
 export { usePublishedCollections } from "./use-published-collections";

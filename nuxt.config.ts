@@ -3,6 +3,12 @@ export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
 
+  image: {
+    cloudinary: {
+      baseURL: "https://res.cloudinary.com/dwjzxeiqm/image/upload/v1785777412/linkfolio"
+    }
+  },
+
   modules: [
     "vuetify-nuxt-module",
     "@nuxt/eslint",

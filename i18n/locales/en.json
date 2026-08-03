@@ -12,7 +12,8 @@
   },
   "footer": {
     "languageSwitcherLabel": "Switch language",
-    "copyright": "© {year} Linkfolio"
+    "copyright": "© {year} Linkfolio",
+    "githubLinkLabel": "GitHub (opens in a new tab)"
   },
   "pages": {
     "home": {
