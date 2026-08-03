@@ -84,7 +84,7 @@ pnpm storybook        # dev server at http://localhost:6006
 pnpm build-storybook
 ```
 
-Visual tests run via [Chromatic](https://www.chromatic.com) on every push/PR (see `.github/workflows/chromatic.yml`). Published Storybook: https://6a6f82979edc629ca6aeb6b4-awpbuzxeti.chromatic.com/
+Visual tests run via [Chromatic](https://www.chromatic.com) on every push/PR (see `.github/workflows/chromatic.yml`). Published Storybook: https://main--6a6f82979edc629ca6aeb6b4.chromatic.com/
 
 ## Production
 
