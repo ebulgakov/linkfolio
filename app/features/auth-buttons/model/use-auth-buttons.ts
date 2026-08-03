@@ -6,10 +6,10 @@ export async function useAuthButtons() {
   // context across an async setup's await automatically inside <script setup>, not inside a
   // plain composable function — a composable call placed after the await here would throw
   // "called outside of a plugin/setup" once extracted out of the .vue file.
-  const { session, authClient } = await useAuthSession();
+  const { session, requestAuthClient } = await useAuthSession();
 
   async function logOut() {
-    await authClient.signOut({
+    await requestAuthClient.signOut({
       fetchOptions: {
         onSuccess: async () => {
           await refreshNuxtData("auth-session");
