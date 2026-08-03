@@ -4,7 +4,7 @@ import type { LinkItem } from "~/shared/api";
 import { LinkCard, useCollectionLinks } from "~/features/collection-links";
 import { CollectionShareLink } from "~/features/collection-share-link";
 import { useCollection } from "~/shared/api";
-import { Alert } from "~/shared/ui";
+import { Alert, CollectionCard } from "~/shared/ui";
 
 definePageMeta({ middleware: "auth" });
 
@@ -79,17 +79,26 @@ const {
     }}</Alert>
 
     <template v-else-if="collection">
-      <div class="d-flex align-center justify-space-between mb-4">
-        <div>
-          <h1>{{ collection.name }}</h1>
-          <p v-if="collection.description" class="text-medium-emphasis">
-            {{ collection.description }}
-          </p>
-        </div>
-        <v-btn :to="`/collections/${id}/links/new`" color="primary">{{
-          t("links.list.addButton")
-        }}</v-btn>
-      </div>
+      <CollectionCard
+        :title="collection.name"
+        :description="collection.description"
+        :image-url="collection.imageUrl"
+        class="mb-4"
+      >
+        <template #overlay>
+          <div class="d-flex ga-2">
+            <v-chip v-if="collection.shared" size="small" color="primary">{{
+              t("collections.list.sharedBadge")
+            }}</v-chip>
+            <v-chip v-if="collection.published" size="small" color="secondary">{{
+              t("collections.list.publishedBadge")
+            }}</v-chip>
+          </div>
+          <v-btn :to="`/collections/${id}/links/new`" color="primary">{{
+            t("links.list.addButton")
+          }}</v-btn>
+        </template>
+      </CollectionCard>
 
       <CollectionShareLink
         v-if="collection.shared || collection.published"

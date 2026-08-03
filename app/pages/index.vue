@@ -1,9 +1,7 @@
 <script lang="ts" setup>
 import { LandingHero, LandingHighlights } from "~/features/home-landing";
-import {
-  PublishedCollectionCard,
-  useHomepagePublishedCollections
-} from "~/features/published-collections";
+import { useHomepagePublishedCollections } from "~/features/published-collections";
+import { CollectionCard } from "~/shared/ui";
 
 const { t } = useI18n();
 
@@ -25,7 +23,12 @@ const randomPublishedCollections = await useHomepagePublishedCollections();
         sm="6"
         md="4"
       >
-        <PublishedCollectionCard :collection="collection" />
+        <CollectionCard
+          :to="`/shared/${collection.slug}`"
+          :title="collection.name"
+          :description="collection.description"
+          :image-url="collection.imageUrl"
+        />
       </v-col>
     </v-row>
 

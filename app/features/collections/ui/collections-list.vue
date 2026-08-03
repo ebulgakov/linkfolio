@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { useCollections, useDeleteCollection } from "~/features/collections";
 import { useAuth } from "~/shared/api";
-import { Alert } from "~/shared/ui";
+import { Alert, CollectionCard } from "~/shared/ui";
 
 const { t } = useI18n();
 
@@ -63,45 +63,45 @@ const {
     <template v-else-if="!pending">
       <Alert v-if="!collections?.length" type="info">{{ t("collections.list.empty") }}</Alert>
 
-      <v-list v-else lines="two">
-        <!-- v-list-item intentionally has no `:to` prop here: that would render the
-        whole row as a native <a>, and nesting the edit NuxtLink (in #append) inside
-        it would be an anchor-in-anchor, which is invalid HTML and breaks keyboard/
-        screen-reader navigation. Instead the title itself is the navigation link,
-        and the edit link is a sibling — not a descendant of another anchor. -->
-        <v-list-item v-for="collection in collections" :key="collection.id">
-          <template #title>
-            <NuxtLink
-              :to="`/collections/${collection.id}`"
-              class="d-flex align-center ga-2 text-decoration-none text-high-emphasis"
-            >
-              {{ collection.name }}
-              <v-chip v-if="collection.shared" size="small" color="primary">{{
-                t("collections.list.sharedBadge")
-              }}</v-chip>
-              <v-chip v-if="collection.published" size="small" color="secondary">{{
-                t("collections.list.publishedBadge")
-              }}</v-chip>
-            </NuxtLink>
-          </template>
-          <template #subtitle>{{ collection.description }}</template>
-          <template #append>
-            <div class="d-flex align-center ga-2">
-              <NuxtLink :to="`/collections/${collection.id}/edit`" class="text-primary">{{
-                t("collections.list.editLink")
-              }}</NuxtLink>
-              <v-btn
-                icon="mdi-delete"
-                variant="text"
-                color="error"
-                size="small"
-                :aria-label="t('collections.list.deleteButton')"
-                @click="requestDelete(collection.id)"
-              />
-            </div>
-          </template>
-        </v-list-item>
-      </v-list>
+      <v-row v-else>
+        <v-col v-for="collection in collections" :key="collection.id" cols="12" sm="6" md="4">
+          <CollectionCard
+            :to="`/collections/${collection.id}`"
+            :title="collection.name"
+            :description="collection.description"
+            :image-url="collection.imageUrl"
+          >
+            <template #overlay>
+              <div class="d-flex ga-2">
+                <v-chip v-if="collection.shared" size="small" color="primary">{{
+                  t("collections.list.sharedBadge")
+                }}</v-chip>
+                <v-chip v-if="collection.published" size="small" color="secondary">{{
+                  t("collections.list.publishedBadge")
+                }}</v-chip>
+              </div>
+              <div class="d-flex align-center ga-2">
+                <v-btn
+                  :to="`/collections/${collection.id}/edit`"
+                  icon="mdi-pencil"
+                  variant="tonal"
+                  size="small"
+                  color="primary"
+                  :aria-label="t('collections.list.editLink')"
+                />
+                <v-btn
+                  icon="mdi-delete"
+                  variant="tonal"
+                  size="small"
+                  color="error"
+                  :aria-label="t('collections.list.deleteButton')"
+                  @click="requestDelete(collection.id)"
+                />
+              </div>
+            </template>
+          </CollectionCard>
+        </v-col>
+      </v-row>
     </template>
 
     <v-dialog v-model="isDialogOpen" max-width="480">
