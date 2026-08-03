@@ -3,7 +3,7 @@ import type { LinkItem } from "~/shared/api";
 
 import { useLinkForm } from "~/features/link-form";
 import { required, url } from "~/shared/lib";
-import { Alert } from "~/shared/ui";
+import { Alert, Input } from "~/shared/ui";
 
 const props = defineProps<{ collectionId: string; link?: LinkItem }>();
 
@@ -72,7 +72,7 @@ async function onSubmit() {
       class="mb-4"
     />
 
-    <v-text-field
+    <Input
       v-if="isEditing"
       :model-value="form.url"
       :label="t('links.form.urlLabel')"
@@ -80,7 +80,7 @@ async function onSubmit() {
       persistent-hint
       readonly
     />
-    <v-text-field
+    <Input
       v-else
       v-model="form.url"
       :label="t('links.form.urlLabel')"
@@ -99,7 +99,7 @@ async function onSubmit() {
         <v-icon v-else-if="previewStatus === 'fetched'" icon="mdi-check-circle" color="success" />
         <v-icon v-else-if="previewStatus === 'failed'" icon="mdi-alert-circle" color="warning" />
       </template>
-    </v-text-field>
+    </Input>
 
     <!--
       The hint above conveys checking/fetched/failed transitions visually
@@ -116,7 +116,7 @@ async function onSubmit() {
       that flag, so an incoming preview response could keep silently
       overwriting the user's manually-typed value.
     -->
-    <v-text-field
+    <Input
       :model-value="form.title"
       :label="t('links.form.titleLabel')"
       :error-messages="errors.title"
@@ -131,7 +131,7 @@ async function onSubmit() {
       @update:model-value="onDescriptionInput"
     />
 
-    <v-text-field
+    <Input
       :model-value="form.imageUrl"
       :label="t('links.form.imageUrlLabel')"
       :error-messages="errors.imageUrl"

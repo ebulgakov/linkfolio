@@ -2,7 +2,7 @@
 import type { SharedLinkItem } from "~/shared/api";
 
 import { useCollectionUnlock } from "~/features/shared-collection";
-import { Alert } from "~/shared/ui";
+import { Alert, Input } from "~/shared/ui";
 
 const props = defineProps<{ slug: string }>();
 const emit = defineEmits<{ unlocked: [links: SharedLinkItem[]] }>();
@@ -20,11 +20,7 @@ async function onSubmit() {
   <v-form @submit.prevent="onSubmit">
     <Alert v-if="errorMessage" type="error" :text="errorMessage" class="mb-4" />
 
-    <v-text-field
-      v-model="password"
-      type="password"
-      :label="t('sharedCollection.passwordPrompt.label')"
-    />
+    <Input v-model="password" type="password" :label="t('sharedCollection.passwordPrompt.label')" />
 
     <v-btn type="submit" color="primary" :loading="pending" block>
       {{ t("sharedCollection.passwordPrompt.submit") }}

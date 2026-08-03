@@ -4,7 +4,7 @@ import {
   usePublishedCollectionsSearch
 } from "~/features/published-collections";
 import { usePublishedCollections } from "~/shared/api";
-import { Alert } from "~/shared/ui";
+import { Alert, Input } from "~/shared/ui";
 
 const { t } = useI18n();
 
@@ -16,7 +16,7 @@ const { query, results } = usePublishedCollectionsSearch(collections);
   <v-container>
     <h1 class="mb-4">{{ t("pages.publishedCollections.title") }}</h1>
 
-    <v-text-field
+    <Input
       v-model="query"
       :label="t('pages.publishedCollections.searchLabel')"
       prepend-inner-icon="mdi-magnify"

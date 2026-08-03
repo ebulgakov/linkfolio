@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import { useCollectionShareLink } from "../model/use-collection-share-link";
 
+import { Input } from "~/shared/ui";
+
 const props = defineProps<{ slug: string }>();
 
 const { t } = useI18n();
@@ -9,7 +11,7 @@ const { shareUrl, copied, copyFailed, onCopyClick } = useCollectionShareLink(pro
 
 <template>
   <div class="d-flex align-center ga-2 mb-4">
-    <v-text-field
+    <Input
       :model-value="shareUrl"
       :label="t('collections.detail.shareLinkLabel')"
       readonly

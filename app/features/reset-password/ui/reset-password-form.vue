@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { useResetPasswordForm } from "~/features/reset-password";
 import { minLength, required } from "~/shared/lib";
-import { Alert } from "~/shared/ui";
+import { Alert, Input } from "~/shared/ui";
 
 const { t } = useI18n();
 const { form, pending, errorMessage, success, hasValidToken, submit } = useResetPasswordForm();
@@ -33,7 +33,7 @@ async function onSubmit() {
     </template>
 
     <template v-else-if="hasValidToken">
-      <v-text-field
+      <Input
         v-model="form.password"
         :label="t('forms.password')"
         :type="showPassword ? 'text' : 'password'"
