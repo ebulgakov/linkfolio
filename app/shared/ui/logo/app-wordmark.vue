@@ -4,6 +4,13 @@ const { t } = useI18n();
 
 <template>
   <NuxtLink to="/" class="d-flex align-center ma-0 text-primary text-decoration-none">
-    <nuxt-img src="/linkfolio-wordmark.svg" :alt="t('common.logoAlt')" width="120" height="40" />
+    <nuxt-img
+      provider="cloudinary"
+      format="svg"
+      src="/linkfolio-wordmark.svg"
+      :alt="t('common.logoAlt')"
+      width="120"
+      height="40"
+    />
   </NuxtLink>
 </template>
