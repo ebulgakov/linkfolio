@@ -80,7 +80,6 @@ const {
 
     <template v-else-if="collection">
       <CollectionCard
-        :to="`/shared/${collection.slug}`"
         :title="collection.name"
         :description="collection.description"
         :image-url="collection.imageUrl"
