@@ -1,15 +1,16 @@
 <script lang="ts" setup>
 import { useCopyright } from "~/features/copyright";
 
+const { t } = useI18n();
 const copyright = useCopyright();
-const link = { label: "GitHub", href: "https://github.com/ebulgakov/linkfolio/" };
+const link = { href: "https://github.com/ebulgakov/linkfolio/" };
 </script>
 
 <template>
   <span class="text-caption">
     <a
       :href="link.href"
-      :title="link.label"
+      :aria-label="t('footer.githubLinkLabel')"
       target="_blank"
       rel="noopener noreferrer"
       class="text-caption text-decoration-none text-primary"
