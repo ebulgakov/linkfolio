@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { useForgotPasswordForm } from "~/features/forgot-password";
 import { email, required } from "~/shared/lib";
-import { Alert } from "~/shared/ui";
+import { Alert, Input } from "~/shared/ui";
 
 const { t } = useI18n();
 const { form, pending, errorMessage, submitted, submit } = useForgotPasswordForm();
@@ -25,7 +25,7 @@ async function onSubmit() {
     <Alert v-if="errorMessage" type="error" :text="errorMessage" class="mb-4" />
 
     <template v-if="!submitted">
-      <v-text-field
+      <Input
         v-model="form.email"
         :label="t('forms.email')"
         type="email"

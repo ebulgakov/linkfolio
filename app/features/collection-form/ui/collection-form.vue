@@ -3,7 +3,7 @@ import type { Collection } from "~/shared/api";
 
 import { useCollectionForm } from "~/features/collection-form";
 import { required, slug, url } from "~/shared/lib";
-import { Alert } from "~/shared/ui";
+import { Alert, Input } from "~/shared/ui";
 
 const props = defineProps<{ collection?: Collection }>();
 
@@ -76,7 +76,7 @@ async function onSubmit() {
   <v-form ref="formRef" @submit.prevent="onSubmit">
     <Alert v-if="errorMessage" type="error" :text="errorMessage" class="mb-4" />
 
-    <v-text-field
+    <Input
       v-model="form.name"
       :label="t('collections.form.nameLabel')"
       :rules="nameRules"
@@ -90,7 +90,7 @@ async function onSubmit() {
       flag, so auto-sync from `name` would keep silently overwriting the
       user's manually-typed slug on every subsequent name keystroke.
     -->
-    <v-text-field
+    <Input
       :model-value="form.slug"
       :label="t('collections.form.slugLabel')"
       :rules="slugRules"
@@ -104,7 +104,7 @@ async function onSubmit() {
         <v-icon v-else-if="slugStatus === 'free'" icon="mdi-check-circle" color="success" />
         <v-icon v-else-if="slugStatus === 'taken'" icon="mdi-close-circle" color="error" />
       </template>
-    </v-text-field>
+    </Input>
 
     <v-textarea
       v-model="form.description"
@@ -138,7 +138,7 @@ async function onSubmit() {
       itself is left untouched in form state while hidden, so re-toggling
       published back off restores it without the user retyping anything.
     -->
-    <v-text-field
+    <Input
       v-if="showPassword"
       v-model="form.password"
       :label="t('collections.form.passwordLabel')"
@@ -147,7 +147,7 @@ async function onSubmit() {
       :error-messages="errors.password"
     />
 
-    <v-text-field
+    <Input
       v-model="form.imageUrl"
       :label="t('collections.form.imageUrlLabel')"
       :rules="imageUrlRules"
