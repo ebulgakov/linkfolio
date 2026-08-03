@@ -3,9 +3,8 @@ import type { LinkItem } from "~/shared/api";
 
 import { LinkCard, useCollectionLinks } from "~/features/collection-links";
 import { CollectionShareLink } from "~/features/collection-share-link";
-import { PublishedCollectionCard } from "~/features/published-collections";
 import { useCollection } from "~/shared/api";
-import { Alert } from "~/shared/ui";
+import { Alert, CollectionCard } from "~/shared/ui";
 
 definePageMeta({ middleware: "auth" });
 
@@ -80,7 +79,13 @@ const {
     }}</Alert>
 
     <template v-else-if="collection">
-      <PublishedCollectionCard :collection="collection" class="mb-4">
+      <CollectionCard
+        :to="`/shared/${collection.slug}`"
+        :title="collection.name"
+        :description="collection.description"
+        :image-url="collection.imageUrl"
+        class="mb-4"
+      >
         <template #overlay>
           <div class="d-flex ga-2">
             <v-chip v-if="collection.shared" size="small" color="primary">{{
@@ -94,7 +99,7 @@ const {
             t("links.list.addButton")
           }}</v-btn>
         </template>
-      </PublishedCollectionCard>
+      </CollectionCard>
 
       <CollectionShareLink
         v-if="collection.shared || collection.published"

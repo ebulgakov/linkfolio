@@ -1,7 +1,10 @@
 <script lang="ts" setup>
-import type { PublishedCollection } from "~/shared/api";
-
-defineProps<{ collection: PublishedCollection }>();
+defineProps<{
+  to: string;
+  title: string;
+  description?: string | null;
+  imageUrl?: string | null;
+}>();
 </script>
 
 <template>
@@ -14,14 +17,8 @@ defineProps<{ collection: PublishedCollection }>();
       nesting an anchor/button inside it would be invalid HTML (anchor-in-
       anchor) and break keyboard/screen-reader navigation.
     -->
-    <v-card :to="`/shared/${collection.slug}`">
-      <v-img
-        v-if="collection.imageUrl"
-        :src="collection.imageUrl"
-        :alt="collection.name"
-        height="160"
-        cover
-      />
+    <v-card :to="to">
+      <v-img v-if="imageUrl" :src="imageUrl" :alt="title" height="160" cover />
       <div
         v-else
         class="d-flex align-center justify-center bg-surface-variant"
@@ -30,9 +27,9 @@ defineProps<{ collection: PublishedCollection }>();
         <v-icon icon="mdi-folder-multiple-outline" size="48" />
       </div>
 
-      <v-card-title class="text-truncate">{{ collection.name }}</v-card-title>
+      <v-card-title class="text-truncate">{{ title }}</v-card-title>
 
-      <v-card-text v-if="collection.description">{{ collection.description }}</v-card-text>
+      <v-card-text v-if="description">{{ description }}</v-card-text>
     </v-card>
 
     <div
