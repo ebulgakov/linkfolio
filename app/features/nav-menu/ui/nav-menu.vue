@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useNavMenu } from "~/features/nav-menu/model/use-nav-menu.ts";
+import { useNavMenu } from "~/features/nav-menu";
 
 const { t } = useI18n();
 

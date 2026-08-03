@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { AuthButtons } from "~/features/auth-buttons";
 import { NavMenu } from "~/features/nav-menu";
-import { AppLogoWordmark } from "~/shared/ui/";
+import { AppLogoWordmark } from "~/shared/ui";
 </script>
 
 <template>
