@@ -83,7 +83,21 @@
     "email": "Email",
     "password": "Password",
     "showPassword": "Show password",
-    "hidePassword": "Hide password"
+    "hidePassword": "Hide password",
+    "imageUpload": {
+      "previewAlt": "Selected image preview",
+      "chooseFileLabel": "Choose image",
+      "pasteButton": "Paste from clipboard",
+      "removeButton": "Remove image",
+      "uploadingLabel": "Uploading…",
+      "errors": {
+        "invalidType": "Please choose a PNG, JPEG, GIF, or WEBP image.",
+        "tooLarge": "Image must be 2MB or smaller.",
+        "uploadFailed": "Couldn't upload the image. Please try again.",
+        "clipboardDenied": "Clipboard permission denied. Allow clipboard access, or choose a file instead.",
+        "clipboardEmpty": "No image found on the clipboard."
+      }
+    }
   },
   "validation": {
     "emailRequired": "Email is required",

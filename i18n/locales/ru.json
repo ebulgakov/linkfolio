@@ -83,7 +83,21 @@
     "email": "Email",
     "password": "Пароль",
     "showPassword": "Показать пароль",
-    "hidePassword": "Скрыть пароль"
+    "hidePassword": "Скрыть пароль",
+    "imageUpload": {
+      "previewAlt": "Предпросмотр выбранного изображения",
+      "chooseFileLabel": "Выбрать изображение",
+      "pasteButton": "Вставить из буфера обмена",
+      "removeButton": "Удалить изображение",
+      "uploadingLabel": "Загрузка…",
+      "errors": {
+        "invalidType": "Выберите изображение в формате PNG, JPEG, GIF или WEBP.",
+        "tooLarge": "Размер изображения не должен превышать 2 МБ.",
+        "uploadFailed": "Не удалось загрузить изображение. Попробуйте ещё раз.",
+        "clipboardDenied": "Доступ к буферу обмена запрещён. Разрешите доступ или выберите файл вручную.",
+        "clipboardEmpty": "В буфере обмена не найдено изображение."
+      }
+    }
   },
   "validation": {
     "emailRequired": "Укажите email",

@@ -45,7 +45,7 @@ export default defineEventHandler(async event => {
   const id = parsedId.data;
 
   const [existing] = await db
-    .select({ id: collections.id })
+    .select({ id: collections.id, imageUrl: collections.imageUrl })
     .from(collections)
     .where(and(eq(collections.id, id), eq(collections.userId, userId)));
 
@@ -93,6 +93,17 @@ export default defineEventHandler(async event => {
   // 200 with an empty body.
   if (!collection) {
     throw createError({ statusCode: 404, statusMessage: "Not Found" });
+  }
+
+  // Best-effort cleanup of the replaced image, only once the update has
+  // actually succeeded (so a unique-violation rethrow above never deletes a
+  // still-in-use blob) and only when `imageUrl` was actually sent and
+  // changed — `deleteImageIfOwned` is a safe no-op on external/unowned URLs,
+  // so no need to check whether the old value was ever an upload.
+  if (parsed.data.imageUrl !== undefined && parsed.data.imageUrl !== existing.imageUrl) {
+    if (existing.imageUrl) {
+      await deleteImageIfOwned(existing.imageUrl, userId);
+    }
   }
 
   return collection;

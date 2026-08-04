@@ -2,8 +2,8 @@
 import type { Collection } from "~/shared/api";
 
 import { useCollectionForm } from "~/features/collection-form";
-import { required, slug, url } from "~/shared/lib";
-import { Alert, Input } from "~/shared/ui";
+import { required, slug } from "~/shared/lib";
+import { Alert, ImageUploadField, Input } from "~/shared/ui";
 
 const props = defineProps<{ collection?: Collection }>();
 
@@ -45,12 +45,18 @@ const {
 
 const formRef = useTemplateRef<VFormInstance>("formRef");
 
+// Set from ImageUploadField's `update:pending` while a file/paste upload is
+// in flight. Guarding submission on this (not just use-collection-form.ts's
+// own `submitDisabled`) prevents saving the old imageUrl mid-upload - if that
+// happened, the completed Blob upload would finish with nothing in the
+// database ever pointing at it.
+const imageUploadPending = ref(false);
+
 const nameRules = computed(() => [required(t("validation.nameRequired"))]);
 const slugRules = computed(() => [
   required(t("validation.slugRequired")),
   slug(t("validation.slugInvalid"))
 ]);
-const imageUrlRules = computed(() => [url(t("validation.urlInvalid"))]);
 
 const slugStatusMessage = computed(() => {
   switch (slugStatus.value) {
@@ -66,6 +72,7 @@ const slugStatusMessage = computed(() => {
 });
 
 async function onSubmit() {
+  if (imageUploadPending.value) return;
   const { valid: isValid } = await formRef.value!.validate();
   if (!isValid) return;
   await submit();
@@ -147,14 +154,27 @@ async function onSubmit() {
       :error-messages="errors.password"
     />
 
-    <Input
-      v-model="form.imageUrl"
-      :label="t('collections.form.imageUrlLabel')"
-      :rules="imageUrlRules"
-      :error-messages="errors.imageUrl"
+    <!--
+      Deliberately :model-value + @update:model-value instead of v-model:
+      ImageUploadField's modelValue/emit type is `string | null` (it can
+      clear the value), but form.imageUrl here is typed as a plain `string`
+      (use-collection-form.ts initializes it with `?? ""` and toPayload()
+      relies on that) - coalescing null to "" here keeps that composable
+      untouched instead of widening its field type.
+    -->
+    <ImageUploadField
+      :model-value="form.imageUrl"
+      @update:model-value="value => (form.imageUrl = value ?? '')"
+      @update:pending="value => (imageUploadPending = value)"
     />
 
-    <v-btn type="submit" color="primary" :loading="pending" :disabled="submitDisabled" block>
+    <v-btn
+      type="submit"
+      color="primary"
+      :loading="pending"
+      :disabled="submitDisabled || imageUploadPending"
+      block
+    >
       {{ isEditing ? t("collections.form.editSubmit") : t("collections.form.createSubmit") }}
     </v-btn>
 
@@ -174,7 +194,12 @@ async function onSubmit() {
           <v-btn variant="text" @click="cancelShareWarning">
             {{ t("collections.shareWarning.cancel") }}
           </v-btn>
-          <v-btn color="primary" :loading="pending" @click="confirmAndSubmit">
+          <v-btn
+            color="primary"
+            :loading="pending"
+            :disabled="imageUploadPending"
+            @click="confirmAndSubmit"
+          >
             {{ t("collections.shareWarning.confirm") }}
           </v-btn>
         </v-card-actions>

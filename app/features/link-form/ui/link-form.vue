@@ -3,7 +3,7 @@ import type { LinkItem } from "~/shared/api";
 
 import { useLinkForm } from "~/features/link-form";
 import { required, url } from "~/shared/lib";
-import { Alert, Input } from "~/shared/ui";
+import { Alert, ImageUploadField, Input } from "~/shared/ui";
 
 const props = defineProps<{ collectionId: string; link?: LinkItem }>();
 
@@ -35,6 +35,13 @@ const {
 
 const formRef = useTemplateRef<VFormInstance>("formRef");
 
+// Set from ImageUploadField's `update:pending` while a file/paste upload is
+// in flight. Guarding submission on this (not just use-link-form.ts's own
+// `submitDisabled`) prevents saving the old imageUrl mid-upload - if that
+// happened, the completed Blob upload would finish with nothing in the
+// database ever pointing at it.
+const imageUploadPending = ref(false);
+
 const urlRules = computed(() => [
   required(t("validation.urlRequired")),
   url(t("validation.urlInvalid"))
@@ -54,6 +61,7 @@ const previewStatusMessage = computed(() => {
 });
 
 async function onSubmit() {
+  if (imageUploadPending.value) return;
   const { valid: isValid } = await formRef.value!.validate();
   if (!isValid) return;
   await submit();
@@ -131,14 +139,27 @@ async function onSubmit() {
       @update:model-value="onDescriptionInput"
     />
 
-    <Input
+    <!--
+      Deliberately :model-value + @update:model-value, not v-model:
+      onImageUrlInput() flips imageUrlDirty before writing form.imageUrl -
+      same reasoning as onTitleInput/onDescriptionInput above. Its param type
+      is `string` (never null), while ImageUploadField's emit is
+      `string | null` (it can clear the value) - coalescing null to "" here
+      keeps use-link-form.ts's signature untouched.
+    -->
+    <ImageUploadField
       :model-value="form.imageUrl"
-      :label="t('links.form.imageUrlLabel')"
-      :error-messages="errors.imageUrl"
-      @update:model-value="onImageUrlInput"
+      @update:model-value="value => onImageUrlInput(value ?? '')"
+      @update:pending="value => (imageUploadPending = value)"
     />
 
-    <v-btn type="submit" color="primary" :loading="pending" :disabled="submitDisabled" block>
+    <v-btn
+      type="submit"
+      color="primary"
+      :loading="pending"
+      :disabled="submitDisabled || imageUploadPending"
+      block
+    >
       {{ isEditing ? t("links.form.editSubmit") : t("links.form.createSubmit") }}
     </v-btn>
   </v-form>

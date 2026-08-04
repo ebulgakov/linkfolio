@@ -7,3 +7,4 @@ export { usePublishedCollections } from "./use-published-collections";
 export * from "./collections";
 export * from "./links";
 export * from "./shared-collections";
+export * from "./uploads";
