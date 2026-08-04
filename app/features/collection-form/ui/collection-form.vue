@@ -45,6 +45,13 @@ const {
 
 const formRef = useTemplateRef<VFormInstance>("formRef");
 
+// Set from ImageUploadField's `update:pending` while a file/paste upload is
+// in flight. Guarding submission on this (not just use-collection-form.ts's
+// own `submitDisabled`) prevents saving the old imageUrl mid-upload - if that
+// happened, the completed Blob upload would finish with nothing in the
+// database ever pointing at it.
+const imageUploadPending = ref(false);
+
 const nameRules = computed(() => [required(t("validation.nameRequired"))]);
 const slugRules = computed(() => [
   required(t("validation.slugRequired")),
@@ -65,6 +72,7 @@ const slugStatusMessage = computed(() => {
 });
 
 async function onSubmit() {
+  if (imageUploadPending.value) return;
   const { valid: isValid } = await formRef.value!.validate();
   if (!isValid) return;
   await submit();
@@ -157,9 +165,16 @@ async function onSubmit() {
     <ImageUploadField
       :model-value="form.imageUrl"
       @update:model-value="value => (form.imageUrl = value ?? '')"
+      @update:pending="value => (imageUploadPending = value)"
     />
 
-    <v-btn type="submit" color="primary" :loading="pending" :disabled="submitDisabled" block>
+    <v-btn
+      type="submit"
+      color="primary"
+      :loading="pending"
+      :disabled="submitDisabled || imageUploadPending"
+      block
+    >
       {{ isEditing ? t("collections.form.editSubmit") : t("collections.form.createSubmit") }}
     </v-btn>
 
@@ -179,7 +194,12 @@ async function onSubmit() {
           <v-btn variant="text" @click="cancelShareWarning">
             {{ t("collections.shareWarning.cancel") }}
           </v-btn>
-          <v-btn color="primary" :loading="pending" @click="confirmAndSubmit">
+          <v-btn
+            color="primary"
+            :loading="pending"
+            :disabled="imageUploadPending"
+            @click="confirmAndSubmit"
+          >
             {{ t("collections.shareWarning.confirm") }}
           </v-btn>
         </v-card-actions>

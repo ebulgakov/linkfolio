@@ -1,17 +1,26 @@
 <script lang="ts" setup>
-import { ref } from "vue";
+import { ref, watch } from "vue";
 
 import Alert from "./app-alert.vue";
 
 import { useImageUpload } from "~/shared/lib";
 
 const props = defineProps<{ modelValue: string | null }>();
-const emit = defineEmits<{ "update:modelValue": [value: string | null] }>();
+const emit = defineEmits<{
+  "update:modelValue": [value: string | null];
+  // Lets a parent form block/disable submission while an upload is still in
+  // flight - without this, submitting between "file picked" and "uploadImage()
+  // resolves" would save the old imageUrl while the new Blob upload
+  // completes with nothing in the database ever pointing at it.
+  "update:pending": [value: boolean];
+}>();
 
 const { t } = useI18n();
 
 const { pending, error, canUseClipboardReadApi, onFileSelected, pasteFromClipboard, remove } =
   useImageUpload(props, emit);
+
+watch(pending, value => emit("update:pending", value), { immediate: true });
 
 // Vuetify's own local model for the file picker - reset right after every
 // pick so re-selecting the same file later still fires a change (the native

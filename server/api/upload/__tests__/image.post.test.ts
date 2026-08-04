@@ -1,8 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // server/api/upload/image.post.ts relies entirely on Nitro's server-side
-// auto-imports (defineEventHandler, createError, requireUserId, readRawBody,
-// sniffImageType, uploadImage, MAX_IMAGE_BYTES) — none of them are explicit
+// auto-imports (defineEventHandler, createError, requireUserId,
+// getRequestHeader, readRawBody, sniffImageType, uploadImage,
+// MAX_IMAGE_BYTES) — none of them are explicit
 // imports in that file, per Nitro's own auto-import convention (see that
 // file's and server/utils/session.ts's top-of-file comments).
 //
@@ -56,6 +57,10 @@ function stubCreateError(input: StubErrorInput): Error & StubErrorInput {
 const requireUserIdMock = vi.hoisted(() => vi.fn());
 const readRawBodyMock = vi.hoisted(() => vi.fn());
 const uploadImageMock = vi.hoisted(() => vi.fn());
+// Defaults to returning undefined (no header set) - Number(undefined) is
+// NaN, which fails the route's Number.isFinite() guard and falls through to
+// the post-read check, exactly like a real request with no Content-Length.
+const getRequestHeaderMock = vi.hoisted(() => vi.fn());
 // Real implementation underneath a spy - see the module comment above for
 // why this isn't a plain `vi.fn()` replacement like the others.
 const sniffImageTypeSpy = vi.fn(sniffImageType);
@@ -64,6 +69,7 @@ vi.stubGlobal("defineEventHandler", stubDefineEventHandler);
 vi.stubGlobal("createError", stubCreateError);
 vi.stubGlobal("requireUserId", requireUserIdMock);
 vi.stubGlobal("readRawBody", readRawBodyMock);
+vi.stubGlobal("getRequestHeader", getRequestHeaderMock);
 vi.stubGlobal("sniffImageType", sniffImageTypeSpy);
 vi.stubGlobal("uploadImage", uploadImageMock);
 vi.stubGlobal("MAX_IMAGE_BYTES", MAX_IMAGE_BYTES);
@@ -86,6 +92,7 @@ const PNG_HEADER = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])
 beforeEach(() => {
   requireUserIdMock.mockReset().mockResolvedValue("user-1");
   readRawBodyMock.mockReset();
+  getRequestHeaderMock.mockReset();
   // .mockClear(), not .mockReset() - the latter would also discard the real
   // sniffImageType implementation this spy wraps.
   sniffImageTypeSpy.mockClear();
@@ -114,6 +121,30 @@ describe("POST /api/upload/image", () => {
 
     expect(sniffImageTypeSpy).not.toHaveBeenCalled();
     expect(uploadImageMock).not.toHaveBeenCalled();
+  });
+
+  it("rejects a declared Content-Length over MAX_IMAGE_BYTES with a 413 before ever reading the body", async () => {
+    getRequestHeaderMock.mockReturnValue(String(MAX_IMAGE_BYTES + 1));
+
+    await expect(handler(makeEvent())).rejects.toMatchObject({ statusCode: 413 });
+
+    expect(readRawBodyMock).not.toHaveBeenCalled();
+    expect(uploadImageMock).not.toHaveBeenCalled();
+  });
+
+  it("falls through to the post-read check when Content-Length is absent (e.g. chunked transfer)", async () => {
+    getRequestHeaderMock.mockReturnValue(undefined);
+    readRawBodyMock.mockResolvedValue(PNG_HEADER);
+    uploadImageMock.mockResolvedValue({
+      url: "https://abc.public.blob.vercel-storage.com/uploads/user-1/x.png"
+    });
+
+    const result = await handler(makeEvent());
+
+    expect(readRawBodyMock).toHaveBeenCalled();
+    expect(result).toEqual({
+      url: "https://abc.public.blob.vercel-storage.com/uploads/user-1/x.png"
+    });
   });
 
   it("rejects a body over MAX_IMAGE_BYTES with a 400 before ever sniffing or uploading", async () => {
@@ -203,7 +234,7 @@ describe("POST /api/upload/image", () => {
 
     await expect(handler(makeEvent())).rejects.toMatchObject({
       statusCode: 500,
-      statusMessage: "Image storage is not configured"
+      statusMessage: "Image storage is unavailable"
     });
 
     consoleErrorSpy.mockRestore();

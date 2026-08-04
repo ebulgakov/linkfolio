@@ -17,6 +17,20 @@
 export default defineEventHandler(async event => {
   const userId = await requireUserId(event);
 
+  // Cheap rejection ahead of the authoritative check below: a normal HTTP
+  // request always sends `Content-Length`, so this catches an oversized body
+  // before `readRawBody` buffers the whole thing into memory. Not a
+  // replacement for the post-read check - the header is client-supplied (not
+  // trustworthy on its own) and a chunked-transfer-encoded request has no
+  // `Content-Length` at all.
+  const declaredLength = Number(getRequestHeader(event, "content-length"));
+  if (Number.isFinite(declaredLength) && declaredLength > MAX_IMAGE_BYTES) {
+    throw createError({
+      statusCode: 413,
+      statusMessage: `Image must be ${MAX_IMAGE_BYTES / (1024 * 1024)}MB or smaller`
+    });
+  }
+
   const bytes = await readRawBody(event, false);
 
   // `readRawBody` resolves `undefined` when the request has neither a
@@ -53,10 +67,12 @@ export default defineEventHandler(async event => {
     const { url } = await uploadImage(bytes, sniffedType, userId);
     return { url };
   } catch (error) {
-    // `put()` throws when `BLOB_READ_WRITE_TOKEN` isn't configured (and for
-    // other SDK-level failures) — don't leak that raw error to the client,
-    // surface a clear, actionable 500 instead.
+    // Covers every `put()` failure - missing `BLOB_READ_WRITE_TOKEN`, a
+    // transient network/outage error, rate-limiting, etc. - not just
+    // misconfiguration, so the message doesn't name one specific cause.
+    // Real error stays server-side via console.error; never leak it to the
+    // client.
     console.error("[upload/image.post] uploadImage failed", error);
-    throw createError({ statusCode: 500, statusMessage: "Image storage is not configured" });
+    throw createError({ statusCode: 500, statusMessage: "Image storage is unavailable" });
   }
 });
