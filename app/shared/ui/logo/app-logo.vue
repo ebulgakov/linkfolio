@@ -3,14 +3,13 @@ const { t } = useI18n();
 </script>
 
 <template>
-  <NuxtLink to="/" class="d-flex align-center ma-0 text-primary text-decoration-none">
+  <NuxtLink to="/" class="d-block">
     <nuxt-img
+      class="w-100"
       provider="cloudinary"
       format="svg"
       src="/linkfolio-logo.svg"
       :alt="t('common.logoAlt')"
-      width="40"
-      height="40"
     />
   </NuxtLink>
 </template>

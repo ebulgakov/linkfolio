@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { useLandingHero } from "~/features/home-landing";
+import { AppLogo } from "~/shared/ui";
 
 const { t } = useI18n();
 const { loggedIn } = await useLandingHero();
@@ -7,9 +8,9 @@ const { loggedIn } = await useLandingHero();
 
 <template>
   <div class="text-center py-8 py-sm-12">
-    <nuxt-img src="/linkfolio-logo.svg" :alt="t('common.logoAlt')" width="64" height="64" />
+    <AppLogo class="logo" />
 
-    <h1 class="text-h4 text-sm-h3 font-weight-bold mt-6 mb-4">{{ t("pages.home.hero.title") }}</h1>
+    <h1 class="text-h4 text-sm-h3 font-weight-bold my-4">{{ t("pages.home.hero.title") }}</h1>
 
     <p class="text-body-1 text-medium-emphasis mx-auto mb-6" style="max-width: 560px">
       {{ t("pages.home.hero.subtitle") }}
@@ -25,3 +26,11 @@ const { loggedIn } = await useLandingHero();
     </div>
   </div>
 </template>
+
+<style lang="css" scoped>
+.logo {
+  display: block;
+  margin: 0 auto;
+  width: 100px;
+}
+</style>
