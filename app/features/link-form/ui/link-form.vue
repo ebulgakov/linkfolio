@@ -3,7 +3,7 @@ import type { LinkItem } from "~/shared/api";
 
 import { useLinkForm } from "~/features/link-form";
 import { required, url } from "~/shared/lib";
-import { Alert, Input } from "~/shared/ui";
+import { Alert, ImageUploadField, Input } from "~/shared/ui";
 
 const props = defineProps<{ collectionId: string; link?: LinkItem }>();
 
@@ -131,11 +131,17 @@ async function onSubmit() {
       @update:model-value="onDescriptionInput"
     />
 
-    <Input
+    <!--
+      Deliberately :model-value + @update:model-value, not v-model:
+      onImageUrlInput() flips imageUrlDirty before writing form.imageUrl -
+      same reasoning as onTitleInput/onDescriptionInput above. Its param type
+      is `string` (never null), while ImageUploadField's emit is
+      `string | null` (it can clear the value) - coalescing null to "" here
+      keeps use-link-form.ts's signature untouched.
+    -->
+    <ImageUploadField
       :model-value="form.imageUrl"
-      :label="t('links.form.imageUrlLabel')"
-      :error-messages="errors.imageUrl"
-      @update:model-value="onImageUrlInput"
+      @update:model-value="value => onImageUrlInput(value ?? '')"
     />
 
     <v-btn type="submit" color="primary" :loading="pending" :disabled="submitDisabled" block>

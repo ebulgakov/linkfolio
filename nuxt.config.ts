@@ -9,6 +9,15 @@ export default defineNuxtConfig({
     }
   },
 
+  nitro: {
+    // Nitro's route scanner globs every .ts file under server/api/** with no
+    // test-file exclusion, so colocated __tests__ files there get treated as
+    // route handlers and bundled - breaking the server build (e.g. on a
+    // top-level `await import(...)` used to load a route module under mocked
+    // globals, which Nitro's build target doesn't support at the top level).
+    ignore: ["**/__tests__/**"]
+  },
+
   modules: [
     "vuetify-nuxt-module",
     "@nuxt/eslint",

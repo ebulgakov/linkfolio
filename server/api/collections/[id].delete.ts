@@ -18,7 +18,7 @@ export default defineEventHandler(async event => {
   const id = parsedId.data;
 
   const [existing] = await db
-    .select({ id: collections.id })
+    .select({ id: collections.id, imageUrl: collections.imageUrl })
     .from(collections)
     .where(and(eq(collections.id, id), eq(collections.userId, userId)));
 
@@ -40,6 +40,16 @@ export default defineEventHandler(async event => {
 
   if (deleted.length === 0) {
     throw createError({ statusCode: 404, statusMessage: "Not Found" });
+  }
+
+  // Best-effort cleanup of the collection's own image now that the row is
+  // actually gone. Only the collection's `imageUrl` — `urls` rows' own
+  // `imageUrl`s are deliberately left alone, same reasoning as the "DO NOT
+  // touch the links DELETE handler" note on links/[linkId].delete.ts: a
+  // `urls` row can be shared across multiple collections, so its image isn't
+  // this collection's to delete just because this collection is gone.
+  if (existing.imageUrl) {
+    await deleteImageIfOwned(existing.imageUrl, userId);
   }
 
   // Same orphan-cleanup rationale as links/[linkId].delete.ts: `urls` is

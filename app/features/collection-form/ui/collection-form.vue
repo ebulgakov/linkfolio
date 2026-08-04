@@ -2,8 +2,8 @@
 import type { Collection } from "~/shared/api";
 
 import { useCollectionForm } from "~/features/collection-form";
-import { required, slug, url } from "~/shared/lib";
-import { Alert, Input } from "~/shared/ui";
+import { required, slug } from "~/shared/lib";
+import { Alert, ImageUploadField, Input } from "~/shared/ui";
 
 const props = defineProps<{ collection?: Collection }>();
 
@@ -50,7 +50,6 @@ const slugRules = computed(() => [
   required(t("validation.slugRequired")),
   slug(t("validation.slugInvalid"))
 ]);
-const imageUrlRules = computed(() => [url(t("validation.urlInvalid"))]);
 
 const slugStatusMessage = computed(() => {
   switch (slugStatus.value) {
@@ -147,11 +146,17 @@ async function onSubmit() {
       :error-messages="errors.password"
     />
 
-    <Input
-      v-model="form.imageUrl"
-      :label="t('collections.form.imageUrlLabel')"
-      :rules="imageUrlRules"
-      :error-messages="errors.imageUrl"
+    <!--
+      Deliberately :model-value + @update:model-value instead of v-model:
+      ImageUploadField's modelValue/emit type is `string | null` (it can
+      clear the value), but form.imageUrl here is typed as a plain `string`
+      (use-collection-form.ts initializes it with `?? ""` and toPayload()
+      relies on that) - coalescing null to "" here keeps that composable
+      untouched instead of widening its field type.
+    -->
+    <ImageUploadField
+      :model-value="form.imageUrl"
+      @update:model-value="value => (form.imageUrl = value ?? '')"
     />
 
     <v-btn type="submit" color="primary" :loading="pending" :disabled="submitDisabled" block>

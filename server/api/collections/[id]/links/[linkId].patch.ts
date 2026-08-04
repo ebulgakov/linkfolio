@@ -56,6 +56,15 @@ export default defineEventHandler(async event => {
     throw createError({ statusCode: 404, statusMessage: "Not Found" });
   }
 
+  // Read the old imageUrl before the update — needed below to detect a
+  // replacement and clean up the superseded blob. Safe to do unconditionally
+  // (single extra scoped select); this handler edits exactly one `urls` row,
+  // unlike the shared-row create path in `links/index.post.ts`.
+  const [existingUrlRow] = await db
+    .select({ imageUrl: urls.imageUrl })
+    .from(urls)
+    .where(and(eq(urls.id, item.urlId), eq(urls.userId, userId)));
+
   // Only set the fields actually present in the body — `!== undefined`
   // (rather than truthiness) so an explicit `null` clears a field without a
   // PATCH containing only `title` wiping out `description`/`imageUrl`.
@@ -76,6 +85,20 @@ export default defineEventHandler(async event => {
 
   if (!updatedUrl) {
     throw createError({ statusCode: 404, statusMessage: "Not Found" });
+  }
+
+  // Best-effort cleanup of the replaced image, only once the update actually
+  // succeeded and only when `imageUrl` was sent and changed —
+  // `deleteImageIfOwned` safely no-ops on external/unowned URLs. Safe here
+  // specifically because this handler edits exactly one `urls` row (unlike
+  // the create path, where a `urls` row can be shared across collections —
+  // see links/index.post.ts's dedup comment).
+  if (
+    parsed.data.imageUrl !== undefined &&
+    parsed.data.imageUrl !== existingUrlRow?.imageUrl &&
+    existingUrlRow?.imageUrl
+  ) {
+    await deleteImageIfOwned(existingUrlRow.imageUrl, userId);
   }
 
   const [link] = await db
