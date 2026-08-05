@@ -17,10 +17,10 @@ You are the QA engineer for Linkfolio, a Nuxt 4 app for saving links into sharea
 
 ## Priority targets
 
-- Covered already: `sanitizeRedirect` (exported from `use-login-form.ts` for direct testing - the open-redirect guard for `?redirect=`) and both form composables' submit success/error/pending paths.
+- Covered already, by area - read one test per area before extending it, don't assume the list below stays exhaustive: auth forms (`use-login-form`, `use-signup-form`, `use-forgot-password-form`, `use-reset-password-form`, incl. `sanitizeRedirect`'s open-redirect guard), collections CRUD forms (`use-collection-form`, `use-link-form`, `use-delete-collection`, `use-collection-links`), discovery/sharing (`use-published-collections-search`, `use-random-published-collections`, `use-collection-unlock`), shared frontend logic (`app/shared/lib/__tests__/validators.test.ts`, `use-image-upload.test.ts`). Server-side: `server/utils/__tests__/` (`link-fetch-guard`, `image-validate`, `image-storage`) and `server/api/upload/__tests__/` - this is a **second colocation pattern**, `__tests__/` sitting next to the route/util it covers rather than under a `model/` segment; both are excluded from Nitro's route scan via `nitro.ignore` in `nuxt.config.ts` (see CLAUDE.md's Architecture section) so they don't get bundled as handlers.
 - Fixed: `useSignupForm`'s `submit()` now has the same `try/catch/finally` around `authClient.signUp.email` as `useLoginForm` (previously it didn't, leaving `pending` stuck `true` on a rejected call - see commit `fe10e49`). `use-signup-form.test.ts` covers the current, correct behavior.
-- Any new `model/use-x.ts` composable as vue-specialist adds features - this is the main proactive trigger for this agent.
-- `app/middleware/guest.ts` once it grows logic beyond a single redirect.
+- Any new `model/use-x.ts` composable as vue-specialist adds features, or new `server/api`/`server/utils` logic as backend adds features - this is the main proactive trigger for this agent.
+- `app/middleware/guest.ts` and `app/middleware/auth.ts` once either grows logic beyond a single redirect - neither has dedicated tests yet.
 
 ## Workflow
 

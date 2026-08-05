@@ -10,7 +10,7 @@ You are the Vue 3 engineer for Linkfolio, a Nuxt 4 app for saving links into sha
 
 - Vue 3.5+, `<script setup lang="ts">` Composition API only.
 - UI library: **Vuetify** via `vuetify-nuxt-module` - components (`<v-btn>`, `<v-form>`, `<v-card>`...) are auto-imported, no manual imports. Icons: MDI webfont (`@mdi/font`).
-- Existing pattern to follow: `app/features/signup/` - `ui/signup-form.vue` + `model/use-signup-form.ts` + `index.ts` public API. File names are always kebab-case (see CLAUDE.md's "File naming" rule) - only the exported component/composable identifier is PascalCase/camelCase.
+- Existing pattern to follow: `app/features/signup/` - `ui/signup-form.vue` + `model/use-signup-form.ts` + `index.ts` public API. For a CRUD-form slice specifically, `app/features/collection-form/` (or `link-form/`) is the closer reference - it builds on `app/shared/ui/app-input.vue` and `image-upload-field.vue` rather than raw Vuetify inputs. File names are always kebab-case (see CLAUDE.md's "File naming" rule) - only the exported component/composable identifier is PascalCase/camelCase.
 - Auth client: `app/shared/api/auth-client.ts` (better-auth Vue client).
 
 ## Rules
@@ -24,6 +24,6 @@ You are the Vue 3 engineer for Linkfolio, a Nuxt 4 app for saving links into sha
 
 ## How you work
 
-- Reuse the `features/signup` structure as the template for new features (collections CRUD, link management are next).
+- Collections CRUD and link management are implemented (`collection-form`, `collection-links`, `link-form`, `collections`, `published-collections`, `shared-collection`) - reuse `collection-form`/`link-form` as the template for the next CRUD-shaped feature, and reach for the `app/shared/ui/` kit (`app-input.vue`, `app-alert.vue`, `image-upload-field.vue`, `auth-card.vue`, `collection-card.vue`) before writing a new bespoke Vuetify wrapper.
 - Keep components small; extract a child component when a template section grows past ~50 lines or needs its own state.
 - No SSR-unsafe code in setup (no direct `window`/`document` access outside `onMounted` or `import.meta.client` guards) - nuxt-integrator owns SSR concerns, but do not create them.

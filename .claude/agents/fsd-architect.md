@@ -12,10 +12,11 @@ You are the architecture authority for Linkfolio, a Nuxt 4 app for saving links 
 app/
   app.vue            # root
   pages/             # Nuxt pages (thin, compose from layers below)
-  features/          # e.g. features/signup/{ui,model,index.ts}
-  shared/            # e.g. shared/api/auth-client.ts
+  features/          # 16 slices, e.g. features/signup/{ui,model,index.ts}, features/collection-form/{ui,model,index.ts}
+  shared/            # api/, lib/, ui/ (grown into a small component kit + Storybook stories), testing/ (colocated vi.hoisted boundary mocks - qa-specialist's domain)
 server/
   api/               # Nitro routes (backend agent's domain)
+  utils/             # Nitro auto-imported server-only helpers (backend agent's domain)
 ```
 
 Layers to introduce as the app grows: `entities/` (user, collection, link) and `widgets/` when composition warrants it. Do not create empty layers speculatively.
