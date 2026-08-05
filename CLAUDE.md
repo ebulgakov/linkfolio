@@ -71,6 +71,12 @@ All files under `app/` use kebab-case — lowercase words separated by hyphens, 
 - `server/api/` is a Nitro file-based REST surface: `auth/[...all].ts` (Better Auth catch-all), full `collections` CRUD (`index.get/post`, `[id].get/patch/delete`, `check-slug.get`) plus nested `collections/[id]/links` CRUD, `links/preview.post.ts` (server-side link-metadata scraping), public/password-gated read access under `shared/` (`index.get.ts`, `[slug].get.ts`, `[slug]/links/index.get.ts`, `[slug]/unlock.post.ts`), and `upload/image.post.ts`/`image.delete.ts` for Cloudinary uploads.
 - `server/utils/` holds Nitro auto-imported, server-only helpers — e.g. `collection-errors.ts`/`link-errors.ts` (`createError` builders), `url-normalize.ts`, `link-fetch-guard.ts`, `shared-collection-password.ts` (gates guest access against the `collections.password` column above).
 
+## Code style
+
+- No `any` (already enforced by Nuxt's default `@typescript-eslint` config — TS's own type system is the escape-hatch-free default; if you're reaching for `any`, the real fix is usually a proper type or a narrower `unknown`).
+- No unjustified `eslint-disable`. Every existing one in the repo is the same case — `// eslint-disable-next-line import/order` in a test file, immediately above a `vi.hoisted()` mock block that must sit before its imports for `mockNuxtImport`/`vi.mock` to compile correctly (see Testing) — a real rule/tool conflict, not a shortcut. A new `eslint-disable` needs the same bar: a genuine conflict between two tools/rules, stated inline, not "the linter was annoying here."
+- `max-lines-per-function` is enforced at 80 (`eslint.config.mjs`), exempting test files (`__tests__/`, `.stories.ts`) since arrange-act-assert blocks legitimately run long. Three pre-existing composables are grandfathered by filename in `eslint.config.mjs` (`use-collection-form.ts`, `use-link-form.ts`, `use-image-upload.ts`) — they predate the rule and intentionally keep one feature's form/upload logic in a single composable per the FSD `features/` pattern above. That grandfather list should only shrink (refactor one of those three below 80 lines — drop it from the list), never grow with a new addition.
+
 ## Subagents
 
 Subagent roster and routing are defined in `AGENTS.md` (single source of truth for Claude Code and other CLIs): @AGENTS.md

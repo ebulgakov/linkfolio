@@ -31,7 +31,33 @@ export default withNuxt(
             caseInsensitive: true
           }
         }
+      ],
+      // Guardrail against sprawling functions; test files are exempt below
+      // since arrange-act-assert blocks legitimately run long.
+      "max-lines-per-function": [
+        "error",
+        { max: 80, skipBlankLines: true, skipComments: true, IIFEs: true }
       ]
+    }
+  },
+  {
+    // Tests exempt: assertion-heavy blocks aren't a function-length smell.
+    files: ["**/__tests__/**", "**/*.stories.ts"],
+    rules: {
+      "max-lines-per-function": "off"
+    }
+  },
+  {
+    // Grandfathered: all-in-one form/upload composables predate this rule
+    // and intentionally keep related logic together (see CLAUDE.md's
+    // features/ FSD section). Shrink this list rather than growing it.
+    files: [
+      "app/features/collection-form/model/use-collection-form.ts",
+      "app/features/link-form/model/use-link-form.ts",
+      "app/shared/lib/use-image-upload.ts"
+    ],
+    rules: {
+      "max-lines-per-function": "off"
     }
   },
   eslintConfigPrettier // must stay last so it can override stylistic rules
