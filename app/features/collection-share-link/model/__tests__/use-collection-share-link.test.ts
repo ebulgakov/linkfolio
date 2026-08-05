@@ -29,11 +29,13 @@ describe("useCollectionShareLink", () => {
   });
 
   it("onCopyClick sets copied to true once navigator.clipboard.writeText resolves", async () => {
-    stubClipboardWriteApi(vi.fn().mockResolvedValue(undefined));
-    const { copied, copyFailed, onCopyClick } = useCollectionShareLink("my-collection");
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    stubClipboardWriteApi(writeText);
+    const { shareUrl, copied, copyFailed, onCopyClick } = useCollectionShareLink("my-collection");
 
     await onCopyClick();
 
+    expect(writeText).toHaveBeenCalledWith(shareUrl.value);
     expect(copied.value).toBe(true);
     expect(copyFailed.value).toBe(false);
   });

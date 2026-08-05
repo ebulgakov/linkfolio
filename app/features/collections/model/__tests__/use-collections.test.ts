@@ -57,7 +57,7 @@ describe("useCollections", () => {
 
     const { data, error } = await useCollections("user-reject");
 
-    expect(error.value).toBeDefined();
+    expect(error.value?.message).toBe("network down");
     // data.value is left at its default (undefined) on failure - useAsyncData
     // never assigns it, it only sets error.
     expect(data.value).toBeUndefined();
