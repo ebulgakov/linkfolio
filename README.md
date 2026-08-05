@@ -8,6 +8,7 @@ Linkfolio is a Nuxt app for building collections of links and sharing them via a
 - [Vuetify](https://vuetifyjs.com) (via `vuetify-nuxt-module`) — UI
 - [Neon](https://neon.tech) Serverless Postgres + [Drizzle ORM](https://orm.drizzle.team) — database
 - [Better Auth](https://better-auth.com) (`better-auth/vue`), proxied to Neon Auth — authentication
+- [Vercel Blob](https://vercel.com/docs/storage/vercel-blob) — image upload storage; [Cloudinary](https://cloudinary.com) via `@nuxt/image` — image delivery/transforms
 - [`@nuxtjs/i18n`](https://i18n.nuxtjs.org) — English/Russian
 - [`@sentry/nuxt`](https://docs.sentry.io/platforms/javascript/guides/nuxt/) — error monitoring
 - Vitest + `@nuxt/test-utils` — testing
@@ -42,6 +43,7 @@ Linkfolio is a Nuxt app for building collections of links and sharing them via a
    | `NEON_AUTH_BASE_URL`    | Neon Auth backend URL, proxied by `server/api/auth/[...all].ts` |
    | `NEON_AUTH_JWKS_URL`    | Neon Auth JWKS endpoint                                         |
    | `BETTER_AUTH_API_KEY`   | Neon Auth API key                                               |
+   | `BLOB_READ_WRITE_TOKEN` | Vercel Blob token for image uploads (Vercel dashboard → Storage → Blob store, or `vercel env pull`) |
 
    These values are project secrets — never expose them to client-side code.
 
@@ -66,7 +68,8 @@ pnpm dev
 ## Testing
 
 ```bash
-pnpm test
+pnpm test            # or test:coverage — CI's gate, enforces coverage floor
+pnpm spec-ratchet     # every model/server-utils/api file has a colocated test
 ```
 
 ## Linting, formatting, type-checking
