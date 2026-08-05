@@ -11,6 +11,8 @@
     "prepare": "husky",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
+    "spec-ratchet": "node tests/spec-ratchet/check-spec-ratchet.mjs",
+    "spec-ratchet:write": "node tests/spec-ratchet/check-spec-ratchet.mjs --write",
     "lint:fix": "eslint --fix",
     "lint": "eslint",
     "type-check": "nuxt typecheck",
