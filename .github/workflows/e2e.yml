@@ -41,6 +41,7 @@ jobs:
           NEON_TEST_BRANCH_ID: ${{ secrets.NEON_TEST_BRANCH_ID }}
           NEON_RESET_SOURCE_BRANCH_ID: ${{ secrets.NEON_RESET_SOURCE_BRANCH_ID }}
           TEST_DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
           NEON_AUTH_BASE_URL: ${{ secrets.NEON_AUTH_BASE_URL }}
           NEON_AUTH_JWKS_URL: ${{ secrets.NEON_AUTH_JWKS_URL }}
           BETTER_AUTH_API_KEY: ${{ secrets.BETTER_AUTH_API_KEY }}
