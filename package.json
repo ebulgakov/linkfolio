@@ -11,6 +11,7 @@
     "prepare": "husky",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
     "spec-ratchet": "node tests/spec-ratchet/check-spec-ratchet.mjs",
     "spec-ratchet:write": "node tests/spec-ratchet/check-spec-ratchet.mjs --write",
     "lint:fix": "eslint --fix",
@@ -46,6 +47,7 @@
     "@chromatic-com/storybook": "^5.2.1",
     "@nuxt/eslint": "^1.16.0",
     "@nuxt/test-utils": "^4.1.0",
+    "@playwright/test": "^1.62.1",
     "@storybook-vue/nuxt": "^9.0.1",
     "@storybook/addon-a11y": "^10.5.5",
     "@storybook/addon-docs": "^10.5.5",
@@ -69,7 +71,7 @@
     "vuetify": "4.1.6"
   },
   "lint-staged": {
-    "*.{js,mjs,cjs,ts,vue}": "eslint --fix",
-    "*.{js,mjs,cjs,ts,vue,json,md,css}": "prettier --write"
+    "*.{js,mjs,cjs,ts,mts,cts,vue}": "eslint --fix",
+    "*.{js,mjs,cjs,ts,mts,cts,vue,json,md,css}": "prettier --write"
   }
 }

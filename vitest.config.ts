@@ -1,8 +1,12 @@
 import { defineVitestConfig } from "@nuxt/test-utils/config";
+import { configDefaults } from "vitest/config";
 
 export default defineVitestConfig({
   test: {
     environment: "nuxt",
+    // Vitest's default include already matches `*.spec.ts` — exclude e2e/ so
+    // `pnpm test` doesn't try to run the Playwright specs living there.
+    exclude: [...configDefaults.exclude, "e2e/**"],
     coverage: {
       provider: "v8",
       reporter: ["text", "json-summary"],
