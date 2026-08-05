@@ -1,11 +1,14 @@
 // Resets the dedicated e2e Neon branch (NEON_TEST_BRANCH_ID) back to the
-// state of a schema-only base branch (NEON_RESET_SOURCE_BRANCH_ID) via
-// Neon's branch-restore API — never restored from main/prod, so the test
-// branch never carries real user data. Used by e2e/global-setup.ts and
+// current state of the production branch (NEON_RESET_SOURCE_BRANCH_ID) via
+// Neon's branch-restore API. Used by e2e/global-setup.ts and
 // e2e/global-teardown.ts so the test branch starts and ends every Playwright
-// run clean, regardless of whether the tests passed. NEON_RESET_SOURCE_BRANCH_ID
-// must be re-synced (re-run migrations, or recreate schema-only) whenever
-// main's schema changes.
+// run clean, regardless of whether the tests passed.
+//
+// This copies prod's Postgres data (collections/urls/etc.) into e2e-test on
+// every reset — accepted tradeoff, isolated storage that never writes back to
+// prod. Auth is a separate story: Neon Auth is project-scoped, not
+// per-branch, so signups during the test still land in *prod*'s
+// neon_auth.user table regardless of this reset — see e2e/auth.spec.ts.
 const NEON_API_BASE = "https://console.neon.tech/api/v2";
 const NEON_PROJECT_ID = "gentle-bird-86757258";
 

@@ -12,7 +12,6 @@
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
-    "cleanup:e2e-users": "node scripts/cleanup-e2e-users.mjs",
     "spec-ratchet": "node tests/spec-ratchet/check-spec-ratchet.mjs",
     "spec-ratchet:write": "node tests/spec-ratchet/check-spec-ratchet.mjs --write",
     "lint:fix": "eslint --fix",
