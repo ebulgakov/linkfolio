@@ -35,7 +35,9 @@ async function neonApi<T>(path: string, init: RequestInit = {}): Promise<T> {
   });
   if (!response.ok) {
     const body = await response.text();
-    throw new Error(`Neon API ${init.method ?? "GET"} ${path} failed (${response.status}): ${body}`);
+    throw new Error(
+      `Neon API ${init.method ?? "GET"} ${path} failed (${response.status}): ${body}`
+    );
   }
   return response.json() as Promise<T>;
 }

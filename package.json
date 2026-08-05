@@ -71,7 +71,7 @@
     "vuetify": "4.1.6"
   },
   "lint-staged": {
-    "*.{js,mjs,cjs,ts,vue}": "eslint --fix",
-    "*.{js,mjs,cjs,ts,vue,json,md,css}": "prettier --write"
+    "*.{js,mjs,cjs,ts,mts,cts,vue}": "eslint --fix",
+    "*.{js,mjs,cjs,ts,mts,cts,vue,json,md,css}": "prettier --write"
   }
 }
