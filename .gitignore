@@ -37,3 +37,7 @@ logs
 storybook-static
 .vercel
 .env*.local
+
+# Playwright
+playwright-report
+test-results
