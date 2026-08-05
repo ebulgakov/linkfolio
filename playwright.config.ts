@@ -7,6 +7,12 @@ loadEnv({ path: ".env.e2e.local" });
 export default defineConfig({
   testDir: "./e2e",
   fullyParallel: false,
+  // All spec files share one dev server and one Neon Auth backend/test
+  // branch (see e2e/auth.spec.ts's header comment) — running spec files
+  // concurrently races signups/resets against that shared state. CI already
+  // gets this for free (Playwright defaults to 1 worker when CI is set);
+  // pin it here too so local runs with 2+ spec files aren't flaky.
+  workers: 1,
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? [["list"], ["html", { open: "never" }]] : "list",
   globalSetup: "./e2e/global-setup.ts",
