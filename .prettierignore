@@ -1,5 +1,6 @@
 pnpm-lock.yaml
 pnpm-workspace.yaml
 .mcp.json
+.cursor/mcp.json
 server/db/migrations
 *.md
