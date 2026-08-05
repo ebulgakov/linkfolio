@@ -5,6 +5,11 @@
     },
     "nuxt-docs": {
       "url": "https://nuxt.com/mcp"
+    },
+    "codegraph": {
+      "type": "stdio",
+      "command": "codegraph",
+      "args": ["serve", "--mcp"]
     }
   }
 }

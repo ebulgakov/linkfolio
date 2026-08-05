@@ -19,9 +19,22 @@
           }
         ]
       }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "codegraph prompt-hook"
+          }
+        ]
+      }
     ]
   },
   "worktree": {
     "bgIsolation": "none"
+  },
+  "permissions": {
+    "allow": ["mcp__codegraph__*"]
   }
 }

@@ -74,3 +74,12 @@ Subagent roster and routing are defined in `AGENTS.md` (single source of truth f
 ## Worktree policy
 
 Never use `EnterWorktree` in this repo — always work directly in the current branch/checkout. This is enforced by a `PreToolUse` hook (`.claude/hooks/block-worktree.sh`, wired up in `.claude/settings.json`) that denies every `EnterWorktree` call: if it detects only the main checkout (`git worktree list --porcelain`), it explains the policy; if it detects an extra worktree, it warns that a previous agent session may still have work in progress there and to close/merge that first. `settings.json` also sets `worktree.bgIsolation: "none"` so background sessions can still edit files directly without ever needing `EnterWorktree` to unlock that (`worktree.bgIsolation` requires Claude Code 2.1.143+; on older clients this setting is ignored and background sessions still require a worktree).
+
+## CodeGraph
+
+In repositories with a healthy CodeGraph index, reach for it BEFORE grep/find or reading files when you need to understand or locate code. Check with `codegraph status` — the `.codegraph/` directory alone isn't proof of an index: only `.codegraph/.gitignore` is tracked in git (see below), so the directory exists on every checkout even before this machine has run the daemon and built a database.
+
+- **MCP tool** (when available): `codegraph_explore` answers most code questions in one call — the relevant symbols' verbatim source plus the call paths between them, including dynamic-dispatch hops grep can't follow. Name a file or symbol in the query to read its current line-numbered source. If it's listed but deferred, load it by name via tool search.
+- **Shell** (always works): `codegraph explore "<symbol names or question>"` prints the same output.
+
+If `codegraph status` reports no index (or the command itself is unavailable), skip CodeGraph entirely — indexing is the user's decision.
