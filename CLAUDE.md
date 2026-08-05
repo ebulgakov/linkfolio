@@ -15,6 +15,7 @@ Package manager is pnpm (see `pnpm-lock.yaml` / `pnpm-workspace.yaml`).
 - `pnpm format` / `pnpm format:fix` — Prettier
 - `pnpm type-check` — `nuxt typecheck`
 - `pnpm test` — run the Vitest suite (`vitest run`)
+- `pnpm test:coverage` — run the suite with coverage (`vitest run --coverage`); this is what CI (`.github/workflows/test.yml`) runs
 - `pnpm storybook` / `pnpm build-storybook` — component workshop for the `.stories.ts` files colocated under `app/shared/ui/**`
 - `prepare: "husky"` (via `package.json`) wires a pre-commit hook (`.husky/pre-commit`) that runs `pnpm exec lint-staged` (ESLint `--fix` + Prettier `--write` on staged `.{js,mjs,cjs,ts,vue,json,md,css}`) then `pnpm run type-check` — installed automatically by `pnpm install`, no separate setup step
 
@@ -24,6 +25,7 @@ Package manager is pnpm (see `pnpm-lock.yaml` / `pnpm-workspace.yaml`).
 - Two colocation patterns, by side: frontend tests sit at `model/__tests__/use-x.test.ts` next to the composable they cover (e.g. `app/features/collection-form/model/__tests__/use-collection-form.test.ts`, `app/features/shared-collection/model/__tests__/use-collection-unlock.test.ts`); server-side tests sit at `__tests__/` next to the route/util they cover instead (e.g. `server/utils/__tests__/link-fetch-guard.test.ts`, `server/api/upload/__tests__/image.post.test.ts`) — this is why `nuxt.config.ts`'s `nitro.ignore` excludes `**/__tests__/**` (see Architecture).
 - Mock at the boundary, not internals: `authClient` via `vi.mock("~/shared/api/auth-client", ...)`; Nuxt auto-imports via `mockNuxtImport` with `vi.hoisted` mutable state boxes (the macro compiles to one hoisted `vi.mock` per import, so behavior varies per test by mutating the box, not by re-registering the mock). Never hit the real better-auth/Neon Auth endpoint from a unit test. Shared boundary mocks for the frontend side live in `app/shared/testing/` (see Architecture) — reuse them rather than re-declaring `vi.mock`/`mockNuxtImport` inline.
 - The qa-specialist subagent owns writing/maintaining these tests — see `.claude/agents/qa-specialist.md` for conventions, the current mock catalog, and priority targets (source of truth for what's covered; not duplicated here since it changes with every feature).
+- **Coverage ratchet**: `vitest.config.ts`'s `test.coverage.thresholds` is a floor, not a target — CI (`pnpm test:coverage`) fails if statements/branches/functions/lines drop below it. Only ever raise these numbers (re-run `pnpm test:coverage` after adding tests, copy the new global % in, round down slightly), never lower them to get a red PR to pass.
 
 ## Architecture
 
