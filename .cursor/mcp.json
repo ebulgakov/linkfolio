@@ -9,7 +9,7 @@
     "codegraph": {
       "type": "stdio",
       "command": "codegraph",
-      "args": ["serve", "--mcp", "--path", "/Users/ebulgakov/Projects/linkfolio"]
+      "args": ["serve", "--mcp"]
     }
   }
 }
