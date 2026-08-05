@@ -1,7 +1,4 @@
 [
-  "app/features/auth-buttons/model/use-auth-buttons.ts",
-  "app/features/collection-share-link/model/use-collection-share-link.ts",
-  "app/features/collections/model/use-collections.ts",
   "app/features/copyright/model/use-copyright.ts",
   "app/features/locale-switcher/model/use-locale-switcher.ts",
   "app/features/nav-menu/model/use-nav-menu.ts",

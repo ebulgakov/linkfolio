@@ -10,9 +10,12 @@ import { vi } from "vitest";
 // exercising a composable that calls both authClient.getSession() and
 // useAuth().getSession() needs to tell them apart at the import site.
 const getSessionMock = vi.hoisted(() => vi.fn());
-const useAuthMock = vi.hoisted(() => vi.fn(() => ({ getSession: getSessionMock })));
+const signOutMock = vi.hoisted(() => vi.fn());
+const useAuthMock = vi.hoisted(() =>
+  vi.fn(() => ({ getSession: getSessionMock, signOut: signOutMock }))
+);
 
-export { getSessionMock as useAuthGetSessionMock, useAuthMock };
+export { getSessionMock as useAuthGetSessionMock, signOutMock as useAuthSignOutMock, useAuthMock };
 
 vi.mock("~/shared/api/use-auth", () => ({
   useAuth: useAuthMock
@@ -20,5 +23,6 @@ vi.mock("~/shared/api/use-auth", () => ({
 
 export function resetUseAuthMocks() {
   getSessionMock.mockReset();
+  signOutMock.mockReset();
   useAuthMock.mockClear();
 }
