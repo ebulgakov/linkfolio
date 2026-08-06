@@ -37,14 +37,16 @@ export default withNuxt(
       "max-lines-per-function": [
         "error",
         { max: 80, skipBlankLines: true, skipComments: true, IIFEs: true }
-      ]
+      ],
+      "max-lines": ["error", { max: 250, skipBlankLines: true, skipComments: true }]
     }
   },
   {
     // Tests exempt: assertion-heavy blocks aren't a function-length smell.
     files: ["**/__tests__/**", "**/*.stories.ts"],
     rules: {
-      "max-lines-per-function": "off"
+      "max-lines-per-function": "off",
+      "max-lines": "off"
     }
   },
   {
