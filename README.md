@@ -11,7 +11,8 @@ Linkfolio is a Nuxt app for building collections of links and sharing them via a
 - [Vercel Blob](https://vercel.com/docs/storage/vercel-blob) — image upload storage; [Cloudinary](https://cloudinary.com) via `@nuxt/image` — image delivery/transforms
 - [`@nuxtjs/i18n`](https://i18n.nuxtjs.org) — English/Russian
 - [`@sentry/nuxt`](https://docs.sentry.io/platforms/javascript/guides/nuxt/) — error monitoring
-- Vitest + `@nuxt/test-utils` — testing
+- Vitest + `@nuxt/test-utils` — unit testing
+- [Playwright](https://playwright.dev) — end-to-end testing
 - [Storybook](https://storybook.js.org) + [Chromatic](https://www.chromatic.com) — component development, visual testing
 - ESLint + Prettier + Husky/lint-staged — linting, formatting, pre-commit hooks
 
@@ -47,6 +48,17 @@ Linkfolio is a Nuxt app for building collections of links and sharing them via a
 
    These values are project secrets — never expose them to client-side code.
 
+   Running the Playwright e2e suite needs extra env in `.env.e2e.local` (gitignored, layered on top of `.env`):
+
+   | Variable                     | Purpose                                                                          |
+   | ----------------------------- | --------------------------------------------------------------------------------- |
+   | `NEON_API_KEY`                | Neon API key, used to call the branch-restore API                                |
+   | `NEON_TEST_BRANCH_ID`         | Persistent `e2e-test` Neon branch the tests run against                          |
+   | `NEON_RESET_SOURCE_BRANCH_ID` | Schema-only `e2e-base` branch `e2e-test` is restored from before/after each run  |
+   | `TEST_DATABASE_URL`           | Connection string for `e2e-test`, used as the app's `DATABASE_URL` under Playwright |
+
+   Regular `.env` (`DATABASE_URL`, `NEON_AUTH_*`, `BETTER_AUTH_API_KEY`) is still needed too — `password-reset.spec.ts` reads the reset token straight from prod's `neon_auth.verification`. Neon Auth is project-scoped, not per-branch, so e2e signups also land real rows in prod's `neon_auth.user`; run `pnpm cleanup:e2e-users` periodically to clean these up (dry-run by default, append `-- --yes` to actually delete).
+
 3. Run database migrations:
 
    ```bash
@@ -71,6 +83,15 @@ pnpm dev
 pnpm test            # or test:coverage — CI's gate, enforces coverage floor
 pnpm spec-ratchet     # every model/server-utils/api file has a colocated test
 ```
+
+### End-to-end (Playwright)
+
+```bash
+pnpm exec playwright install   # first time only, installs browsers
+pnpm test:e2e                  # runs e2e/*.spec.ts against local dev server
+```
+
+Single worker, not parallel — spec files share one dev server and one Neon Auth backend/test branch. Runs in CI on every PR and push to `main` (`.github/workflows/e2e.yml`), uploading a report artifact on failure.
 
 ## Linting, formatting, type-checking
 
