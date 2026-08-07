@@ -21,7 +21,7 @@ const randomPublishedCollections = await useHomepagePublishedCollections();
         :key="collection.id"
         cols="12"
         sm="6"
-        md="4"
+        md="3"
       >
         <CollectionCardSquare
           :to="`/shared/${collection.slug}`"

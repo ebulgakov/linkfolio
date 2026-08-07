@@ -29,7 +29,7 @@ const { query, results } = usePublishedCollectionsSearch(collections);
       <Alert v-if="!results.length" type="info">{{ t("pages.publishedCollections.empty") }}</Alert>
 
       <v-row v-else>
-        <v-col v-for="collection in results" :key="collection.id" cols="12" sm="6" md="4">
+        <v-col v-for="collection in results" :key="collection.id" cols="12" sm="6" md="3">
           <CollectionCardSquare
             :to="`/shared/${collection.slug}`"
             :title="collection.name"

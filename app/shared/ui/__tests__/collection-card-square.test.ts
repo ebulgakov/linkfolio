@@ -51,23 +51,23 @@ describe("CollectionCardSquare", () => {
     expect(wrapper.find(".mdi-folder-multiple-outline").exists()).toBe(true);
   });
 
-  it("is flippable with a back face when description is set and noFlip is not", async () => {
+  it("is flippable with a description overlay when description is set and noFlip is not", async () => {
     const wrapper = await mountCard({
       title: "Flippable",
       description: "A handful of useful links."
     });
 
     expect(wrapper.classes()).toContain("collection-card-square--flip");
-    const back = wrapper.find(".collection-card-square__face--back");
-    expect(back.exists()).toBe(true);
-    expect(back.text()).toBe("A handful of useful links.");
+    const overlay = wrapper.find(".collection-card-square__description-overlay");
+    expect(overlay.exists()).toBe(true);
+    expect(overlay.text()).toBe("A handful of useful links.");
   });
 
   it("does not flip when description is empty", async () => {
     const wrapper = await mountCard({ title: "No Description", description: null });
 
     expect(wrapper.classes()).not.toContain("collection-card-square--flip");
-    expect(wrapper.find(".collection-card-square__face--back").exists()).toBe(false);
+    expect(wrapper.find(".collection-card-square__description-overlay").exists()).toBe(false);
   });
 
   it("does not flip when noFlip is true even with a description", async () => {
@@ -78,7 +78,7 @@ describe("CollectionCardSquare", () => {
     });
 
     expect(wrapper.classes()).not.toContain("collection-card-square--flip");
-    expect(wrapper.find(".collection-card-square__face--back").exists()).toBe(false);
+    expect(wrapper.find(".collection-card-square__description-overlay").exists()).toBe(false);
   });
 
   it("renders as a NuxtLink-based anchor when `to` is passed", async () => {

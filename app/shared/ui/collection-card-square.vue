@@ -24,7 +24,13 @@ const canFlip = computed(() => !!props.description && !props.noFlip);
       v-bind="to ? { to } : {}"
       class="collection-card-square__flipper"
     >
-      <div class="collection-card-square__face collection-card-square__face--front">
+      <!-- No backface-visibility:hidden here on purpose: past 90deg of the
+           flip, the browser renders this face's own content mirrored rather
+           than swapping to a separate back face - the "true 3D flip" effect.
+           The title mirrors/reads backwards too as a result; that's an
+           accepted consequence of keeping the same preview image on both
+           sides instead of a distinct back panel. -->
+      <div class="collection-card-square__face">
         <v-img v-if="imageUrl" :src="imageUrl" :alt="title" cover class="fill-height" />
         <div v-else class="d-flex align-center justify-center bg-surface-variant fill-height">
           <v-icon icon="mdi-folder-multiple-outline" size="48" />
@@ -34,15 +40,15 @@ const canFlip = computed(() => !!props.description && !props.noFlip);
           <div class="text-truncate text-white text-h6">{{ title }}</div>
         </div>
       </div>
-
-      <!-- Back face is text-only by design: it shares the front's single
-           anchor as the card's only tab stop, so it must never gain a
-           focusable element - that would create a hidden-but-tabbable
-           control while the face is rotated away from view. -->
-      <div v-if="canFlip" class="collection-card-square__face collection-card-square__face--back">
-        <p class="collection-card-square__description text-body-2">{{ description }}</p>
-      </div>
     </component>
+
+    <!-- Non-rotating sibling layer, not part of the flipper: fades in on
+         hover so the description stays upright and readable over the
+         mirrored image underneath, while pointer-events:none keeps the
+         card clickable through it (see CSS). -->
+    <div v-if="canFlip" class="collection-card-square__description-overlay">
+      <p class="collection-card-square__description text-body-2">{{ description }}</p>
+    </div>
 
     <div v-if="$slots.overlay" class="collection-card-square__overlay">
       <slot name="overlay" />
@@ -78,15 +84,24 @@ const canFlip = computed(() => !!props.description && !props.noFlip);
   inset: 0;
   overflow: hidden;
   border-radius: inherit;
-  backface-visibility: hidden;
 }
 
-.collection-card-square__face--back {
-  transform: rotateY(180deg);
-  background: rgb(var(--v-theme-surface));
-  padding: 16px;
+.collection-card-square__description-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
   display: flex;
   align-items: center;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.collection-card-square--flip:hover .collection-card-square__description-overlay {
+  opacity: 1;
 }
 
 .collection-card-square__description {
@@ -95,6 +110,7 @@ const canFlip = computed(() => !!props.description && !props.noFlip);
   -webkit-box-orient: vertical;
   overflow: hidden;
   margin: 0;
+  color: white;
 }
 
 .collection-card-square__scrim {
@@ -124,7 +140,8 @@ const canFlip = computed(() => !!props.description && !props.noFlip);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .collection-card-square__flipper {
+  .collection-card-square__flipper,
+  .collection-card-square__description-overlay {
     transition: none;
   }
 }

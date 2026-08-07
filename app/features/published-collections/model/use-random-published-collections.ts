@@ -18,7 +18,7 @@ function pickRandom<T>(list: T[], count: number): T[] {
 }
 
 /**
- * Picks 6 random published collections, once, in an SSR/hydration-safe way.
+ * Picks 4 random published collections, once, in an SSR/hydration-safe way.
  *
  * A plain `computed(() => shuffle(...))` would re-shuffle independently on
  * server and client, producing a different order/subset on each and
@@ -40,5 +40,5 @@ function pickRandom<T>(list: T[], count: number): T[] {
  * the first render - only a full page reload re-triggers `init`.
  */
 export function useRandomPublishedCollections(source: Ref<PublishedCollection[]>) {
-  return useState("published-collections-random-pick", () => pickRandom(source.value ?? [], 6));
+  return useState("published-collections-random-pick", () => pickRandom(source.value ?? [], 4));
 }

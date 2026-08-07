@@ -25,7 +25,7 @@ export const WithImage: Story = {
   }
 };
 
-// No description means no back face to flip to, so hovering this story does nothing.
+// No description means nothing to flip to, so hovering this story does nothing.
 export const WithoutDescription: Story = {
   args: {
     description: null
@@ -47,9 +47,9 @@ export const WithBadgesAndAction: Story = {
     setup() {
       return { args };
     },
-    // This story has a description, so hovering flips it - the "Add link"
-    // button lives in the overlay slot, which fades out with the front
-    // face during the flip (overlay is front-face-only by design).
+    // This story has a description, so hovering flips it - the preview
+    // mirrors and the description fades in on top, while the "Add link"
+    // button (overlay slot) fades out (overlay is front-face-only by design).
     template: `
       <CollectionCardSquare v-bind="args">
         <template #overlay>
