@@ -23,10 +23,10 @@ export default defineVitestConfig({
       ],
       // Floor only — raise after a real coverage improvement, never lower to pass a red PR.
       thresholds: {
-        statements: 41.3,
-        branches: 42.7,
-        functions: 31.6,
-        lines: 43.0
+        statements: 41.8,
+        branches: 43.5,
+        functions: 32.2,
+        lines: 43.4
       }
     }
   }

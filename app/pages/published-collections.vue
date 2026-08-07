@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { usePublishedCollectionsSearch } from "~/features/published-collections";
 import { usePublishedCollections } from "~/shared/api";
-import { Alert, CollectionCard, Input } from "~/shared/ui";
+import { Alert, CollectionCardSquare, Input } from "~/shared/ui";
 
 const { t } = useI18n();
 
@@ -30,7 +30,7 @@ const { query, results } = usePublishedCollectionsSearch(collections);
 
       <v-row v-else>
         <v-col v-for="collection in results" :key="collection.id" cols="12" sm="6" md="4">
-          <CollectionCard
+          <CollectionCardSquare
             :to="`/shared/${collection.slug}`"
             :title="collection.name"
             :description="collection.description"
