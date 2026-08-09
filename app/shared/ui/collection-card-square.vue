@@ -15,21 +15,12 @@ const canFlip = computed(() => !!props.description && !props.noFlip);
 </script>
 
 <template>
-  <div
-    class="collection-card-square rounded elevation-1"
-    :class="{ 'collection-card-square--flip': canFlip }"
-  >
+  <div class="collection-card-square" :class="{ 'collection-card-square--flip': canFlip }">
     <component
       :is="to ? NuxtLink : 'div'"
       v-bind="to ? { to } : {}"
-      class="collection-card-square__flipper"
+      class="collection-card-square__flipper rounded elevation-1"
     >
-      <!-- No backface-visibility:hidden here on purpose: past 90deg of the
-           flip, the browser renders this face's own content mirrored rather
-           than swapping to a separate back face - the "true 3D flip" effect.
-           The title mirrors/reads backwards too as a result; that's an
-           accepted consequence of keeping the same preview image on both
-           sides instead of a distinct back panel. -->
       <div class="collection-card-square__face">
         <v-img v-if="imageUrl" :src="imageUrl" :alt="title" cover class="fill-height" />
         <div v-else class="d-flex align-center justify-center bg-surface-variant fill-height">
@@ -39,16 +30,14 @@ const canFlip = computed(() => !!props.description && !props.noFlip);
         <div class="collection-card-square__scrim">
           <div class="text-truncate text-white text-h6">{{ title }}</div>
         </div>
+
+        <div v-if="description" class="collection-card-square__description">
+          <p class="text-body-2">
+            {{ description }}
+          </p>
+        </div>
       </div>
     </component>
-
-    <!-- Non-rotating sibling layer, not part of the flipper: fades in on
-         hover so the description stays upright and readable over the
-         mirrored image underneath, while pointer-events:none keeps the
-         card clickable through it (see CSS). -->
-    <div v-if="canFlip" class="collection-card-square__description-overlay">
-      <p class="collection-card-square__description text-body-2">{{ description }}</p>
-    </div>
 
     <div v-if="$slots.overlay" class="collection-card-square__overlay">
       <slot name="overlay" />
@@ -60,8 +49,7 @@ const canFlip = computed(() => !!props.description && !props.noFlip);
 .collection-card-square {
   position: relative;
   aspect-ratio: 1 / 1;
-  perspective: 1200px;
-  overflow: hidden;
+  perspective: 3000px;
 }
 
 .collection-card-square__flipper {
@@ -78,6 +66,12 @@ const canFlip = computed(() => !!props.description && !props.noFlip);
 .collection-card-square--flip:hover .collection-card-square__flipper {
   transform: rotateY(180deg);
 }
+.collection-card-square--flip:hover .collection-card-square__scrim {
+  opacity: 0;
+}
+.collection-card-square--flip:hover .collection-card-square__description {
+  opacity: 1;
+}
 
 .collection-card-square__face {
   position: absolute;
@@ -86,31 +80,24 @@ const canFlip = computed(() => !!props.description && !props.noFlip);
   border-radius: inherit;
 }
 
-.collection-card-square__description-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  border-radius: inherit;
-  display: flex;
-  align-items: center;
-  padding: 16px;
-  background: rgba(0, 0, 0, 0.55);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s;
-}
-
-.collection-card-square--flip:hover .collection-card-square__description-overlay {
-  opacity: 1;
-}
-
 .collection-card-square__description {
+  opacity: 0;
+  transform: rotateY(180deg);
   display: -webkit-box;
-  -webkit-line-clamp: 6;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  margin: 0;
   color: white;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  will-change: opacity;
+  transition-delay: 150ms;
+  transition-duration: 0ms;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 12px;
 }
 
 .collection-card-square__scrim {
@@ -118,7 +105,10 @@ const canFlip = computed(() => !!props.description && !props.noFlip);
   inset-inline: 0;
   bottom: 0;
   padding: 24px 12px 8px;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 40%, transparent);
+  will-change: opacity;
+  transition-delay: 150ms;
+  transition-duration: 0ms;
 }
 
 .collection-card-square__overlay {
@@ -141,7 +131,8 @@ const canFlip = computed(() => !!props.description && !props.noFlip);
 
 @media (prefers-reduced-motion: reduce) {
   .collection-card-square__flipper,
-  .collection-card-square__description-overlay {
+  .collection-card-square__description,
+  .collection-card-square__scrim {
     transition: none;
   }
 }

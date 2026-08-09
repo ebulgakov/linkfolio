@@ -47,9 +47,10 @@ export const WithBadgesAndAction: Story = {
     setup() {
       return { args };
     },
-    // This story has a description, so hovering flips it - the preview
-    // mirrors and the description fades in on top, while the "Add link"
-    // button (overlay slot) fades out (overlay is front-face-only by design).
+    // This story has a description, so hovering flips it - image, title, and
+    // description are all part of the same face and mirror together, while
+    // the "Add link" button (overlay slot) fades out (overlay is
+    // front-face-only by design).
     template: `
       <CollectionCardSquare v-bind="args">
         <template #overlay>
