@@ -6,7 +6,7 @@ import type { PublishedCollection } from "~/shared/api";
 import { usePublishedCollections } from "~/shared/api";
 
 /**
- * Fetches published collections and picks 5 at random, for the guest
+ * Fetches published collections and picks 4 at random, for the guest
  * homepage section. Only meaningful for unauthenticated visitors - see
  * useRandomPublishedCollections's caveat about its useState key being
  * claimed on first call, so this must not run for a logged-in session.

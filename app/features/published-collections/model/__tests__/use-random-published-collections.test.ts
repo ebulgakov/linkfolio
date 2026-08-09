@@ -34,20 +34,20 @@ beforeEach(() => {
 });
 
 describe("useRandomPublishedCollections", () => {
-  it("picks exactly 6 items out of a longer source list, all drawn from source, no duplicates", () => {
+  it("picks exactly 4 items out of a longer source list, all drawn from source, no duplicates", () => {
     const source = ref(makeCollections(8));
 
     const pick = useRandomPublishedCollections(source);
 
-    expect(pick.value).toHaveLength(6);
+    expect(pick.value).toHaveLength(4);
     const ids = pick.value.map(item => item.id);
-    expect(new Set(ids).size).toBe(6); // no duplicates within the pick
+    expect(new Set(ids).size).toBe(4); // no duplicates within the pick
     for (const item of pick.value) {
       expect(source.value).toContainEqual(item);
     }
   });
 
-  it("picks all items - min(6, length) - when the source has fewer than 6 items, with no padding and no error", () => {
+  it("picks all items - min(4, length) - when the source has fewer than 4 items, with no padding and no error", () => {
     const source = ref(makeCollections(3));
 
     const pick = useRandomPublishedCollections(source);
