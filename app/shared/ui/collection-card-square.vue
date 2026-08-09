@@ -22,7 +22,11 @@ const canFlip = computed(() => !!props.description && !props.noFlip);
       class="collection-card-square__flipper rounded elevation-1"
     >
       <div class="collection-card-square__face">
-        <v-img v-if="imageUrl" :src="imageUrl" :alt="title" cover class="fill-height" />
+        <template v-if="imageUrl">
+          <img :src="imageUrl" :alt="title" class="collection-card-square__blur" />
+          <v-img :src="imageUrl" :alt="title" content class="fill-height" />
+        </template>
+
         <div v-else class="d-flex align-center justify-center bg-surface-variant fill-height">
           <v-icon icon="mdi-folder-multiple-outline" size="48" />
         </div>
@@ -64,6 +68,16 @@ const canFlip = computed(() => !!props.description && !props.noFlip);
   will-change: transform;
 }
 
+.collection-card-square__blur {
+  filter: blur(8px);
+  z-index: -1;
+  position: absolute;
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  opacity: 0.4;
+}
+
 .collection-card-square--flip:hover .collection-card-square__flipper,
 .collection-card-square--flip:focus-within .collection-card-square__flipper {
   transform: rotateY(180deg);
@@ -82,6 +96,8 @@ const canFlip = computed(() => !!props.description && !props.noFlip);
   inset: 0;
   overflow: hidden;
   border-radius: inherit;
+  z-index: 0;
+  background: #fff;
 }
 
 .collection-card-square__description {
