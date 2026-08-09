@@ -49,7 +49,7 @@ const canFlip = computed(() => !!props.description && !props.noFlip);
 .collection-card-square {
   position: relative;
   aspect-ratio: 1 / 1;
-  perspective: 3000px;
+  perspective: 1200px;
 }
 
 .collection-card-square__flipper {
@@ -60,16 +60,20 @@ const canFlip = computed(() => !!props.description && !props.noFlip);
   color: inherit;
   text-decoration: none;
   transform-style: preserve-3d;
-  transition: transform 0.6s;
+  transition: transform 300ms linear;
+  will-change: transform;
 }
 
-.collection-card-square--flip:hover .collection-card-square__flipper {
+.collection-card-square--flip:hover .collection-card-square__flipper,
+.collection-card-square--flip:focus-within .collection-card-square__flipper {
   transform: rotateY(180deg);
 }
-.collection-card-square--flip:hover .collection-card-square__scrim {
+.collection-card-square--flip:hover .collection-card-square__scrim,
+.collection-card-square--flip:focus-within .collection-card-square__scrim {
   opacity: 0;
 }
-.collection-card-square--flip:hover .collection-card-square__description {
+.collection-card-square--flip:hover .collection-card-square__description,
+.collection-card-square--flip:focus-within .collection-card-square__description {
   opacity: 1;
 }
 
@@ -123,7 +127,8 @@ const canFlip = computed(() => !!props.description && !props.noFlip);
   padding: 8px;
 }
 
-.collection-card-square--flip:hover .collection-card-square__overlay {
+.collection-card-square--flip:hover .collection-card-square__overlay,
+.collection-card-square--flip:focus-within .collection-card-square__overlay {
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.2s;
