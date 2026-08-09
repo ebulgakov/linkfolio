@@ -78,9 +78,31 @@ describe("CollectionCardSquare", () => {
     });
 
     expect(wrapper.classes()).not.toContain("collection-card-square--flip");
+    expect(wrapper.classes()).toContain("collection-card-square--reveal");
     const description = wrapper.find(".collection-card-square__description");
     expect(description.exists()).toBe(true);
     expect(description.text()).toBe("A handful of useful links.");
+  });
+
+  it("makes the flipper keyboard-focusable when unlinked and revealable, but not otherwise", async () => {
+    const unlinkedRevealable = await mountCard({
+      title: "Unlinked",
+      description: "A handful of useful links."
+    });
+    expect(unlinkedRevealable.find(".collection-card-square__flipper").attributes("tabindex")).toBe(
+      "0"
+    );
+
+    const unlinkedNoDescription = await mountCard({ title: "Unlinked, nothing to reveal" });
+    expect(
+      unlinkedNoDescription.find(".collection-card-square__flipper").attributes("tabindex")
+    ).toBeUndefined();
+
+    const linked = await mountCard(
+      { title: "Linked", to: "/shared/x", description: "A handful of useful links." },
+      { route: "/" }
+    );
+    expect(linked.find(".collection-card-square__flipper").attributes("tabindex")).toBeUndefined();
   });
 
   it("renders as a NuxtLink-based anchor when `to` is passed", async () => {

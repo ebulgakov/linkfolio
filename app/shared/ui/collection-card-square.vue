@@ -12,13 +12,21 @@ const props = defineProps<{
 }>();
 
 const canFlip = computed(() => !!props.description && !props.noFlip);
+const canReveal = computed(() => !!props.description);
 </script>
 
 <template>
-  <div class="collection-card-square" :class="{ 'collection-card-square--flip': canFlip }">
+  <div
+    class="collection-card-square"
+    :class="{
+      'collection-card-square--flip': canFlip,
+      'collection-card-square--reveal': canReveal
+    }"
+  >
     <component
       :is="to ? NuxtLink : 'div'"
       v-bind="to ? { to } : {}"
+      :tabindex="!to && canReveal ? 0 : undefined"
       class="collection-card-square__flipper rounded elevation-1"
     >
       <div class="collection-card-square__face">
@@ -78,16 +86,24 @@ const canFlip = computed(() => !!props.description && !props.noFlip);
   opacity: 0.4;
 }
 
-.collection-card-square--flip:hover .collection-card-square__flipper,
-.collection-card-square--flip:focus-within .collection-card-square__flipper {
+.collection-card-square--flip .collection-card-square__flipper:hover,
+.collection-card-square--flip .collection-card-square__flipper:focus {
   transform: rotateY(180deg);
 }
-.collection-card-square--flip:hover .collection-card-square__scrim,
-.collection-card-square--flip:focus-within .collection-card-square__scrim {
+.collection-card-square--reveal
+  .collection-card-square__flipper:hover
+  .collection-card-square__scrim,
+.collection-card-square--reveal
+  .collection-card-square__flipper:focus
+  .collection-card-square__scrim {
   opacity: 0;
 }
-.collection-card-square--flip:hover .collection-card-square__description,
-.collection-card-square--flip:focus-within .collection-card-square__description {
+.collection-card-square--reveal
+  .collection-card-square__flipper:hover
+  .collection-card-square__description,
+.collection-card-square--reveal
+  .collection-card-square__flipper:focus
+  .collection-card-square__description {
   opacity: 1;
 }
 
@@ -100,9 +116,15 @@ const canFlip = computed(() => !!props.description && !props.noFlip);
   background: #fff;
 }
 
+.collection-card-square--flip .collection-card-square__description {
+  /* Counter-rotates against the flipper's 180deg turn so the text reads
+     normally once the card has flipped; noFlip cards never rotate the
+     parent, so they keep the description's default (unrotated) transform. */
+  transform: rotateY(180deg);
+}
+
 .collection-card-square__description {
   opacity: 0;
-  transform: rotateY(180deg);
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
@@ -143,8 +165,12 @@ const canFlip = computed(() => !!props.description && !props.noFlip);
   padding: 8px;
 }
 
-.collection-card-square--flip:hover .collection-card-square__overlay,
-.collection-card-square--flip:focus-within .collection-card-square__overlay {
+.collection-card-square--flip
+  .collection-card-square__flipper:hover
+  ~ .collection-card-square__overlay,
+.collection-card-square--flip
+  .collection-card-square__flipper:focus
+  ~ .collection-card-square__overlay {
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.2s;
