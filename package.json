@@ -59,6 +59,8 @@
     "drizzle-kit": "^0.31.10",
     "eslint": "^10.8.0",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-import-resolver-typescript": "^4.4.5",
+    "eslint-plugin-boundaries": "^7.2.0",
     "eslint-plugin-storybook": "^10.5.5",
     "happy-dom": "^20.11.1",
     "husky": "^9.1.7",
