@@ -1,7 +1,8 @@
 <script lang="ts" setup>
+import { useCollectionUnlock } from "../model/use-collection-unlock";
+
 import type { SharedLinkItem } from "~/shared/api";
 
-import { useCollectionUnlock } from "~/features/shared-collection";
 import { Alert, Input } from "~/shared/ui";
 
 const props = defineProps<{ slug: string }>();

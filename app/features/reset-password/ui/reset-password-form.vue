@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import { useResetPasswordForm } from "~/features/reset-password";
+import { useResetPasswordForm } from "../model/use-reset-password-form";
+
 import { minLength, required } from "~/shared/lib";
 import { Alert, Input } from "~/shared/ui";
 

@@ -15,6 +15,7 @@ Linkfolio is a Nuxt app for building collections of links and sharing them via a
 - [Playwright](https://playwright.dev) — end-to-end testing
 - [Storybook](https://storybook.js.org) + [Chromatic](https://www.chromatic.com) — component development, visual testing
 - ESLint + Prettier + Husky/lint-staged — linting, formatting, pre-commit hooks
+- [dependency-cruiser](https://github.com/sverweij/dependency-cruiser) — circular-import and app/server boundary checks, dependency graph visualization
 
 ## Prerequisites
 
@@ -100,6 +101,18 @@ pnpm lint        # or lint:fix
 pnpm format      # or format:fix
 pnpm type-check
 ```
+
+## Dependency graph
+
+```bash
+pnpm dep-check        # CI gate: no circular imports, no app/**<->server/** imports
+pnpm dep-graph         # prints a Mermaid diagram to stdout — paste into a PR/Markdown
+pnpm dep-graph:archi   # renders dependency-graph.svg (needs Graphviz's `dot` locally)
+```
+
+Requires Node `^22||^24||>=26` (dependency-cruiser's own supported range) — the project's pinned version ([`.nvmrc`](./.nvmrc), `v26.7.0`) already satisfies this, so `nvm use` (see Prerequisites) is enough if your default Node is outside that range. See `.dependency-cruiser.cjs` and `CLAUDE.md` for what these rules cover and why.
+
+![Dependency graph](./dependency-graph.svg)
 
 ## Storybook
 

@@ -1,5 +1,7 @@
 <script lang="ts" setup>
-import { useCollections, useDeleteCollection } from "~/features/collections";
+import { useCollections } from "../model/use-collections";
+import { useDeleteCollection } from "../model/use-delete-collection";
+
 import { useAuth } from "~/shared/api";
 import { Alert, CollectionCard } from "~/shared/ui";
 

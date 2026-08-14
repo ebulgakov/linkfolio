@@ -1,7 +1,8 @@
 <script lang="ts" setup>
+import { useCollectionForm } from "../model/use-collection-form";
+
 import type { Collection } from "~/shared/api";
 
-import { useCollectionForm } from "~/features/collection-form";
 import { required, slug } from "~/shared/lib";
 import { Alert, ImageUploadField, Input } from "~/shared/ui";
 

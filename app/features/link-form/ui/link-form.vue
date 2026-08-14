@@ -1,7 +1,8 @@
 <script lang="ts" setup>
+import { useLinkForm } from "../model/use-link-form";
+
 import type { LinkItem } from "~/shared/api";
 
-import { useLinkForm } from "~/features/link-form";
 import { required, url } from "~/shared/lib";
 import { Alert, ImageUploadField, Input } from "~/shared/ui";
 

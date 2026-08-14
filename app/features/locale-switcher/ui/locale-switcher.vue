@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useLocaleSwitcher } from "~/features/locale-switcher";
+import { useLocaleSwitcher } from "../model/use-locale-switcher";
 
 const { t } = useI18n();
 const { locale, availableLocales, onLocaleChange } = useLocaleSwitcher();
