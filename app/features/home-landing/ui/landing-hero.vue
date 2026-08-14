@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import { useLandingHero } from "~/features/home-landing";
+import { useLandingHero } from "../model/use-landing-hero";
+
 import { AppLogo } from "~/shared/ui";
 
 const { t } = useI18n();

@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import { useForgotPasswordForm } from "~/features/forgot-password";
+import { useForgotPasswordForm } from "../model/use-forgot-password-form";
+
 import { email, required } from "~/shared/lib";
 import { Alert, Input } from "~/shared/ui";
 

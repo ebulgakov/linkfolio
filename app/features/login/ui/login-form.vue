@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import { useLoginForm } from "~/features/login";
+import { useLoginForm } from "../model/use-login-form";
+
 import { email, required } from "~/shared/lib";
 import { Alert, Input } from "~/shared/ui";
 

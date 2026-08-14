@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useAuthButtons } from "~/features/auth-buttons";
+import { useAuthButtons } from "../model/use-auth-buttons";
 
 const { t } = useI18n();
 const { session, logOut, goToLogin, goToSignup } = await useAuthButtons();

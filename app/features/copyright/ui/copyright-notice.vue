@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useCopyright } from "~/features/copyright";
+import { useCopyright } from "../model/use-copyright";
 
 const { t } = useI18n();
 const copyright = useCopyright();

@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import { useSignupForm } from "~/features/signup";
+import { useSignupForm } from "../model/use-signup-form";
+
 import { email, minLength, required } from "~/shared/lib";
 import { Alert, Input } from "~/shared/ui";
 
