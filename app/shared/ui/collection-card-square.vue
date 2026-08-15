@@ -16,19 +16,17 @@ const canReveal = computed(() => !!props.description);
 </script>
 
 <template>
-  <div
+  <component
+    :is="to ? NuxtLink : 'div'"
+    v-bind="to ? { to } : {}"
+    :tabindex="!to && canReveal ? 0 : undefined"
     class="collection-card-square"
     :class="{
       'collection-card-square--flip': canFlip,
       'collection-card-square--reveal': canReveal
     }"
   >
-    <component
-      :is="to ? NuxtLink : 'div'"
-      v-bind="to ? { to } : {}"
-      :tabindex="!to && canReveal ? 0 : undefined"
-      class="collection-card-square__flipper rounded elevation-1"
-    >
+    <div class="collection-card-square__flipper rounded elevation-1">
       <div class="collection-card-square__face">
         <template v-if="imageUrl">
           <img :src="imageUrl" :alt="title" class="collection-card-square__blur" />
@@ -49,16 +47,15 @@ const canReveal = computed(() => !!props.description);
           </p>
         </div>
       </div>
-    </component>
-
-    <div v-if="$slots.overlay" class="collection-card-square__overlay">
-      <slot name="overlay" />
     </div>
-  </div>
+  </component>
 </template>
 
 <style scoped>
 .collection-card-square {
+  display: block;
+  text-decoration: none;
+  color: inherit;
   position: relative;
   aspect-ratio: 1 / 1;
   perspective: 1200px;
@@ -66,11 +63,8 @@ const canReveal = computed(() => !!props.description);
 
 .collection-card-square__flipper {
   position: relative;
-  display: block;
   width: 100%;
   height: 100%;
-  color: inherit;
-  text-decoration: none;
   transform-style: preserve-3d;
   transition: transform 300ms linear;
   will-change: transform;
@@ -86,24 +80,17 @@ const canReveal = computed(() => !!props.description);
   opacity: 0.4;
 }
 
-.collection-card-square--flip .collection-card-square__flipper:hover,
-.collection-card-square--flip .collection-card-square__flipper:focus {
+.collection-card-square--flip:hover .collection-card-square__flipper,
+.collection-card-square--flip:focus .collection-card-square__flipper {
   transform: rotateY(180deg);
 }
-.collection-card-square--reveal
-  .collection-card-square__flipper:hover
-  .collection-card-square__scrim,
-.collection-card-square--reveal
-  .collection-card-square__flipper:focus
-  .collection-card-square__scrim {
+
+.collection-card-square--reveal:hover .collection-card-square__scrim,
+.collection-card-square--reveal:focus .collection-card-square__scrim {
   opacity: 0;
 }
-.collection-card-square--reveal
-  .collection-card-square__flipper:hover
-  .collection-card-square__description,
-.collection-card-square--reveal
-  .collection-card-square__flipper:focus
-  .collection-card-square__description {
+.collection-card-square--reveal:hover .collection-card-square__description,
+.collection-card-square--reveal:focus .collection-card-square__description {
   opacity: 1;
 }
 
@@ -151,29 +138,6 @@ const canReveal = computed(() => !!props.description);
   will-change: opacity;
   transition-delay: 150ms;
   transition-duration: 0ms;
-}
-
-.collection-card-square__overlay {
-  position: absolute;
-  inset-inline: 0;
-  top: 0;
-  z-index: 1;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 8px;
-  padding: 8px;
-}
-
-.collection-card-square--flip
-  .collection-card-square__flipper:hover
-  ~ .collection-card-square__overlay,
-.collection-card-square--flip
-  .collection-card-square__flipper:focus
-  ~ .collection-card-square__overlay {
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s;
 }
 
 @media (prefers-reduced-motion: reduce) {
