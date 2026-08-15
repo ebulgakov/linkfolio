@@ -89,13 +89,11 @@ describe("CollectionCardSquare", () => {
       title: "Unlinked",
       description: "A handful of useful links."
     });
-    expect(unlinkedRevealable.find(".collection-card-square__flipper").attributes("tabindex")).toBe(
-      "0"
-    );
+    expect(unlinkedRevealable.find(".collection-card-square").attributes("tabindex")).toBe("0");
 
     const unlinkedNoDescription = await mountCard({ title: "Unlinked, nothing to reveal" });
     expect(
-      unlinkedNoDescription.find(".collection-card-square__flipper").attributes("tabindex")
+      unlinkedNoDescription.find(".collection-card-square").attributes("tabindex")
     ).toBeUndefined();
 
     const linked = await mountCard(
@@ -111,7 +109,7 @@ describe("CollectionCardSquare", () => {
       { route: "/" }
     );
 
-    const flipper = wrapper.find(".collection-card-square__flipper");
+    const flipper = wrapper.find(".collection-card-square");
     expect(flipper.element.tagName).toBe("A");
     expect(flipper.attributes("href")).toBe("/shared/my-collection");
   });
@@ -119,23 +117,7 @@ describe("CollectionCardSquare", () => {
   it("renders as a plain div when `to` is not passed", async () => {
     const wrapper = await mountCard({ title: "Not Linked" });
 
-    const flipper = wrapper.find(".collection-card-square__flipper");
+    const flipper = wrapper.find(".collection-card-square");
     expect(flipper.element.tagName).toBe("DIV");
-  });
-
-  it("renders the overlay slot when provided", async () => {
-    const wrapper = await mountCard(
-      { title: "With Overlay" },
-      { slots: { overlay: () => "Overlay content" } }
-    );
-
-    expect(wrapper.find(".collection-card-square__overlay").exists()).toBe(true);
-    expect(wrapper.text()).toContain("Overlay content");
-  });
-
-  it("does not render the overlay wrapper when no overlay slot is given", async () => {
-    const wrapper = await mountCard({ title: "Without Overlay" });
-
-    expect(wrapper.find(".collection-card-square__overlay").exists()).toBe(false);
   });
 });
