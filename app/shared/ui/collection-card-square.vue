@@ -54,6 +54,8 @@ const canReveal = computed(() => !!props.description);
 <style scoped>
 .collection-card-square {
   display: block;
+  text-decoration: none;
+  color: inherit;
   position: relative;
   aspect-ratio: 1 / 1;
   perspective: 1200px;
@@ -61,11 +63,8 @@ const canReveal = computed(() => !!props.description);
 
 .collection-card-square__flipper {
   position: relative;
-  display: block;
   width: 100%;
   height: 100%;
-  color: inherit;
-  text-decoration: none;
   transform-style: preserve-3d;
   transition: transform 300ms linear;
   will-change: transform;
